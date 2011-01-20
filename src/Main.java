@@ -12,8 +12,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Config man = new Config();
-		Console con = new Console(man);
+		Console con = new Console();
 		Calendar time;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		try {

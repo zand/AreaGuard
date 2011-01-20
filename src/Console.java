@@ -9,11 +9,9 @@ import com.zand.areaguard.Session;
 
 public class Console {
 	private final Session session = new Session();
-	public final Config manager;
 	private PrintStream out = System.out;
 
-	public Console(Config manager) {
-		this.manager = manager;
+	public Console() {
 	}
 
 	public void command(String[] args) {
@@ -24,7 +22,7 @@ public class Console {
 			} else if (args[0].startsWith("deb")) { // debug
 				if (args.length > 1) {
 					if (args[1].startsWith("s")) { // setup
-						manager.setup();
+						Config.setup();
 					}
 					if (args[1].startsWith("l")) { // debug load
 						if (args.length > 2) {
@@ -48,7 +46,7 @@ public class Console {
 						if (args.length > 2) {
 							if (args.length == 4 && args[3].equals("yes")) {
 								if (args[2].equals("config")) {
-									manager.deleteConfig();
+									Config.deleteConfig();
 								} if (args[2].equals("areas")) {
 									out.println("Eraseing all Areas, please wait...");
 									AreaDatabase.getInstance().removeAllAreas();
