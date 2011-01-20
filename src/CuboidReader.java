@@ -26,6 +26,7 @@ public class CuboidReader {
 			if (area.getId() != -1) {
 				HashSet<String> restrict = new HashSet<String>();
 				if (c.protection) {
+					restrict.add("build");
 					restrict.add("open");
 				}
 				if (c.restricted) restrict.add("enter");

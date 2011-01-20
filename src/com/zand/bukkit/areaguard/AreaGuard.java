@@ -79,6 +79,8 @@ public class AreaGuard extends JavaPlugin {
     	player.sendMessage(ChatColor.YELLOW + area.toString());
     	ArrayList<String> values;
     	String[] first = {"owners", "restrict", "allow", "no-allow"};
+    	
+    	// Show what comes first
     	for (String list : first) {
     		values = area.getList(list);
     		if (!values.isEmpty()) {
@@ -90,8 +92,13 @@ public class AreaGuard extends JavaPlugin {
     	}
     	int i;
     	for (String list : area.getLists()) {
-    		for (i=0; i < first.length; i++) if (!list.equals(first[i])) break;
+    		// Go though the list and break when we find a match
+    		for (i=0; i < first.length; i++) 
+    			if (list.equals(first[i])) break;
+    		
+    		// if we diden't reach the end then there was a match
     		if (i != first.length) continue;
+    		
     		values = area.getList(list);
     		if (!values.isEmpty()) {
     			String msg = ChatColor.YELLOW + "  " + list + ":" + ChatColor.WHITE;

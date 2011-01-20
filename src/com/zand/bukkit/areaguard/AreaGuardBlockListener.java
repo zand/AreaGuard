@@ -29,7 +29,23 @@ public class AreaGuardBlockListener extends BlockListener {
     		
     		Player player = (Player)event.getPlayer();
     		Block block = event.getBlock();
-    		plugin.checkEvent(event, player, "build", block.getX(), block.getY(), block.getZ());
+    		if (!plugin.checkEvent(event, player, "build", block.getX(), block.getY(), block.getZ()))
+    			return;
+    		
+    		String type;
+    		switch (block.getType()) {
+    			case CHEST: type = "chest"; break;
+    			case FURNACE: type = "furnace"; break;
+    			case DISPENSER: type = "dispenser"; break;
+    			case JUKEBOX: type = "jukebox"; break;
+    			case LEVER: type = "lever"; break;
+    			case STONE_BUTTON: type = "button"; break;
+    			case WOOD_DOOR: type = "door"; break;
+    			default: return;
+    		}
+    		
+    		if (plugin.checkEvent(event, player, type, block.getX(), block.getY(), block.getZ()))
+    			plugin.checkEvent(event, player, "open", block.getX(), block.getY(), block.getZ());
     	}
     }
     

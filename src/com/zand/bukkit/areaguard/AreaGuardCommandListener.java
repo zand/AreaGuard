@@ -46,9 +46,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 						Area area = new Area(args[index], ps.getCoords());
 						if (area.getId() != -1) {
 								player.sendMessage(ChatColor.YELLOW + area.toString() + " Added and Selected");
-								HashSet<String> r = new HashSet<String>();
-								for (String s : Config.defaultRestict.split(" ")) r.add(s);
-								area.addList("restrict", r);
+								area.addList("restrict", Config.defaultRestict);
 								ps.selected = area.getId();
 						}
 						else player.sendMessage(ChatColor.DARK_RED + "Faild to Add Area");

@@ -15,7 +15,7 @@ public class Config {
 	public static int createTool;
 	public static int checkTool;
 	public static HashSet<String> creators = new HashSet<String>();
-	public static String defaultRestict = "";
+	public static HashSet<String> defaultRestict = new HashSet<String>();
 	
 
 	public Config() {
@@ -48,7 +48,8 @@ public class Config {
 			creators.add(creator);
 		createTool = Integer.valueOf(props.getProperty("create-tool"));
 		checkTool = Integer.valueOf(props.getProperty("check-tool"));
-		defaultRestict = props.getProperty("default-restrict");
+		for (String name : props.getProperty("default-restrict").split(" "))
+			defaultRestict.add(name);
 		
 		// Configure Connection
 		ad.config(props.getProperty("driver"), 
