@@ -1,5 +1,6 @@
 package com.zand.bukkit.areaguard;
 
+import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.*;
@@ -21,6 +22,12 @@ public class AreaGuardBlockListener extends BlockListener {
     	Player player = (Player)event.getPlayer();
     	Block block = event.getBlock();
     	plugin.checkEvent(event, player, "build", block.getX(), block.getY(), block.getZ());
+    	
+    	String type = getOpenType(block.getType());
+		if (type.isEmpty()) return;
+		
+		if (plugin.checkEvent(event, player, type, block.getX(), block.getY(), block.getZ()))
+			plugin.checkEvent(event, player, "open", block.getX(), block.getY(), block.getZ());
     }
     
     public void onBlockDamage(BlockDamageEvent event) {
@@ -32,17 +39,8 @@ public class AreaGuardBlockListener extends BlockListener {
     		if (!plugin.checkEvent(event, player, "build", block.getX(), block.getY(), block.getZ()))
     			return;
     		
-    		String type;
-    		switch (block.getType()) {
-    			case CHEST: type = "chest"; break;
-    			case FURNACE: type = "furnace"; break;
-    			case DISPENSER: type = "dispenser"; break;
-    			case JUKEBOX: type = "jukebox"; break;
-    			case LEVER: type = "lever"; break;
-    			case STONE_BUTTON: type = "button"; break;
-    			case WOOD_DOOR: type = "door"; break;
-    			default: return;
-    		}
+    		String type = getOpenType(block.getType());
+    		if (type.isEmpty()) return;
     		
     		if (plugin.checkEvent(event, player, type, block.getX(), block.getY(), block.getZ()))
     			plugin.checkEvent(event, player, "open", block.getX(), block.getY(), block.getZ());
@@ -70,21 +68,30 @@ public class AreaGuardBlockListener extends BlockListener {
 		
 		Player player = (Player)event.getEntity();
 		Block block = event.getBlock();
-		String type;
-		switch (block.getType()) {
-			case CHEST: type = "chest"; break;
-			case FURNACE: type = "furnace"; break;
-			case DISPENSER: type = "dispenser"; break;
-			case JUKEBOX: type = "jukebox"; break;
-			case LEVER: type = "lever"; break;
-			case STONE_BUTTON: type = "button"; break;
-			case WOOD_DOOR: type = "door"; break;
-			default: return;
-		}
 		
-		if (plugin.checkEvent(event, player, type, block.getX(), block.getY(), block.getZ()))
-			plugin.checkEvent(event, player, "open", block.getX(), block.getY(), block.getZ());
+		String type = getOpenType(block.getType());
+		if (type.isEmpty()) {
+			
+			switch (block.getType()) {
+				case WOOD_DOOR: type = "door"; break;
+				case LEVER: type = "lever"; break;
+				case STONE_BUTTON: type = "button"; break;
+				default: return;
+			}
+			
+			plugin.checkEvent(event, player, type, block.getX(), block.getY(), block.getZ());
+		}
+		else plugin.checkEvent(event, player, type, block.getX(), block.getY(), block.getZ());
 	}
 	
-
+	public String getOpenType(Material mat) {
+		switch (mat) {
+		case CHEST: return "chest";
+		case FURNACE: return "furnace";
+		case DISPENSER: return "dispenser";
+		case JUKEBOX: return "jukebox";
+		default: return "";
+		}
+		
+	}
 }
