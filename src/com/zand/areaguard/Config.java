@@ -17,19 +17,23 @@ public class Config {
 	public static HashSet<String> creators = new HashSet<String>();
 	public static HashSet<String> defaultRestict = new HashSet<String>();
 	
+	
+	public static boolean  isCreator(String name) {
+		return creators.contains(name.toLowerCase());
+	}
 
 	public Config() {
 		setup();
 	}
 
-	public void deleteConfig() {
+	public static void deleteConfig() {
 		System.out.println("Deleating \"" + config + "\"");
 		File f = new File(config);
 		if (f.exists())
 			f.delete();
 	}
 
-	public boolean readConfig(String file) {
+	public static boolean readConfig(String file) {
 		System.out.println("Reading config \"" + config + "\"");
 		Properties props = new Properties();
 
@@ -44,8 +48,8 @@ public class Config {
 					+ file + "\", " + e.getMessage());
 			return false;
 		}
-		for (String creator : props.getProperty("create-tool").split(" "))
-			creators.add(creator);
+		for (String creator : props.getProperty("area-creators").split(" "))
+			creators.add(creator.toLowerCase());
 		createTool = Integer.valueOf(props.getProperty("create-tool"));
 		checkTool = Integer.valueOf(props.getProperty("check-tool"));
 		for (String name : props.getProperty("default-restrict").split(" "))
@@ -63,7 +67,7 @@ public class Config {
 		return true;
 	}
 
-	public boolean setup() {
+	public static boolean setup() {
 		System.out.println("AreaGuard: Setup");
 
 		// Test the config file

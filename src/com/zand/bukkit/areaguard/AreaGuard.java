@@ -110,9 +110,9 @@ public class AreaGuard extends JavaPlugin {
     }
     
     public boolean canCreate(Player player) {
-    	if (Config.creators.contains(player.getName())) return true;
-    	player.sendMessage("your not a area creator but, I will allow for debug.");
-    	return true;
+    	if (player.isOp() || Config.isCreator(player.getName())) return true;
+    	player.sendMessage("Your not allowed to use that command.");
+    	return false;
     }
     
     public boolean canModify(Area area, Player player) {

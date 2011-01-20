@@ -39,7 +39,14 @@ public class AreaGuardCommandListener extends PlayerListener {
 			player = event.getPlayer();
 
 			if (args.length > index) {
-				if (args[index].equals("help")) { index++; showHelp(); }
+				if (args[index].equals("help")) { index++; showHelp(); return; }
+				if (args[index].equals("reconfig")) {
+					if (player.isOp()) {
+						Config.setup();
+						player.sendMessage(ChatColor.GOLD + "Reloading the config file.");
+					} else player.sendMessage(ChatColor.DARK_RED + "Your not allowed to use that command.");
+					return;
+				}
 				if (args[index].equals("add")) { 
 					index++; if (args.length > index)  if (plugin.canCreate(player)) {
 						PlayerSession ps = plugin.getSession(player);
