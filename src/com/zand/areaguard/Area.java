@@ -1,6 +1,7 @@
 package com.zand.areaguard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -118,5 +119,9 @@ public class Area {
 		if (listHas("no-allow", player)) return false;
 		if (listHas("no-"+name, player)) return false;
 		return true;
+	}
+
+	public HashMap<String, String> getMsgs() {
+		return ad.getMsgs(id);
 	}
 }

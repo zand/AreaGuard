@@ -82,10 +82,19 @@ public class AreaGuard extends JavaPlugin {
     
     public void showAreaInfo(Player player, Area area) {
     	player.sendMessage(ChatColor.YELLOW + area.toString());
-    	ArrayList<String> values;
     	String[] first = {"owners", "restrict", "allow", "no-allow"};
     	
-    	// Show what comes first
+    	// list the set msgs
+    	HashMap<String, String> msgs = area.getMsgs();
+		if (!msgs.isEmpty()) {
+			String msg = ChatColor.YELLOW + "  msg on:" + ChatColor.WHITE;
+			for (String value: msgs.keySet()) 
+				msg += " " + value;
+			player.sendMessage(msg);
+		}
+    	
+    	// Show the lists that come first
+		ArrayList<String> values;
     	for (String list : first) {
     		values = area.getList(list);
     		if (!values.isEmpty()) {
@@ -94,6 +103,7 @@ public class AreaGuard extends JavaPlugin {
     				msg += " " + value;
     			player.sendMessage(msg);
     		}
+    		else player.sendMessage(ChatColor.YELLOW + "  " + list + ":");
     	}
     	int i;
     	for (String list : area.getLists()) {
