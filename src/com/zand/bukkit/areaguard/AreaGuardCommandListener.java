@@ -33,71 +33,116 @@ public class AreaGuardCommandListener extends PlayerListener {
 		// remove the / and split to args
 		args = event.getMessage().toLowerCase().substring(1).split(" ");
 		index = 0;
-
+		
+		// Is this for us
 		if (args.length > index && plugin.isCommand(args[index])) {
-			index++;
 			player = event.getPlayer();
-
-			if (args.length > index) {
-				if (args[index].equals("help")) { index++; showHelp(); return; }
-				if (args[index].equals("reconfig")) {
-					if (player.isOp()) {
-						Config.setup();
-						player.sendMessage(ChatColor.GOLD + "Reloading the config file.");
-					} else player.sendMessage(ChatColor.DARK_RED + "Your not allowed to use that command.");
-					return;
-				}
-				if (args[index].equals("add")) { 
-					index++; if (args.length > index)  if (plugin.canCreate(player)) {
-						PlayerSession ps = plugin.getSession(player);
-						Area area = new Area(args[index], ps.getCoords());
-						if (area.getId() != -1) {
-								player.sendMessage(ChatColor.YELLOW + area.toString() + " Added and Selected");
-								area.addList("restrict", Config.defaultRestict);
-								ps.selected = area.getId();
-						}
-						else player.sendMessage(ChatColor.DARK_RED + "Faild to Add Area");
-					}
-				}
-				else {
-					Area area = getAreaFromArgs();
-					if (area != null && args.length > index) {
-						
-						// [area] [operation]
-						if (args[index].equals("show") || args[index].equals("info")) plugin.showAreaInfo(player, area);
-						else if (args[index].equals("select")) 
-							plugin.getSession(player).selected = area.getId();
-						
-						// Owners only
-						else if (args[index].equals("list") && plugin.canModify(area, player)) 
-						{ index++; list(area); }
-						else if (args[index].equals("msg") && plugin.canModify(area, player)) 
-						{ index++; setMsg(area); }
-						
-						// Creators only
-						else if (args[index].equals("rename") && plugin.canCreate(player)) 
-						{ index++; if (args.length > index) if (area.setName(args[index])) 
-							player.sendMessage(ChatColor.YELLOW + "Area Renamed");
-						else player.sendMessage(ChatColor.DARK_RED + "Faild to Rename Area");
-						}
-						else if (args[index].equals("remove") && plugin.canCreate(player)) {
-							if (area.remove())
-								player.sendMessage(ChatColor.YELLOW + "Area Removed");
-							else player.sendMessage(ChatColor.DARK_RED + "Faild to Remove Area");
-						}
-						else if (args[index].equals("move") && plugin.canCreate(player)) { 
-							if (area.setCoords(plugin.getSession(player).getCoords()))
-								player.sendMessage(ChatColor.YELLOW + "Area Moved");
-							else player.sendMessage(ChatColor.DARK_RED + "Faild to Move Area");
-						}
-					}
-					else player.sendMessage("Could not find Area");
-				}
-			}
-			else showHelp();
+			
+			processCommand();
 
 			event.setCancelled(true);
 		}
+	}
+	
+	private void processCommand() {
+		index++;
+		
+		// Is there something after /ag
+		if (args.length > index) {
+			
+			// Help
+			if (args[index].equals("help")) { index++; showHelp(); return; }
+			
+			// Reconfig
+			if (args[index].equals("reconfig")) {
+				if (player.isOp()) {
+					Config.setup();
+					player.sendMessage(ChatColor.GOLD + "Reloading the config file.");
+				} else player.sendMessage(ChatColor.DARK_RED + "Your not allowed to use that command.");
+				return;
+			}
+			
+			// Add
+			if (args[index].equals("add")) { 
+				index++; if (args.length > index)  if (plugin.canCreate(player)) {
+					PlayerSession ps = plugin.getSession(player);
+					Area area = new Area(args[index], ps.getCoords());
+					if (area.getId() != -1) {
+							player.sendMessage(ChatColor.YELLOW + area.toString() + " Added and Selected");
+							area.addList("restrict", Config.defaultRestict);
+							ps.selected = area.getId();
+					}
+					else player.sendMessage(ChatColor.DARK_RED + "Faild to Add Area");
+				}
+			}
+			
+			// [area] [operation]
+			else {
+				Area area = getAreaFromArgs();
+				if (area != null && args.length > index) {
+					// All
+					// Info/Show
+					if (args[index].equals("show") || args[index].equals("info")) plugin.showAreaInfo(player, area);
+					
+					// Select
+					else if (args[index].equals("select")) 
+						plugin.getSession(player).selected = area.getId();
+					
+					// Owners only
+					// List
+					else if (args[index].equals("list") && plugin.canModify(area, player)) 
+					{ index++; list(area); }
+					
+					// Msg
+					else if (args[index].equals("msg") && plugin.canModify(area, player)) 
+					{ index++; setMsg(area); }
+					
+					// Creators only
+					// Rename
+					else if (args[index].equals("rename") && plugin.canCreate(player)) 
+					{ index++; if (args.length > index) if (area.setName(args[index])) 
+						player.sendMessage(ChatColor.YELLOW + "Area Renamed");
+					else player.sendMessage(ChatColor.DARK_RED + "Faild to Rename Area");
+					}
+					
+					// Remove
+					else if (args[index].equals("remove") && plugin.canCreate(player)) {
+						if (area.remove())
+							player.sendMessage(ChatColor.YELLOW + "Area Removed");
+						else player.sendMessage(ChatColor.DARK_RED + "Faild to Remove Area");
+					}
+					
+					// Move
+					else if (args[index].equals("move") && plugin.canCreate(player)) { 
+						if (area.setCoords(plugin.getSession(player).getCoords()))
+							player.sendMessage(ChatColor.YELLOW + "Area Moved");
+						else player.sendMessage(ChatColor.DARK_RED + "Faild to Move Area");
+					}
+					
+					// We have reached the end
+					// now its time we look at the next arg
+					else if (args.length > index+1) {
+						index++;
+						
+						// Alias for Msg or List
+						if (args[index].equals("msg") || args[index].equals("list")) {
+							if (args[index].equals(args[index-1])) return; // I would hate to get an endless loop here
+							
+							// Swap the args
+							String temp   = args[index];
+							args[index]   = args[index-1];
+							args[index-1] = temp;
+							
+							// re-process the command
+							index = 0;
+							processCommand();
+						}
+					}
+				}
+				else player.sendMessage("Could not find Area");
+			}
+		}
+		else showHelp();
 	}
 
 	private void setMsg(Area area) {
