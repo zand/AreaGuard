@@ -1,5 +1,6 @@
 package com.zand.bukkit.areaguard;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerListener;
@@ -26,19 +27,32 @@ public class AreaGuardPlayerListener extends PlayerListener {
     	// Check if in area
     	Player player = event.getPlayer();
     	PlayerSession ps = plugin.getSession(player);
-    	Area to = Area.getArea(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-    	if (to == null) { 
-    		ps.lastIn = -1;
-    		return;
-    	}
     	
-    	// Where they in it
-    	if (ps.lastIn != to.getId()) {
-    		// if its not >= -1 it was never set
-        	if (ps.lastIn >= -1)
-        		plugin.checkEvent(event, player, "enter", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-    		ps.lastIn = to.getId();
+    	// if they moved to a new block
+    	if (loc.getBlockX() != ps.lastLoc.getBlockX() ||
+    		loc.getBlockY() != ps.lastLoc.getBlockY() ||
+    		loc.getBlockZ() != ps.lastLoc.getBlockZ()) {
+    		Area to = Area.getArea(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    		
+    		// if they entered an area
+    		if (to != null)
+    			if (ps.lastArea == null || ps.lastArea.getId() != to.getId())
+    			plugin.checkEvent(event, player, "enter", to);
+    		
+    		// if they left an area
+    		if (ps.lastArea != null) 
+    			if (to == null || ps.lastArea.getId() != to.getId()) {
+    			String msg = ps.lastArea.getMsg("leave");
+    			if (!msg.isEmpty()) player.sendMessage(ChatColor.YELLOW + msg);
+    		}
+    		
+    		if (event.isCancelled()) {
+    			player.teleportTo(ps.lastLoc);
+    		}
+    		else {
+    			ps.lastArea = to;
+    			ps.lastLoc = loc;
+    		}
     	}
-    	
     }
 }

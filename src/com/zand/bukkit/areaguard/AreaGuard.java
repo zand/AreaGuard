@@ -136,6 +136,12 @@ public class AreaGuard extends JavaPlugin {
     
     public boolean checkEvent(Cancellable event, Player player, String type, int x, int y, int z) {
     	Area area = Area.getArea(x, y, z);
+		return checkEvent(event, player, type, area);
+    }
+
+
+
+	public boolean checkEvent(Cancellable event, Player player, String type, Area area) {
 		if (area != null) {
 			if (area.playerCan(player.getName(), type)) {
 				String msg = area.getMsg(type);
@@ -149,5 +155,5 @@ public class AreaGuard extends JavaPlugin {
 			}	
 		}
 		return true;
-    }
+	}
 }
