@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 
 public class Config {
@@ -88,21 +89,18 @@ public class Config {
 		if (!found) {
 			try {
 				System.out.println("Creating \"" + config + "\"");
+				List<String> data = JarFile.toList("data/areaguard.properties");
+				
 				(new File("AreaGuard")).mkdir();
 				f.createNewFile();
 				FileWriter w = new FileWriter(config);
 				BufferedWriter out = new BufferedWriter(w);
-				out.write("area-creators=admin zand"); out.newLine();
-				out.write("create-tool=269"); out.newLine();
-				out.write("check-tool=280"); out.newLine();
-				out.write("default-restrict=build open");out.newLine();
-				out.write("url=jdbc:sqlite:AreaGuard/main.db");out.newLine();
-				out.write("user=minecraft");out.newLine();
-				out.write("password=");out.newLine();
-				out.write("area-table=AG_Areas");out.newLine();
-				out.write("msg-table=AG_Msgs");out.newLine();
-				out.write("list-table=AG_Lists");out.newLine();
-				out.write("keep-connection=true");out.newLine();
+				
+				// Write the config data
+				for (String line : data) {
+					out.write(line); 
+					out.newLine();
+				}
 				out.close();
 			} catch (IOException e) {
 				System.err.println("Error: " + e.getMessage());
