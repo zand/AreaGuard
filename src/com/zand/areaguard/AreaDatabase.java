@@ -668,7 +668,7 @@ public class AreaDatabase {
 
 	public boolean updateArea(Area area) {
 		String update = "UPDATE `" + areas + "` "
-				+ "SET Name=?, x1=?, y1=?, z1=?, x2=?, y2=?, z2=?, "
+				+ "SET Name=?, x1=?, y1=?, z1=?, x2=?, y2=?, z2=? "
 				+ "WHERE Id=?;";
 		connect();
 		if (conn == null)
@@ -680,7 +680,7 @@ public class AreaDatabase {
 				ps.setInt(i + 2, area.getCoords()[i]);
 			ps.setInt(8, area.getId());
 
-			ps.executeQuery();
+			ps.execute();
 			ps.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
