@@ -10,6 +10,7 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
+import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,10 +34,11 @@ public class AreaGuard extends JavaPlugin {
     private final List<String> commands = new ArrayList<String>();
     protected final HashMap<String, PlayerSession> playerSessions = new HashMap<String, PlayerSession>();
     public final String versionInfo;
-    Config man = new Config();
 
     public AreaGuard(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
         super(pluginLoader, instance, desc, folder, plugin, cLoader);
+        
+        Config.setup();
 
         versionInfo = desc.getName() + " version " + desc.getVersion() + " by zand";
         commands.add(desc.getName().toLowerCase());
@@ -59,13 +61,16 @@ public class AreaGuard extends JavaPlugin {
     
     private void registerEvents() {
 		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Event.Priority.Normal, this);
+		Priority preventPriority = Event.Priority.High;
+		
 		pm.registerEvent(Event.Type.PLAYER_COMMAND, commandListener, Event.Priority.Low, this);
-		pm.registerEvent(Event.Type.ENTITY_DAMAGEDBY_ENTITY, entityListener, Event.Priority.Low, this);
-        pm.registerEvent(Event.Type.BLOCK_PLACED, blockListener, Event.Priority.Low, this);
-        pm.registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Event.Priority.Low, this);
-        pm.registerEvent(Event.Type.BLOCK_RIGHTCLICKED, blockListener, Event.Priority.Low, this);
-        pm.registerEvent(Event.Type.BLOCK_INTERACT, blockListener, Event.Priority.Low, this);
+		
+		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, preventPriority, this);
+		pm.registerEvent(Event.Type.ENTITY_DAMAGEDBY_ENTITY, entityListener, preventPriority, this);
+        pm.registerEvent(Event.Type.BLOCK_PLACED, blockListener, preventPriority, this);
+        pm.registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, preventPriority, this);
+        pm.registerEvent(Event.Type.BLOCK_RIGHTCLICKED, blockListener, preventPriority, this);
+        pm.registerEvent(Event.Type.BLOCK_INTERACT, blockListener, preventPriority, this);
     }
     
     public PlayerSession getSession(Player player) {
