@@ -56,8 +56,18 @@ public class Config {
 			defaultRestict.add(name);
 		
 		// Configure Connection
-		ad.config(props.getProperty("driver"), 
-					props.getProperty("url"), 
+		String url = props.getProperty("url");
+		
+		// Figure out what driver to use
+		String driver = "org.sqlite.JDBC";
+		String lower = url.toLowerCase().replaceAll("\\\\", "");
+		if 		(lower.startsWith("jdbc:sqlite:")) 	driver = "org.sqlite.JDBC";
+		else if (lower.startsWith("jdbc:mysql:"))	driver = "com.mysql.jdbc.Driver";
+		else System.err.println("Coulden't figuer out driver from url");
+		
+		
+		
+		ad.config(driver, url, 
 					props.getProperty("user"), 
 					props.getProperty("password"), 
 					props.getProperty("area-table"), 
@@ -86,7 +96,6 @@ public class Config {
 				out.write("create-tool=269"); out.newLine();
 				out.write("check-tool=280"); out.newLine();
 				out.write("default-restrict=build open");out.newLine();
-				out.write("driver=org.sqlite.JDBC");out.newLine();
 				out.write("url=jdbc:sqlite:AreaGuard/main.db");out.newLine();
 				out.write("user=minecraft");out.newLine();
 				out.write("password=");out.newLine();
