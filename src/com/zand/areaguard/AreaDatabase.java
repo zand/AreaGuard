@@ -134,50 +134,31 @@ public class AreaDatabase {
 	}
 
 	public boolean createTables() {
-		boolean sqlite = url.toLowerCase().contains("sqlite");
-		String auto = (sqlite ? "INTEGER" : "int NOT NULL AUTO_INCREMENT");
-		String tail = (sqlite ? ");" : ") ENGINE=InnoDB;");
-
-		String sqlAreas = "CREATE TABLE IF NOT EXISTS `"
-				+ areas
-				+ "` ( \n"
-				+ "Id "
-				+ auto
-				+ ", \n"
-				+ "Name varchar(32) NOT NULL, \n"
-				+ "x1 int NOT NULL, \n"
-				+ "y1 int NOT NULL, \n"
-				+ "z1 int NOT NULL, \n"
-				+ "x2 int NOT NULL, \n"
-				+ "y2 int NOT NULL, \n"
-				+ "z2 int NOT NULL, \n"
-				+ "PRIMARY KEY (Id) \n"
-				+ (sqlite ? "" : ", INDEX(Id), \n" + "INDEX(Name), \n"
-						+ "INDEX(x1) \n") + tail;
-		String sqlLists = "CREATE TABLE IF NOT EXISTS `" + areaMsgs + "` ( \n" 
-				+ "AreaId int NOT NULL, \n"
-				+ "Name varchar(16) NOT NULL, \n" 
-				+ "Msg varchar(100) \n"
-				+ (sqlite ? "" : ", INDEX(AreaId), \n" + "INDEX(Name) \n") + tail;
-		String sqlListValues = "CREATE TABLE IF NOT EXISTS `" + areaLists + "` ( \n" 
-				+ "AreaId int NOT NULL, \n"
-				+ "List varchar(16) NOT NULL, \n"
-				+ "Value varchar(64) \n"
-				+ "NOT NULL \n"
-				+ (sqlite ? "" : ", INDEX(AreaId), INDEX(List), \n" + "INDEX(Value) \n")
-				+ tail;
+		// Load the sql Data
+		String[] lines = JarFile.toString(
+				(url.toLowerCase().contains("sqlite") ? 
+						"data/sqlight.sql" : "data/mysql.sql"))
+				.replace("<areas>", areas)
+				.replace("<areaMsgs>", areaMsgs)
+				.replace("<areaLists>", areaLists)
+				.split(";");
 
 		connect();
 		if (conn == null)
 			return false;
-		for (String sql : new String[] { sqlAreas, sqlLists, sqlListValues }) {
-			// System.out.println(sql);
+		
+		// Execute the sql data
+		for (String sql : lines) {
+			if (sql.trim().isEmpty()) continue;
+			sql += ";";
+			//System.out.println(sql);
 			try {
 				Statement st = conn.createStatement();
 				st.execute(sql);
 				st.close();
 			} catch (SQLException e) {
 				System.err.println("Failed to Create Tables: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		disconnect();
