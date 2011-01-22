@@ -39,9 +39,6 @@ public class AreaDatabase {
 
 	public int addArea(String name, int coords[]) {
 		int ret = -1;
-		if (!getAreaIds(name).isEmpty()) {
-			return -1;
-		}
 
 		String insert = "INSERT INTO `" + areas
 				+ "` (Name, x1, y1, z1, x2, y2, z2)"

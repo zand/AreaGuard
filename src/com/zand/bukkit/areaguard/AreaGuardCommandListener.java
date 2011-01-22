@@ -97,14 +97,14 @@ public class AreaGuardCommandListener extends PlayerListener {
 					else if (args[index].equals("msg") && plugin.canModify(area, player)) 
 					{ index++; setMsg(area); }
 					
-					// Creators only
 					// Rename
-					else if (args[index].equals("rename") && plugin.canCreate(player)) 
+					else if (args[index].equals("rename") && plugin.canModify(area, player)) 
 					{ index++; if (args.length > index) if (area.setName(args[index])) 
 						player.sendMessage(ChatColor.YELLOW + "Area Renamed");
 					else player.sendMessage(ChatColor.DARK_RED + "Faild to Rename Area");
 					}
 					
+					// Creators only
 					// Remove
 					else if (args[index].equals("remove") && plugin.canCreate(player)) {
 						if (area.remove())
