@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS `<areas>` ( 
 Id INTEGER, 
-Name varchar(32) NOT NULL, 
+Name varchar(32) NOT NULL,
+Priority int NOT NULL DEFAULT 0,
 x1 int NOT NULL, 
 y1 int NOT NULL, 
 z1 int NOT NULL, 

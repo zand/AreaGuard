@@ -25,12 +25,14 @@ public class Area {
 	
 	// Cache
 	private String name = "NOT FOUND";
+	private int priority = 0;
 	
 	private int[] coords = new int[6];
 	
-	protected Area(int id, String name, int[] coords) {
+	protected Area(int id, String name, int priority, int[] coords) {
 		this.id = id;
 		this.name = name;
+		this.priority = priority;
 		if (coords.length == 6)
 			this.coords = coords;
 	}
@@ -123,5 +125,9 @@ public class Area {
 
 	public HashMap<String, String> getMsgs() {
 		return ad.getMsgs(id);
+	}
+
+	public int getPriority() {
+		return priority;
 	}
 }

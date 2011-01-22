@@ -44,7 +44,7 @@ public class AreaDatabase {
 
 		String insert = "INSERT INTO `" + areas
 				+ "` (Name, x1, y1, z1, x2, y2, z2)"
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?);";
+				+ "VALUES (?, ?, ?, ?, ?, ?);";
 		connect();
 		if (conn == null)
 			return -1;
@@ -196,7 +196,7 @@ public class AreaDatabase {
 
 			ResultSet rs = ps.executeQuery();
 			if (rs.next())
-				ret = new Area(id, rs.getString("Name"), new int[] {
+				ret = new Area(id, rs.getString("Name"), rs.getInt("Priority"), new int[] {
 						rs.getInt("x1"), rs.getInt("y1"), rs.getInt("z1"),
 						rs.getInt("x2"), rs.getInt("y2"), rs.getInt("z2") });
 
@@ -214,7 +214,7 @@ public class AreaDatabase {
 		String sql = "SELECT Id FROM `" + areas + "` WHERE x1 <= ? "
 				+ "AND x2 >= ? " + "AND y1 <= ? " + "AND y2 >= ? "
 				+ "AND z1 <= ? " + "AND z2 >= ? " + "ORDER BY `" + areas
-				+ "`.Id DESC LIMIT 1";
+				+ "`.Priority DESC LIMIT 1";
 
 		connect();
 		if (conn != null) {
@@ -668,7 +668,7 @@ public class AreaDatabase {
 
 	public boolean updateArea(Area area) {
 		String update = "UPDATE `" + areas + "` "
-				+ "SET Name=?, x1=?, y1=?, z1=?, x2=?, y2=?, z2=? "
+				+ "SET Name=?, Priority=? x1=?, y1=?, z1=?, x2=?, y2=?, z2=? "
 				+ "WHERE Id=?;";
 		connect();
 		if (conn == null)
@@ -676,9 +676,10 @@ public class AreaDatabase {
 		try {
 			PreparedStatement ps = conn.prepareStatement(update);
 			ps.setString(1, area.getName());
+			ps.setInt(2, area.getPriority());
 			for (int i = 0; i < 6; i++)
-				ps.setInt(i + 2, area.getCoords()[i]);
-			ps.setInt(8, area.getId());
+				ps.setInt(i + 3, area.getCoords()[i]);
+			ps.setInt(9, area.getId());
 
 			ps.execute();
 			ps.close();
