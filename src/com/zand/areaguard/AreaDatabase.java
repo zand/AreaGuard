@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class AreaDatabase {
@@ -181,6 +182,37 @@ public class AreaDatabase {
 			conn = null;
 			System.err.print("AreaGuard:  Can't Disconnect, " + e.getMessage());
 		}
+	}
+	
+	public List<Integer> getAreaIdsFromListValues(String list, String value) {
+		List<Integer> ret = new ArrayList<Integer>();
+		String sql = "SELECT AreaId FROM `" + areaLists + "` WHERE List=? And Value=?";
+
+		connect();
+		if (conn != null) {
+			try {
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ps.setString(1, list);
+				ps.setString(2, value);
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				while (rs.next()) ret.add(rs.getInt(1));
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			disconnect();
+		}
+		return ret;
+		
 	}
 
 	public Area getArea(int id) {

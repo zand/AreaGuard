@@ -17,6 +17,15 @@ public class Area {
 	public static Area getArea(String name) {
 		return ad.getArea(ad.getAreaId(name));
 	}
+	public static Area getOwnedArea(String owner, String name) {
+		for (int id : ad.getAreaIdsFromListValues("owners", owner)) {
+			Area area = ad.getArea(id);
+			if (area != null)
+				if (area.getName().equals(name))
+					return area;
+		}
+		return null;
+	}
 	public static boolean remove(int id) {
 		return ad.removeArea(id);
 	}

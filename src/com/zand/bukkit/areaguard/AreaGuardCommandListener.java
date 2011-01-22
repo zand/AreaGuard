@@ -193,6 +193,12 @@ public class AreaGuardCommandListener extends PlayerListener {
 				if (args.length >= index)
 					return Area.getArea(args[index-1]);
 			} 
+			// My
+			else if (args[index].equals("my")) {
+				index += 2;
+				if (args.length >= index)
+					return Area.getOwnedArea(player.getName(), args[index-1]);
+			} 
 			// Id
 			else if (args[index].equals("id")) {
 				index += 2;
@@ -217,6 +223,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 			}
 		}
 		player.sendMessage("name [area_name] - Area with name");
+		player.sendMessage("my [area_name] - Area you own with name");
 		player.sendMessage("id [area_id] - Area with ID number");
 		player.sendMessage("at [x] [y] [z] - Area at location");
 		player.sendMessage("here - Area that you are in");
