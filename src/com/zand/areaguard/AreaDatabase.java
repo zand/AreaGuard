@@ -42,7 +42,7 @@ public class AreaDatabase {
 
 		String insert = "INSERT INTO `" + areas
 				+ "` (Name, x1, y1, z1, x2, y2, z2)"
-				+ "VALUES (?, ?, ?, ?, ?, ?);";
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?);";
 		connect();
 		if (conn == null)
 			return -1;
@@ -697,7 +697,7 @@ public class AreaDatabase {
 
 	public boolean updateArea(Area area) {
 		String update = "UPDATE `" + areas + "` "
-				+ "SET Name=?, Priority=? x1=?, y1=?, z1=?, x2=?, y2=?, z2=? "
+				+ "SET Name=?, Priority=?, x1=?, y1=?, z1=?, x2=?, y2=?, z2=? "
 				+ "WHERE Id=?;";
 		connect();
 		if (conn == null)

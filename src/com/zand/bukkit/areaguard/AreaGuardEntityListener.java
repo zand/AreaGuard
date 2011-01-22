@@ -40,10 +40,32 @@ public class AreaGuardEntityListener extends EntityListener {
     	
     }
     
-    /*public void onEntityDamageByProjectile(EntityDamageByProjectileEvent event) {
+    public void onEntityDamageByProjectile(EntityDamageByProjectileEvent event) {
+    	if (event.isCancelled()) return;
+    	
+    	Entity to = event.getEntity();
+    	Entity from = event.getDamager();
+    	String type = "";
+    	
+    	Player player = null;
+    	
+    	// if this is a player
+    	if (from instanceof Player) {
+    		player = (Player) from;
+    		if (to instanceof Player) type = "pvp";
+    		else type = "mobs";
+    	}
+    	else if (to instanceof Player) {
+    		player = (Player) to;
+    		type = "mobs";
+    	}
+    	
+    	if(player == null) return;
+    	Location loc = event.getEntity().getLocation();
+		plugin.checkEvent(event, player, type, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }
     
-    public void onEntityCombust(EntityCombustEvent event) {
+    /*public void onEntityCombust(EntityCombustEvent event) {
     }
 
     public void onEntityDamage(EntityDamageEvent event) {
