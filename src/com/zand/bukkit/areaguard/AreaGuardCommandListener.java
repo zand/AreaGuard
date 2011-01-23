@@ -85,8 +85,9 @@ public class AreaGuardCommandListener extends PlayerListener {
 					if (args[index].equals("show") || args[index].equals("info")) plugin.showAreaInfo(player, area);
 					
 					// Select
-					else if (args[index].equals("select")) 
+					else if (args[index].equals("select")) {
 						plugin.getSession(player).selected = area.getId();
+						player.sendMessage(ChatColor.YELLOW + "Area Selected"); }
 					
 					// Owners only
 					// List
@@ -119,6 +120,20 @@ public class AreaGuardCommandListener extends PlayerListener {
 						else player.sendMessage(ChatColor.DARK_RED + "Faild to Move Area");
 					}
 					
+					// Extend 
+					else if (args[index].equals("extend") && plugin.canCreate(player)) {
+						int coords[] = area.getCoords();
+						int point[] = plugin.getSession(player).getPoint();
+						
+						for (int i=0; i<3; i++) // Extend the coords to include the point
+							if 		(coords[i] > point[i]) 	coords[i] = point[i];
+							else if (coords[i+3] < point[i]) coords[i+3] = point[i];
+						
+						if (area.setCoords(coords))
+							player.sendMessage(ChatColor.YELLOW + "Area Extended");
+						else player.sendMessage(ChatColor.DARK_RED + "Faild to Extend Area");
+					}
+					
 					// We have reached the end
 					// now its time we look at the next arg
 					else if (args.length > index+1) {
@@ -139,7 +154,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 						}
 					}
 				}
-				else player.sendMessage("Could not find Area");
+				else player.sendMessage(ChatColor.DARK_RED + "Could not find Area");
 			}
 		}
 		else showHelp();
@@ -184,7 +199,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 	private Area getAreaFromArgs() {
 		if (args.length > index) {
 			// Selected
-			if (args[index].equals("selected")) 
+			if (args[index].startsWith("sel")) 
 			{ index++; return Area.getArea(plugin.getSession(player).selected); }
 			
 			// Name
