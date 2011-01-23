@@ -28,6 +28,7 @@ import com.zand.areaguard.Config;
  */
 public class AreaGuard extends JavaPlugin {
 	private final AreaGuardCommandListener commandListener = new AreaGuardCommandListener(this);
+	private final AreaGuardWorldListener worldListener = new AreaGuardWorldListener(this);
 	private final AreaGuardPlayerListener playerListener = new AreaGuardPlayerListener(this);
     private final AreaGuardBlockListener blockListener = new AreaGuardBlockListener(this);
     private final AreaGuardEntityListener entityListener = new AreaGuardEntityListener(this);
@@ -53,6 +54,7 @@ public class AreaGuard extends JavaPlugin {
     }
     
     public void onDisable() {
+    	TempBlocks.deleteAll();
     }
     
     public boolean isCommand(String command) {
@@ -65,7 +67,9 @@ public class AreaGuard extends JavaPlugin {
 		
 		pm.registerEvent(Event.Type.PLAYER_COMMAND, commandListener, Event.Priority.Low, this);
 		
+		pm.registerEvent(Event.Type.CHUNK_UNLOADED, worldListener, preventPriority, this);
 		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, preventPriority, this);
+		pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, preventPriority, this);
 		pm.registerEvent(Event.Type.ENTITY_DAMAGEDBY_ENTITY, entityListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_PLACED, blockListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, preventPriority, this);

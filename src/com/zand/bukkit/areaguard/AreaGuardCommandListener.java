@@ -62,6 +62,21 @@ public class AreaGuardCommandListener extends PlayerListener {
 				return;
 			}
 			
+			// Draw
+			if (args[index].equals("outline")) {
+				if (plugin.canCreate(player)) {
+					index++;
+					if (args.length > index) {
+						plugin.getSession(player).drawOutline(false);
+						player.sendMessage(ChatColor.YELLOW + "Outline removed.");
+					} else {
+						plugin.getSession(player).drawOutline(true);
+						player.sendMessage(ChatColor.YELLOW + "Drawing outline.");
+					}
+				} else player.sendMessage(ChatColor.DARK_RED + "Your not allowed to use that command.");
+				return;
+			}
+			
 			// Add
 			if (args[index].equals("add")) { 
 				index++; if (args.length > index)  if (plugin.canCreate(player)) {

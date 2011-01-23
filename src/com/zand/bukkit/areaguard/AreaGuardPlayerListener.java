@@ -3,6 +3,7 @@ package com.zand.bukkit.areaguard;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -19,6 +20,10 @@ public class AreaGuardPlayerListener extends PlayerListener {
 	public AreaGuardPlayerListener(AreaGuard instance) {
 		plugin = instance;
 	}
+	
+	public void onPlayerQuit(PlayerEvent event) {
+		plugin.getSession(event.getPlayer()).onQuit();
+    }
     
     public void onPlayerMove(PlayerMoveEvent event) {
     	if (event.isCancelled()) return;
@@ -52,6 +57,7 @@ public class AreaGuardPlayerListener extends PlayerListener {
     		else {
     			ps.lastArea = to;
     			ps.lastLoc = loc;
+    			ps.onMove();
     		}
     	}
     }
