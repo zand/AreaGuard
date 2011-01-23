@@ -13,6 +13,7 @@ public class PlayerSession extends Session {
 	protected boolean firstPoint = true;
 	private TempBlockDrawer drawer = new TempBlockDrawer();
 	boolean drawOutline = false;
+	protected boolean bypassArea = false;
 	
 	PlayerSession(Player player) {
 		this.player = player;

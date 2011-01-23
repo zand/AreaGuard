@@ -151,7 +151,12 @@ public class AreaGuard extends JavaPlugin {
 				String msg = area.getMsg(type);
 				if (!msg.isEmpty()) player.sendMessage(ChatColor.YELLOW + msg);
 			}
-			else {
+			else if (getSession(player).bypassArea) {
+				player.sendMessage(ChatColor.DARK_RED + "Bypassing area permissions");
+				String msg = area.getMsg("no-"+type);
+				if (!msg.isEmpty()) player.sendMessage(ChatColor.DARK_RED + msg);
+				return true;
+			} else {
 				event.setCancelled(true);
 				String msg = area.getMsg("no-"+type);
 				if (!msg.isEmpty()) player.sendMessage(ChatColor.DARK_RED + msg);

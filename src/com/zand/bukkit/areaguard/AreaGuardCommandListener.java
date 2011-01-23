@@ -54,7 +54,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 			if (args[index].equals("help")) { index++; showHelp(); return; }
 			
 			// Reconfig
-			if (args[index].equals("reconfig")) {
+			else if (args[index].equals("reconfig")) {
 				if (player.isOp()) {
 					Config.setup();
 					player.sendMessage(ChatColor.GOLD + "Reloading the config file.");
@@ -62,8 +62,15 @@ public class AreaGuardCommandListener extends PlayerListener {
 				return;
 			}
 			
+			// Bypass
+			else if (args[index].equals("bypass") && plugin.canCreate(player)) { 
+				PlayerSession ps = plugin.getSession(player);
+				ps.bypassArea = !ps.bypassArea;
+				player.sendMessage(ChatColor.RED + "Bypassing " + (ps.bypassArea ? "enabled" : "disabled"));
+			}
+			
 			// Draw
-			if (args[index].equals("outline")) {
+			else if (args[index].equals("outline")) {
 				if (plugin.canCreate(player)) {
 					index++;
 					if (args.length > index) {
@@ -78,7 +85,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 			}
 			
 			// Add
-			if (args[index].equals("add")) { 
+			else if (args[index].equals("add")) { 
 				index++; if (args.length > index)  if (plugin.canCreate(player)) {
 					PlayerSession ps = plugin.getSession(player);
 					Area area = new Area(args[index], ps.getCoords());
@@ -119,7 +126,8 @@ public class AreaGuardCommandListener extends PlayerListener {
 						player.sendMessage(ChatColor.YELLOW + "Area Renamed");
 					else player.sendMessage(ChatColor.DARK_RED + "Faild to Rename Area");
 					}
-					
+
+					// Creators only
 					// Priority 
 					else if (args[index].startsWith("prio") && plugin.canModify(area, player)) { 
 						index++; 
@@ -139,7 +147,6 @@ public class AreaGuardCommandListener extends PlayerListener {
 						}
 					}
 					
-					// Creators only
 					// Remove
 					else if (args[index].equals("remove") && plugin.canCreate(player)) {
 						if (area.remove())
