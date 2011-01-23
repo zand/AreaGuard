@@ -139,4 +139,10 @@ public class Area {
 	public int getPriority() {
 		return priority;
 	}
+
+	public boolean setPriority(int priority) {
+		if (id == -1) return false;
+		this.priority = priority;
+		return ad.updateArea(this);
+	}
 }

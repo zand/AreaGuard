@@ -120,6 +120,25 @@ public class AreaGuardCommandListener extends PlayerListener {
 					else player.sendMessage(ChatColor.DARK_RED + "Faild to Rename Area");
 					}
 					
+					// Priority 
+					else if (args[index].startsWith("prio") && plugin.canModify(area, player)) { 
+						index++; 
+						
+						if (args.length > index) {
+							int i;
+							try {
+								i = Integer.valueOf(args[index]);
+							} catch (NumberFormatException e) {
+								player.sendMessage(ChatColor.DARK_RED + args[index] +" is not a number");
+								return;
+							}
+						
+							if (area.setPriority(i)) 
+								player.sendMessage(ChatColor.YELLOW + "Area priority set");
+							else player.sendMessage(ChatColor.DARK_RED + "Faild to set area priority");
+						}
+					}
+					
 					// Creators only
 					// Remove
 					else if (args[index].equals("remove") && plugin.canCreate(player)) {
