@@ -120,10 +120,10 @@ public class Area {
 		return ad.listHas(id, list, value);
 	}
 	
-	public boolean playerCan(String player, String name) {
-		if (listHas("owners", player)) return true;
+	public boolean playerCan(String player, String name, boolean checkAllow) {
+		if (checkAllow || listHas("owners", player)) return true;
 		if (listHas("restrict", name)) {
-			if (listHas("allow", player)) return true;
+			if (checkAllow || listHas("allow", player)) return true;
 			if (listHas(name, player)) return true;
 			return false;
 		}

@@ -68,7 +68,7 @@ public class AreaGuardBlockListener extends BlockListener {
 	
 	public boolean checkCanBuild(Player player, Block block, Cancellable event) {
 		// Check build
-		if (!plugin.checkEvent(event, player, "build", block.getX(), block.getY(), block.getZ()))
+		if (!plugin.checkEvent(event, player, "build", block.getX(), block.getY(), block.getZ(), true))
 			return false;
 		
 		if (checkCanUse(player, block, event))
@@ -91,8 +91,8 @@ public class AreaGuardBlockListener extends BlockListener {
 		}
 		
 		if (!type.isEmpty()) {
-			if (plugin.checkEvent(event, player, type, block.getX(), block.getY(), block.getZ())) {
-				if (plugin.checkEvent(event, player, "open", block.getX(), block.getY(), block.getZ()))
+			if (plugin.checkEvent(event, player, type, block.getX(), block.getY(), block.getZ(), true)) {
+				if (plugin.checkEvent(event, player, "open", block.getX(), block.getY(), block.getZ(), true))
 					return true;
 				else return false;
 			}
@@ -107,7 +107,7 @@ public class AreaGuardBlockListener extends BlockListener {
 		}
 		
 		if (!type.isEmpty()) {
-			if (plugin.checkEvent(event, player, type, block.getX(), block.getY(), block.getZ()))
+			if (plugin.checkEvent(event, player, type, block.getX(), block.getY(), block.getZ(), true))
 				return true;
 			return false;
 		}

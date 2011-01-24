@@ -66,7 +66,7 @@ public class AreaGuard extends JavaPlugin {
     public void onEnable() {
     	registerEvents();
     	setupOtherPlugins();
-        System.out.println( versionInfo + " is enabled!" );
+    	log.info( versionInfo + " is enabled!" );
     }
     
     public void onDisable() {
@@ -169,18 +169,18 @@ public class AreaGuard extends JavaPlugin {
     	return (area.listHas("owners", player.getName()) || canCreate(player));
     }
     
-    public boolean checkEvent(Cancellable event, Player player, String type, int x, int y, int z) {
+    public boolean checkEvent(Cancellable event, Player player, String type, int x, int y, int z, boolean checkAllow) {
     	Area area = Area.getArea(x, y, z);
-		return checkEvent(event, player, type, area);
+		return checkEvent(event, player, type, area, checkAllow);
     }
     
-	public boolean checkEvent(Cancellable event, Player player, String type, Area area) {
+	public boolean checkEvent(Cancellable event, Player player, String type, Area area, boolean checkAllow) {
 		if (area != null) {
-			if (area.playerCan(player.getName(), type)) {
+			if (area.playerCan(player.getName(), type, checkAllow)) {
 				String msg = area.getMsg(type);
 				if (!msg.isEmpty()) Messager.inform(player, msg);
 			}
-			else if (getSession(player).bypassArea) {
+			else if (checkAllow && getSession(player).bypassArea) {
 				Messager.warn(player, "Bypassing area permissions");
 				String msg = area.getMsg("no-"+type);
 				if (!msg.isEmpty()) Messager.warn(player, msg);

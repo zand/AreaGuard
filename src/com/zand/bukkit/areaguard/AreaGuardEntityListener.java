@@ -36,7 +36,7 @@ public class AreaGuardEntityListener extends EntityListener {
     	
     	if(player == null) return;
     	Location loc = event.getEntity().getLocation();
-		plugin.checkEvent(event, player, type, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+		plugin.checkEvent(event, player, type, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), false);
     	
     }
     
@@ -62,7 +62,7 @@ public class AreaGuardEntityListener extends EntityListener {
     	
     	if(player == null) return;
     	Location loc = event.getEntity().getLocation();
-		plugin.checkEvent(event, player, type, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+		plugin.checkEvent(event, player, type, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), false);
     }
     
     /*public void onEntityCombust(EntityCombustEvent event) {

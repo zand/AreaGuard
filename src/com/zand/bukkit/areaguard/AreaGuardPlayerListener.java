@@ -42,7 +42,7 @@ public class AreaGuardPlayerListener extends PlayerListener {
     		// if they entered an area
     		if (to != null)
     			if (ps.lastArea == null || ps.lastArea.getId() != to.getId())
-    			plugin.checkEvent(event, player, "enter", to);
+    			plugin.checkEvent(event, player, "enter", to, true);
     		
     		// if they left an area
     		if (ps.lastArea != null) 
