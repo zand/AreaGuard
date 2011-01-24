@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -11,11 +12,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 
+import com.nijikokun.bukkit.Permissions.Permissions;
 import com.zand.areaguard.Area;
 import com.zand.areaguard.Config;
 
@@ -27,31 +30,42 @@ import com.zand.areaguard.Config;
  * @author zand
  */
 public class AreaGuard extends JavaPlugin {
+	private final String name;
+	public final String versionInfo;
+	private static Logger log = Logger.getLogger("Minecraft");
+	
+	// Are Listeners
 	private final AreaGuardCommandListener commandListener = new AreaGuardCommandListener(this);
 	private final AreaGuardWorldListener worldListener = new AreaGuardWorldListener(this);
 	private final AreaGuardPlayerListener playerListener = new AreaGuardPlayerListener(this);
     private final AreaGuardBlockListener blockListener = new AreaGuardBlockListener(this);
     private final AreaGuardEntityListener entityListener = new AreaGuardEntityListener(this);
+    
+    // Outside Plugins
+    public Permissions Permissions = null;
+    
+    // Are command prefixes
     private final List<String> commands = new ArrayList<String>();
+    
+    // Are data on each player
     protected final HashMap<String, PlayerSession> playerSessions = new HashMap<String, PlayerSession>();
-    public final String versionInfo;
 
     public AreaGuard(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
         super(pluginLoader, instance, desc, folder, plugin, cLoader);
         
         Config.setup();
+        name = desc.getName();
         String authors = "";
         for (String author : desc.getAuthors()) authors += ", " + author;
-        versionInfo = desc.getName() + " version " + desc.getVersion() + 
+        versionInfo = name + " version " + desc.getVersion() + 
         	(authors.isEmpty() ? "" : " by" + authors.substring(1));
-        commands.add(desc.getName().toLowerCase());
+        commands.add(name.toLowerCase());
         commands.add("ag");
     }
 
-    
-
     public void onEnable() {
     	registerEvents();
+    	setupOtherPlugins();
         System.out.println( versionInfo + " is enabled!" );
     }
     
@@ -77,6 +91,18 @@ public class AreaGuard extends JavaPlugin {
         pm.registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_RIGHTCLICKED, blockListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_INTERACT, blockListener, preventPriority, this);
+    }
+    
+    private void setupOtherPlugins() {
+    	
+    	// Permissions
+    	Plugin test = this.getServer().getPluginManager().getPlugin("Permissions");
+    	if (this.Permissions == null) {
+    		if(test != null) {
+    			this.Permissions = (Permissions)test;
+    	    	log.info("[" + name + "] Found Permissions plugin. Using it.");
+    	    }
+    	}
     }
     
     public PlayerSession getSession(Player player) {
@@ -130,7 +156,10 @@ public class AreaGuard extends JavaPlugin {
     	}
     }
     
-    public boolean canCreate(Player player) {
+    @SuppressWarnings("static-access")
+	public boolean canCreate(Player player) {
+    	if (this.Permissions != null)
+    		if (this.Permissions.Security.permission(player, "areaguard.create")) return true;
     	if (player.isOp() || Config.isCreator(player.getName())) return true;
     	Messager.warn(player, "Your not allowed to use that command.");
     	return false;
@@ -144,9 +173,7 @@ public class AreaGuard extends JavaPlugin {
     	Area area = Area.getArea(x, y, z);
 		return checkEvent(event, player, type, area);
     }
-
-
-
+    
 	public boolean checkEvent(Cancellable event, Player player, String type, Area area) {
 		if (area != null) {
 			if (area.playerCan(player.getName(), type)) {
