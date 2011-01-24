@@ -40,8 +40,10 @@ public class AreaGuard extends JavaPlugin {
         super(pluginLoader, instance, desc, folder, plugin, cLoader);
         
         Config.setup();
-
-        versionInfo = desc.getName() + " version " + desc.getVersion() + " by zand";
+        String authors = "";
+        for (String author : desc.getAuthors()) authors += ", " + author;
+        versionInfo = desc.getName() + " version " + desc.getVersion() + 
+        	(authors.isEmpty() ? "" : " by" + authors.substring(1));
         commands.add(desc.getName().toLowerCase());
         commands.add("ag");
     }
@@ -130,7 +132,7 @@ public class AreaGuard extends JavaPlugin {
     
     public boolean canCreate(Player player) {
     	if (player.isOp() || Config.isCreator(player.getName())) return true;
-    	player.sendMessage("Your not allowed to use that command.");
+    	Messager.warn(player, "Your not allowed to use that command.");
     	return false;
     }
     
@@ -149,17 +151,17 @@ public class AreaGuard extends JavaPlugin {
 		if (area != null) {
 			if (area.playerCan(player.getName(), type)) {
 				String msg = area.getMsg(type);
-				if (!msg.isEmpty()) player.sendMessage(ChatColor.YELLOW + msg);
+				if (!msg.isEmpty()) Messager.inform(player, msg);
 			}
 			else if (getSession(player).bypassArea) {
-				player.sendMessage(ChatColor.DARK_RED + "Bypassing area permissions");
+				Messager.warn(player, "Bypassing area permissions");
 				String msg = area.getMsg("no-"+type);
-				if (!msg.isEmpty()) player.sendMessage(ChatColor.DARK_RED + msg);
+				if (!msg.isEmpty()) Messager.warn(player, msg);
 				return true;
 			} else {
 				event.setCancelled(true);
 				String msg = area.getMsg("no-"+type);
-				if (!msg.isEmpty()) player.sendMessage(ChatColor.DARK_RED + msg);
+				if (!msg.isEmpty()) Messager.warn(player, msg);
 				return false;
 			}	
 		}

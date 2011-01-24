@@ -57,8 +57,8 @@ public class AreaGuardCommandListener extends PlayerListener {
 			else if (args[index].equals("reconfig")) {
 				if (player.isOp()) {
 					Config.setup();
-					player.sendMessage(ChatColor.GOLD + "Reloading the config file.");
-				} else player.sendMessage(ChatColor.DARK_RED + "Your not allowed to use that command.");
+					Messager.inform(player, "Reloading the config file.");
+				} else Messager.warn(player, "Your not allowed to use that command.");
 				return;
 			}
 			
@@ -66,7 +66,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 			else if (args[index].equals("bypass") && plugin.canCreate(player)) { 
 				PlayerSession ps = plugin.getSession(player);
 				ps.bypassArea = !ps.bypassArea;
-				player.sendMessage(ChatColor.RED + "Bypassing " + (ps.bypassArea ? "enabled" : "disabled"));
+				Messager.warn(player, "Bypassing " + (ps.bypassArea ? "enabled" : "disabled"));
 			}
 			
 			// Draw
@@ -75,12 +75,12 @@ public class AreaGuardCommandListener extends PlayerListener {
 					index++;
 					if (args.length > index) {
 						plugin.getSession(player).drawOutline(false);
-						player.sendMessage(ChatColor.YELLOW + "Outline removed.");
+						Messager.inform(player, "Outline removed.");
 					} else {
 						plugin.getSession(player).drawOutline(true);
-						player.sendMessage(ChatColor.YELLOW + "Drawing outline.");
+						Messager.inform(player, "Drawing outline.");
 					}
-				} else player.sendMessage(ChatColor.DARK_RED + "Your not allowed to use that command.");
+				} else Messager.warn(player, "Your not allowed to use that command.");
 				return;
 			}
 			
@@ -90,11 +90,11 @@ public class AreaGuardCommandListener extends PlayerListener {
 					PlayerSession ps = plugin.getSession(player);
 					Area area = new Area(args[index], ps.getCoords());
 					if (area.getId() != -1) {
-							player.sendMessage(ChatColor.YELLOW + area.toString() + " Added and Selected");
+							Messager.inform(player, area.toString() + " Added and Selected");
 							area.addList("restrict", Config.defaultRestict);
 							ps.selected = area.getId();
 					}
-					else player.sendMessage(ChatColor.DARK_RED + "Faild to Add Area");
+					else Messager.error(player, "Faild to Add Area");
 				}
 			}
 			
@@ -109,7 +109,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 					// Select
 					else if (args[index].equals("select")) {
 						plugin.getSession(player).selected = area.getId();
-						player.sendMessage(ChatColor.YELLOW + "Area Selected"); }
+						Messager.inform(player, "Area Selected"); }
 					
 					// Owners only
 					// List
@@ -123,8 +123,8 @@ public class AreaGuardCommandListener extends PlayerListener {
 					// Rename
 					else if (args[index].equals("rename") && plugin.canModify(area, player)) 
 					{ index++; if (args.length > index) if (area.setName(args[index])) 
-						player.sendMessage(ChatColor.YELLOW + "Area Renamed");
-					else player.sendMessage(ChatColor.DARK_RED + "Faild to Rename Area");
+						Messager.inform(player, "Area Renamed");
+					else Messager.error(player, "Faild to Rename Area");
 					}
 
 					// Creators only
@@ -137,28 +137,28 @@ public class AreaGuardCommandListener extends PlayerListener {
 							try {
 								i = Integer.valueOf(args[index]);
 							} catch (NumberFormatException e) {
-								player.sendMessage(ChatColor.DARK_RED + args[index] +" is not a number");
+								Messager.warn(player, args[index] +" is not a number");
 								return;
 							}
 						
 							if (area.setPriority(i)) 
-								player.sendMessage(ChatColor.YELLOW + "Area priority set");
-							else player.sendMessage(ChatColor.DARK_RED + "Faild to set area priority");
+								Messager.inform(player, "Area priority set");
+							else Messager.error(player, "Faild to set area priority");
 						}
 					}
 					
 					// Remove
 					else if (args[index].equals("remove") && plugin.canCreate(player)) {
 						if (area.remove())
-							player.sendMessage(ChatColor.YELLOW + "Area Removed");
-						else player.sendMessage(ChatColor.DARK_RED + "Faild to Remove Area");
+							Messager.inform(player, "Area Removed");
+						else Messager.error(player, "Faild to Remove Area");
 					}
 					
 					// Move
 					else if (args[index].equals("move") && plugin.canCreate(player)) { 
 						if (area.setCoords(plugin.getSession(player).getCoords()))
-							player.sendMessage(ChatColor.YELLOW + "Area Moved");
-						else player.sendMessage(ChatColor.DARK_RED + "Faild to Move Area");
+							Messager.inform(player, "Area Moved");
+						else Messager.error(player, "Faild to Move Area");
 					}
 					
 					// Extend 
@@ -171,8 +171,8 @@ public class AreaGuardCommandListener extends PlayerListener {
 							else if (coords[i+3] < point[i]) coords[i+3] = point[i];
 						
 						if (area.setCoords(coords))
-							player.sendMessage(ChatColor.YELLOW + "Area Extended");
-						else player.sendMessage(ChatColor.DARK_RED + "Faild to Extend Area");
+							Messager.inform(player, "Area Extended");
+						else Messager.error(player, "Faild to Extend Area");
 					}
 					
 					// We have reached the end
@@ -195,7 +195,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 						}
 					}
 				}
-				else player.sendMessage(ChatColor.DARK_RED + "Could not find Area");
+				else Messager.error(player, "Could not find Area");
 			}
 		}
 		else showHelp();
@@ -220,19 +220,22 @@ public class AreaGuardCommandListener extends PlayerListener {
 				index++;
 				HashSet<String> values = new HashSet<String>();
 				for (; index < args.length; index++) values.add(args[index]);
-				area.addList(list, values);
-				player.sendMessage("Added to " + list);
+				if (area.addList(list, values))
+					Messager.inform(player, "Added to " + list);
+				else Messager.error(player, "Failed to add to " + list);
 			}
 			else if (args[index].equals("remove")) {
 				index++;
 				HashSet<String> values = new HashSet<String>();
 				for (; index < args.length; index++) values.add(args[index]);
-				area.removeList(list, values);
-				player.sendMessage("Removed from " + list);
+				if (area.removeList(list, values))
+					Messager.inform(player, "Removed from " + list);
+				else Messager.error(player, "Failed to remove from " + list);
 			}
 			else if (args[index].equals("delete")) {
-				area.removeList(list);
-				player.sendMessage("Deleted " + list);
+				if (area.removeList(list))
+					Messager.inform(player, "Deleted " + list);
+				else Messager.error(player, "Failed to delete " + list);
 			}
 		}
 	}
