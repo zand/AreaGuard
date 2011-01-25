@@ -73,6 +73,12 @@ public class Area {
 		return ad.getMsg(id, name);
 	}
 	
+	public boolean isInside(int x, int y, int z) {
+		return (x >= coords[0] && x <= coords[3] &&
+				y >= coords[1] && y <= coords[4] &&
+				z >= coords[2] && z <= coords[5]);
+	}
+	
 	public Set<String> getLists() {
 		return ad.getLists(id);
 	}
