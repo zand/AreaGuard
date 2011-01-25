@@ -121,9 +121,9 @@ public class Area {
 	}
 	
 	public boolean playerCan(String player, String name, boolean checkAllow) {
-		if (checkAllow || listHas("owners", player)) return true;
+		if (checkAllow && listHas("owners", player)) return true;
 		if (listHas("restrict", name)) {
-			if (checkAllow || listHas("allow", player)) return true;
+			if (checkAllow && listHas("allow", player)) return true;
 			if (listHas(name, player)) return true;
 			return false;
 		}
