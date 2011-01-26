@@ -117,7 +117,7 @@ public class Area {
 	}
 	
 	public String toString() {
-		return "[" + id + "] \t" + name + " \t@ (" + 
+		return priority + ": [" + id + "] \t" + name + " \t@ (" + 
 		coords[0] + ", " + coords[1] + ", " + coords[2] + ")-(" +
 		coords[3] + ", " + coords[4] + ", " + coords[5] + ")"; 
 	}

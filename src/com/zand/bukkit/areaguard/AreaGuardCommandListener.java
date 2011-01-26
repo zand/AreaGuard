@@ -84,14 +84,31 @@ public class AreaGuardCommandListener extends PlayerListener {
 				return;
 			}
 			
-			// Add
-			else if (args[index].equals("add")) { 
+			// Create
+			else if (args[index].equals("create")) { 
 				index++; if (args.length > index)  if (plugin.canCreate(player)) {
 					PlayerSession ps = plugin.getSession(player);
 					Area area = new Area(args[index], ps.getCoords());
 					if (area.getId() != -1) {
 							Messager.inform(player, area.toString() + " Added and Selected");
-							area.addList("restrict", Config.defaultRestict);
+							
+							if (!area.addList("restrict", Config.defaultRestict))
+								Messager.error(player, "Failed to add default restrict");
+							
+							HashSet<String> owners = new HashSet<String>();
+							for (index++; index < args.length; index++)
+								owners.add(args[index]);
+							if (!owners.isEmpty()) {
+								if (area.addList("owners", owners)) {
+									// Get added values
+									String values = "";
+									for (String value : owners) values += " " + value;
+									
+									// Inform the player
+									Messager.inform(player, "Added owners:" + ChatColor.WHITE + values); }
+								else Messager.error(player, "Failed to add owners");
+							}
+							
 							ps.selected = area.getId();
 					}
 					else Messager.error(player, "Faild to Add Area");
@@ -112,9 +129,11 @@ public class AreaGuardCommandListener extends PlayerListener {
 						Messager.inform(player, "Area Selected"); }
 					
 					// Owners only
-					// List
-					else if (args[index].equals("list") && plugin.canModify(area, player)) 
-					{ index++; list(area); }
+					// Add|Remove|Clear List
+					else if ((args[index].equals("add") ||
+							args[index].equals("remove") ||
+							args[index].equals("clear")) && plugin.canModify(area, player)) 
+						list(area);
 					
 					// Msg
 					else if (args[index].equals("msg") && plugin.canModify(area, player)) 
@@ -147,11 +166,11 @@ public class AreaGuardCommandListener extends PlayerListener {
 						}
 					}
 					
-					// Remove
-					else if (args[index].equals("remove") && plugin.canCreate(player)) {
+					// Delete
+					else if (args[index].equals("delete") && plugin.canCreate(player)) {
 						if (area.remove())
-							Messager.inform(player, "Area Removed");
-						else Messager.error(player, "Faild to Remove Area");
+							Messager.inform(player, "Area Deleted");
+						else Messager.error(player, "Faild to Delete Area");
 					}
 					
 					// Move
@@ -181,7 +200,10 @@ public class AreaGuardCommandListener extends PlayerListener {
 						index++;
 						
 						// Alias for Msg or List
-						if (args[index].equals("msg") || args[index].equals("list")) {
+						if (args[index].equals("msg") || 
+							args[index].equals("add") ||
+							args[index].equals("remove") ||
+							args[index].equals("clear")) {
 							if (args[index].equals(args[index-1])) return; // I would hate to get an endless loop here
 							
 							// Swap the args
@@ -195,7 +217,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 						}
 					}
 				}
-				else Messager.error(player, "Could not find Area");
+				else Messager.warn(player, "Could not find Area");
 			}
 		}
 		else showHelp();
@@ -213,29 +235,42 @@ public class AreaGuardCommandListener extends PlayerListener {
 	}
 
 	private void list(Area area) {
-		index++; // Skip list name for now
 		if (args.length > index) {
-			String list = args[index-1]; // the list name
+			String list = args[index+1]; // the list name
 			if (args[index].equals("add")) {
-				index++;
+				index+=2;
+				
+				// Get the values
 				HashSet<String> values = new HashSet<String>();
 				for (; index < args.length; index++) values.add(args[index]);
-				if (area.addList(list, values))
-					Messager.inform(player, "Added to " + list);
+				if (values.isEmpty()) Messager.warn(player, "No values given");
+				else if (area.addList(list, values)) {
+					// Get added values
+					String s = "";
+					for (String value : values) s += " " + value;
+					
+					// Inform the player
+					Messager.inform(player, "Added to " + list + ":" + ChatColor.WHITE + s); }
 				else Messager.error(player, "Failed to add to " + list);
 			}
 			else if (args[index].equals("remove")) {
-				index++;
+				index+=2;
 				HashSet<String> values = new HashSet<String>();
 				for (; index < args.length; index++) values.add(args[index]);
-				if (area.removeList(list, values))
-					Messager.inform(player, "Removed from " + list);
+				if (values.isEmpty()) Messager.warn(player, "No values given");
+				else if (area.removeList(list, values)) {
+					// Get added values
+					String s = "";
+					for (String value : values) s += " " + value;
+					
+					// Inform the player
+					Messager.inform(player, "Removed from " + list + ":" + ChatColor.WHITE + s); }
 				else Messager.error(player, "Failed to remove from " + list);
 			}
-			else if (args[index].equals("delete")) {
+			else if (args[index].equals("clear")) {
 				if (area.removeList(list))
-					Messager.inform(player, "Deleted " + list);
-				else Messager.error(player, "Failed to delete " + list);
+					Messager.inform(player, "Cleared " + list);
+				else Messager.error(player, "Failed to clear " + list);
 			}
 		}
 	}
@@ -292,18 +327,30 @@ public class AreaGuardCommandListener extends PlayerListener {
 	private void showHelp() {
 		String prefix = "/" + args[0];
 		String[][] help = {
-				{"[area] info|show",					"Shows info on a area"},
-				{"[area] select",						"Selects an a area"},
-				{"[area] list [name] add [values]",		"Adds to a list"},
-				{"[area] list [name] remove [values]",	"Removes from a list"},
-				{"[area] list [name] delete",			"Deletes the list"},
-				{"[area] msg [name] [message]",			"Sets a message"},
-				{"[area] move",							"Move the area to the last 2 selected points"},
-				{"[area] rename [name]",				"Renames the area"},
-				{"[area] remove",						"Removes the area"}};
+				{"help create",	"Help for area creators"},
+				{"help owner",	"Help for area owners"},
+				{"help lists",	"Help on lists"},
+				{"help events",	"Help on events"}};
 		
 		if (args.length > index) {
-			if (args[index].equals("lists")) {
+			if (args[index].startsWith("create")) {
+				help = new String[][] {
+					{"create [name] (owners)",				"Creates an area and adds the owners"},
+					{"[area] move",							"Move the area to the last 2 selected points"},
+					{"[area] extend",						"Exstend the area to the last selected point"},
+					{"[area] delete",						"Deletes the area"}};
+			}
+			else if (args[index].startsWith("own")) {
+				help = new String[][] {
+					{"[area] info|show",				"Shows info on a area"},
+					{"[area] select",					"Selects an a area"},
+					{"[area] add [event] [values]",		"Adds to a list"},
+					{"[area] remove [event] [values]",	"Removes from a list"},
+					{"[area] clear [event]",			"clears the list"},
+					{"[area] msg [event] [message]",	"Sets a message"},
+					{"[area] rename [name]",			"Renames the area"}};
+			}
+			else if (args[index].startsWith("list")) {
 				prefix = "";
 				help = new String[][] {
 				{"owners","The area's owners"},
@@ -314,7 +361,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 				{"buid","Players that can build"},
 				{"no-buid","Players that can't build"},
 				}; }
-			else if (args[index].equals("events")) {
+			else if (args[index].startsWith("event")) {
 				prefix = "";
 				help = new String[][] {
 				{"build","Create/Destroy Blocks"},

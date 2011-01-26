@@ -9,7 +9,7 @@ public class Messager {
 	}
 	
 	public static void error(Player player, String message) {
-		player.sendMessage(ChatColor.DARK_RED + message);
+		player.sendMessage(ChatColor.DARK_RED + "Error!: " + message);
 	}
 	
 	public static void inform(Player player, String message) {
