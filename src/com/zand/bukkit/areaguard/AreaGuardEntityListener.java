@@ -4,6 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.*;
 
+import com.zand.areaguard.Area;
+
 /**
  * Handles all events fired in relation to entities
  */
@@ -35,9 +37,11 @@ public class AreaGuardEntityListener extends EntityListener {
     	}
     	
     	if(player == null) return;
-    	Location loc = event.getEntity().getLocation();
-		plugin.checkEvent(event, player, type, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), false);
-    	
+    	Location loc = to.getLocation();
+    	Area area = Area.getArea(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+		if (plugin.checkEvent(event, player, type, area, false) &&
+				to instanceof Player)
+			onPlayerDamage((Player) to, area);
     }
     
     public void onEntityDamageByProjectile(EntityDamageByProjectileEvent event) {
@@ -60,15 +64,34 @@ public class AreaGuardEntityListener extends EntityListener {
     		type = "mobs";
     	}
     	
-    	if(player == null) return;
-    	Location loc = event.getEntity().getLocation();
-		plugin.checkEvent(event, player, type, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), false);
+    	if (player == null) return;
+    	Location loc = to.getLocation();
+    	Area area = Area.getArea(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+		if (plugin.checkEvent(event, player, type, area, false) &&
+				to instanceof Player)
+			onPlayerDamage((Player) to, area);
+    }
+    
+    public void onEntityDamageByBlock(EntityDamageByBlockEvent event) {
+    	if (event.isCancelled()) return;
+    	
+    	Entity to = event.getEntity();
+    	
+    	if (to instanceof Player) {
+    		Location loc = to.getLocation();
+        	Area area = Area.getArea(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        	onPlayerDamage((Player) to, area);
+    	}
+    }
+    
+    private  void onPlayerDamage(Player player, Area area) {
+    	// if they are in an area
+		if (area != null)
+			if (area.playerCan(player.getName(), "heal", false)) // can they auto heal
+					new HealJob(player, area); // start a new HealJob
     }
     
     /*public void onEntityCombust(EntityCombustEvent event) {
-    }
-
-    public void onEntityDamage(EntityDamageEvent event) {
     }
 
     public void onEntityExplode(EntityExplodeEvent event) {

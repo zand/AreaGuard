@@ -87,6 +87,8 @@ public class AreaGuard extends JavaPlugin {
 		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, preventPriority, this);
 		pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, preventPriority, this);
 		pm.registerEvent(Event.Type.ENTITY_DAMAGEDBY_ENTITY, entityListener, preventPriority, this);
+		pm.registerEvent(Event.Type.ENTITY_DAMAGEDBY_PROJECTILE, entityListener, preventPriority, this);
+		pm.registerEvent(Event.Type.ENTITY_DAMAGEDBY_BLOCK, entityListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_PLACED, blockListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_RIGHTCLICKED, blockListener, preventPriority, this);
