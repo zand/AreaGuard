@@ -73,7 +73,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 			}
 			
 			// Bypass
-			else if (args[index].equals("bypass") && plugin.canCreate(player)) { 
+			else if (args[index].equals("bypass") && plugin.checkPermission(player, "ag.bypass")) { 
 				PlayerSession ps = plugin.getSession(player);
 				ps.bypassArea = !ps.bypassArea;
 				Messager.warn(player, "Bypassing " + (ps.bypassArea ? "enabled" : "disabled"));
@@ -81,7 +81,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 			
 			// Draw
 			else if (args[index].equals("outline")) {
-				if (plugin.canCreate(player)) {
+				if (plugin.checkPermission(player, "ag.create")) {
 					index++;
 					if (args.length > index) {
 						plugin.getSession(player).drawOutline(false);
@@ -96,7 +96,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 			
 			// Create
 			else if (args[index].equals("create")) { 
-				index++; if (args.length > index)  if (plugin.canCreate(player)) {
+				index++; if (args.length > index)  if (plugin.checkPermission(player, "ag.create")) {
 					PlayerSession ps = plugin.getSession(player);
 					Area area = new Area(args[index], ps.getCoords());
 					if (area.getId() != -1) {
@@ -177,21 +177,21 @@ public class AreaGuardCommandListener extends PlayerListener {
 					}
 					
 					// Delete
-					else if (args[index].equals("delete") && plugin.canCreate(player)) {
+					else if (args[index].equals("delete") && plugin.checkPermission(player, "ag.create")) {
 						if (area.remove())
 							Messager.inform(player, "Area Deleted");
 						else Messager.error(player, "Faild to Delete Area");
 					}
 					
 					// Move
-					else if (args[index].equals("move") && plugin.canCreate(player)) { 
+					else if (args[index].equals("move") && plugin.checkPermission(player, "ag.create")) { 
 						if (area.setCoords(plugin.getSession(player).getCoords()))
 							Messager.inform(player, "Area Moved");
 						else Messager.error(player, "Faild to Move Area");
 					}
 					
 					// Extend 
-					else if (args[index].equals("extend") && plugin.canCreate(player)) {
+					else if (args[index].equals("extend") && plugin.checkPermission(player, "ag.create")) {
 						int coords[] = area.getCoords();
 						int point[] = plugin.getSession(player).getPoint();
 						

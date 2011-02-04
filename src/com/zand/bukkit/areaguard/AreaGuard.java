@@ -19,8 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 
 import com.nijikokun.bukkit.Permissions.Permissions;
-import com.zand.areaguard.Area;
-import com.zand.areaguard.Config;
+import com.zand.areaguard.*;
 
 //import com.nijikokun.bukkit.General.General;
 
@@ -175,20 +174,6 @@ public class AreaGuard extends JavaPlugin {
     	}
     }
     
-    @SuppressWarnings("static-access")
-    /**
-	* Checks if the player can create the areas.
-	* @param player	The player to check for
-	* @return if they can create an area
-	*/
-	public boolean canCreate(Player player) {
-    	if (this.Permissions != null)
-    		if (this.Permissions.Security.permission(player, "areaguard.create")) return true;
-    	if (player.isOp() || Config.isCreator(player.getName())) return true;
-    	Messager.warn(player, "Your not allowed to use that command.");
-    	return false;
-    }
-    
     /**
 	* Checks if the player can modify the area settings.
 	* @param event	The area to check
@@ -196,7 +181,24 @@ public class AreaGuard extends JavaPlugin {
 	* @return if they can modify the area
 	*/
     public boolean canModify(Area area, Player player) {
-    	return (area.listHas("owners", player.getName()) || canCreate(player));
+    	return (area.listHas("owners", player.getName()) || checkPermission(player, "ag.create"));
+    }
+    
+    /**
+     * Checks the permission nodes via the AreaGuard config and Permissions plugin if available.
+     * @param player	The player to check
+     * @param nodes		The nodes to test
+     * @return			If the player has permission
+     */
+    @SuppressWarnings("static-access")
+	public boolean checkPermission(Player player, String nodes) {
+    	if (player.isOp()) return true;
+    	if (Config.isCreator(player.getName()) &&
+    		nodes.startsWith("ag.create") ||
+    		nodes.startsWith("ag.bypass"))
+    	if (this.Permissions != null)
+    		if (this.Permissions.Security.permission(player, nodes)) return true;
+    	return false;
     }
     
     /**
@@ -226,6 +228,19 @@ public class AreaGuard extends JavaPlugin {
 	*/
 	public boolean checkEvent(Cancellable event, Player player, String[] lists, Area area) {
 		if (area != null) {
+			
+			// In the event of an error
+			if (area instanceof ErrorArea) 
+				if (checkPermission(player, "ag.bypass.error")) {
+					Messager.error(player, "AreaGuard Failed! Bypassing error protection");
+					return false;
+				} else {
+					Messager.error(player, "AreaGuard Failed!");
+					event.setCancelled(true);
+					return false;
+				}
+			
+			// Check if the player can do the events 
 			if (area.playerCan(player.getName(), lists)) {
 				
 				// Send the allowed messages

@@ -45,7 +45,7 @@ public class AreaDatabase {
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?);";
 		connect();
 		if (conn == null)
-			return -1;
+			return -2;
 		try {
 			PreparedStatement ps = conn.prepareStatement(insert);
 			ps.setString(1, name);
@@ -63,9 +63,8 @@ public class AreaDatabase {
 			rs.close();
 			ps.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return -1;
+			return -2;
 		}
 		disconnect();
 		return ret;
@@ -202,23 +201,26 @@ public class AreaDatabase {
 				ps.close();
 
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				ret.add(-2);
 			}
 
 			disconnect();
-		}
+		} else ret.add(-2);
 		return ret;
 		
 	}
 
 	public Area getArea(int id) {
 		Area ret = null;
+		
+		// ErrorArea
+		if (id == -2) return new ErrorArea();
 		connect();
 
 		try {
 			if (conn == null || conn.isClosed())
-				return null;
+				return new ErrorArea();
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `"
 					+ areas + "` WHERE Id=? LIMIT 1");
 			ps.setInt(1, id);
@@ -231,8 +233,8 @@ public class AreaDatabase {
 
 			rs.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return new ErrorArea();
 		}
 		disconnect();
 		return ret;
@@ -266,12 +268,12 @@ public class AreaDatabase {
 				ps.close();
 
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return -2;
 			}
 
 			disconnect();
-		}
+		} else return -2;
 		return ret;
 	}
 
@@ -295,12 +297,12 @@ public class AreaDatabase {
 				ps.close();
 
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return -2;
 			}
 
 			disconnect();
-		}
+		} else return -2;
 		return ret;
 	}
 
@@ -324,12 +326,12 @@ public class AreaDatabase {
 				st.close();
 
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				ret.add(-2);
 			}
 
 			disconnect();
-		}
+		} else ret.add(-2);
 
 		return ret;
 	}
@@ -363,12 +365,12 @@ public class AreaDatabase {
 				ps.close();
 
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				ret.add(-2);
 			}
 
 			disconnect();
-		}
+		} else ret.add(-2);
 		return ret;
 	}
 
@@ -393,12 +395,12 @@ public class AreaDatabase {
 				ps.close();
 
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				ret.add(-2);
 			}
 
 			disconnect();
-		}
+		} else ret.add(-2);
 		return ret;
 	}
 	
