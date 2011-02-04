@@ -62,6 +62,16 @@ public class AreaGuardCommandListener extends PlayerListener {
 				return;
 			}
 			
+			// Debug
+			else if (args[index].equals("debug")) {
+				if (player.isOp()) {
+					PlayerSession s = plugin.getSession(player);
+					s.debug = !s.debug;
+					Messager.inform(player, "Debug mode " + (s.debug ? "En" : "Dis") + "abled.");
+				} else Messager.warn(player, "Your not allowed to use that command.");
+				return;
+			}
+			
 			// Bypass
 			else if (args[index].equals("bypass") && plugin.canCreate(player)) { 
 				PlayerSession ps = plugin.getSession(player);

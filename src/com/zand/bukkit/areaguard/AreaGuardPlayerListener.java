@@ -42,8 +42,8 @@ public class AreaGuardPlayerListener extends PlayerListener {
     		// if they entered an area
     		if (to != null)
     			if (ps.lastArea == null || ps.lastArea.getId() != to.getId()) {
-    				if (plugin.checkEvent(event, player, "enter", to, true) &&
-    					to.playerCan(player.getName(), "heal", false)) // can they auto heal
+    				if (plugin.checkEvent(event, player, new String[] {"owners", "allow", "enter"}, to) &&
+    					to.playerCan(player.getName(), new String[] {"heal"})) // can they auto heal
     						new HealJob(player, to); // start a new HealJob
     			}
     		

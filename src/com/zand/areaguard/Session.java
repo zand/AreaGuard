@@ -6,6 +6,7 @@ public class Session{
 	protected int[] loc2 = new int[3];
 	public int selected = -1;
 	public boolean ignoreOwnership = false;
+	public boolean debug = false;
 	
 	public void setPoint(int x, int y, int z) {
 		loc2 = loc1;

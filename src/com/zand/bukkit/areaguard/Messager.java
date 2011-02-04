@@ -15,4 +15,8 @@ public class Messager {
 	public static void inform(Player player, String message) {
 		player.sendMessage(ChatColor.YELLOW + message);
 	}
+	
+	public static void debug(Player player, String message) {
+		player.sendMessage(ChatColor.GOLD + "Debug!: " + message);
+	}
 }

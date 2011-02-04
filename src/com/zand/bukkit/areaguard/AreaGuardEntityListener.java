@@ -39,7 +39,7 @@ public class AreaGuardEntityListener extends EntityListener {
     	if(player == null) return;
     	Location loc = to.getLocation();
     	Area area = Area.getArea(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-		if (plugin.checkEvent(event, player, type, area, false) &&
+		if (plugin.checkEvent(event, player, new String[] {type}, area) &&
 				to instanceof Player)
 			onPlayerDamage((Player) to, area);
     }
@@ -67,7 +67,7 @@ public class AreaGuardEntityListener extends EntityListener {
     	if (player == null) return;
     	Location loc = to.getLocation();
     	Area area = Area.getArea(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-		if (plugin.checkEvent(event, player, type, area, false) &&
+		if (plugin.checkEvent(event, player, new String[] {type}, area) &&
 				to instanceof Player)
 			onPlayerDamage((Player) to, area);
     }
@@ -87,7 +87,7 @@ public class AreaGuardEntityListener extends EntityListener {
     private  void onPlayerDamage(Player player, Area area) {
     	// if they are in an area
 		if (area != null)
-			if (area.playerCan(player.getName(), "heal", false)) // can they auto heal
+			if (area.playerCan(player.getName(), new String[] {"heal"})) // can they auto heal
 					new HealJob(player, area); // start a new HealJob
     }
     

@@ -126,15 +126,30 @@ public class Area {
 		return ad.listHas(id, list, value);
 	}
 	
-	public boolean playerCan(String player, String name, boolean checkAllow) {
-		if (checkAllow && listHas("owners", player)) return true;
-		if (listHas("restrict", name)) {
-			if (checkAllow && listHas("allow", player)) return true;
-			if (listHas(name, player)) return true;
+	/**
+	 * Checks if the player can do an action.
+	 * @param player	The player to check for
+	 * @param lists		An array of lists to check
+	 * @return			If they can
+	 */
+	public boolean playerCan(String player, String[] lists) {
+		// Find out if any of the events are restricted
+		boolean restrict = false;
+		for (String list : lists) if (listHas("restrict", list)) {
+			restrict = true;
+			break;
+		}
+		
+		// If they are check if the player is allowed
+		if (restrict) {
+			for (String list : lists)
+				if (listHas(list, player)) return true;
 			return false;
 		}
-		if (listHas("no-allow", player)) return false;
-		if (listHas("no-"+name, player)) return false;
+		
+		// If they are not check if the player is not allowed
+		for (String list : lists)
+			if (listHas("no-"+list, player)) return false;
 		return true;
 	}
 

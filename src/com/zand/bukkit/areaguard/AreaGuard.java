@@ -73,6 +73,11 @@ public class AreaGuard extends JavaPlugin {
     	TempBlocks.deleteAll();
     }
     
+    /**
+	* Checks if this is a command for us.
+	* @param command 	The first part of the command without the "/"
+	* @return			if it is
+	*/
     public boolean isCommand(String command) {
     	return commands.contains(command);
     }
@@ -95,8 +100,10 @@ public class AreaGuard extends JavaPlugin {
         pm.registerEvent(Event.Type.BLOCK_INTERACT, blockListener, preventPriority, this);
     }
     
+    /**
+	* Detects and sets up the other plugins for use
+	*/
     private void setupOtherPlugins() {
-    	
     	// Permissions
     	Plugin test = this.getServer().getPluginManager().getPlugin("Permissions");
     	if (this.Permissions == null) {
@@ -107,6 +114,11 @@ public class AreaGuard extends JavaPlugin {
     	}
     }
     
+    /**
+	* Gets the players current session.
+	* @param player	The player to get the session for
+	* @return 		The current session for that player
+	*/
     public PlayerSession getSession(Player player) {
     	String name = player.getName();
     	if (!playerSessions.containsKey(name))
@@ -114,6 +126,11 @@ public class AreaGuard extends JavaPlugin {
     	return playerSessions.get(name);
     }
     
+    /**
+	* Sends the player a message containing the area info.
+	* @param player	The player to send to
+	* @param area	The area to show
+	*/
     public void showAreaInfo(Player player, Area area) {
     	player.sendMessage(ChatColor.YELLOW + area.toString());
     	String[] first = {"owners", "restrict", "allow", "no-allow"};
@@ -159,6 +176,11 @@ public class AreaGuard extends JavaPlugin {
     }
     
     @SuppressWarnings("static-access")
+    /**
+	* Checks if the player can create the areas.
+	* @param player	The player to check for
+	* @return if they can create an area
+	*/
 	public boolean canCreate(Player player) {
     	if (this.Permissions != null)
     		if (this.Permissions.Security.permission(player, "areaguard.create")) return true;
@@ -167,30 +189,66 @@ public class AreaGuard extends JavaPlugin {
     	return false;
     }
     
+    /**
+	* Checks if the player can modify the area settings.
+	* @param event	The area to check
+	* @param player	The player to check for
+	* @return if they can modify the area
+	*/
     public boolean canModify(Area area, Player player) {
     	return (area.listHas("owners", player.getName()) || canCreate(player));
     }
     
-    public boolean checkEvent(Cancellable event, Player player, String type, int x, int y, int z, boolean checkAllow) {
+    /**
+	* Checks if the player can do the event and Cancels it he can't.
+	* It also sends	the player the Msgs for that event.
+	* @param event	The event to be canceled
+	* @param player	The player to check for
+	* @param lists	An array of list names for that event
+	* @param x		The x location of area to check
+	* @param y		The y location of area to check
+	* @param z		The z location of area to check
+	* @return if the event was canceled
+	*/
+    public boolean checkEvent(Cancellable event, Player player, String[] lists, int x, int y, int z) {
     	Area area = Area.getArea(x, y, z);
-		return checkEvent(event, player, type, area, checkAllow);
+		return checkEvent(event, player, lists, area);
     }
-    
-	public boolean checkEvent(Cancellable event, Player player, String type, Area area, boolean checkAllow) {
+	
+	/**
+	* Checks if the player can do the event and Cancels it he can't.
+	* It also sends the player the Msgs for that event.
+	* @param event	The event to be canceled
+	* @param player	The player to check for
+	* @param lists	An array of list names for that event
+	* @param area	The area to check
+	* @return		If the event was canceled
+	*/
+	public boolean checkEvent(Cancellable event, Player player, String[] lists, Area area) {
 		if (area != null) {
-			if (area.playerCan(player.getName(), type, checkAllow)) {
-				String msg = area.getMsg(type);
-				if (!msg.isEmpty()) Messager.inform(player, msg);
-			}
-			else if (checkAllow && getSession(player).bypassArea) {
-				Messager.warn(player, "Bypassing area permissions");
-				String msg = area.getMsg("no-"+type);
-				if (!msg.isEmpty()) Messager.warn(player, msg);
-				return true;
+			if (area.playerCan(player.getName(), lists)) {
+				
+				// Send the allowed messages
+				for (String list : lists) {
+					String msg = area.getMsg(list);
+					if (getSession(player).debug) 
+						Messager.debug(player, "Checking " + list + " " 
+								+ (area.listHas(list, player.getName())));
+					if (!msg.isEmpty()) Messager.inform(player, msg); }
 			} else {
-				event.setCancelled(true);
-				String msg = area.getMsg("no-"+type);
-				if (!msg.isEmpty()) Messager.warn(player, msg);
+				
+				// Bypass or Cancel the event
+				if (getSession(player).bypassArea)
+					Messager.warn(player, "Bypassing area permissions");
+				else event.setCancelled(true);
+				
+				// Send the not allowed messages
+				for (String list : lists) {
+					String msg = area.getMsg("no-"+list);
+					if (getSession(player).debug) 
+						Messager.debug(player, "Checking no-" + list + " " 
+								+ (area.listHas("no-"+list, player.getName())));
+					if (!msg.isEmpty()) Messager.warn(player, msg); }
 				return false;
 			}	
 		}
