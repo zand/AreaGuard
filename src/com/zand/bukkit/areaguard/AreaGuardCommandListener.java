@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerListener;
 
 import com.zand.areaguard.Area;
+import com.zand.areaguard.AreaDatabase;
 import com.zand.areaguard.Config;
 
 /**
@@ -56,6 +57,7 @@ public class AreaGuardCommandListener extends PlayerListener {
 			// Reconfig
 			else if (args[index].equals("reconfig")) {
 				if (player.isOp()) {
+					AreaDatabase.getInstance().disconnect(true);
 					Config.setup();
 					Messager.inform(player, "Reloading the config file.");
 				} else Messager.warn(player, "Your not allowed to use that command.");

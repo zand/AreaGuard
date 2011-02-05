@@ -66,11 +66,21 @@ public class AreaGuardBlockListener extends BlockListener {
 		checkCanUse(player, block, event);
 	}
 	
+	/**
+	 * Checks if a player is allowed to create or destroy a block.
+	 * @param player	The player to check for
+	 * @param block		The block to check
+	 * @param event		The event to cancel if he can't
+	 * @return			If the player can create or destroy
+	 */
 	public boolean checkCanBuild(Player player, Block block, Cancellable event) {
 		// Check build
-		if (!plugin.checkEvent(event, player, new String[] {"owners", "allow", "build"}, block.getX(), block.getY(), block.getZ()))
+		if (!plugin.checkEvent(event, player, 
+				new String[] {"owners", "allow", "build"}, 
+				block.getX(), block.getY(), block.getZ()))
 			return false;
 		
+		// Check can use
 		if (checkCanUse(player, block, event))
 			return false;
 		
@@ -78,6 +88,13 @@ public class AreaGuardBlockListener extends BlockListener {
 		return true;
 	}
 	
+	/**
+	 * Checks if a player is allowed to use a block.
+	 * @param player	The player to check for
+	 * @param block		The block to check
+	 * @param event		The event to cancel if he can't
+	 * @return			If the player can use the block
+	 */
 	public boolean checkCanUse(Player player, Block block, Cancellable event) {
 		Material mat = block.getType();
 		String type = "";
@@ -91,7 +108,9 @@ public class AreaGuardBlockListener extends BlockListener {
 		}
 		
 		if (!type.isEmpty()) {
-			return plugin.checkEvent(event, player, new String[] {"owners", "allow", "open", type}, block.getX(), block.getY(), block.getZ());
+			return plugin.checkEvent(event, player, 
+					new String[] {"owners", "allow", "open", type, "block-"+block.getTypeId()}, 
+					block.getX(), block.getY(), block.getZ());
 		}
 		
 		//Check things that can be operated
@@ -102,7 +121,9 @@ public class AreaGuardBlockListener extends BlockListener {
 		}
 		
 		if (!type.isEmpty()) {
-			return plugin.checkEvent(event, player, new String[] {"owners", "allow", type}, block.getX(), block.getY(), block.getZ());
+			return plugin.checkEvent(event, player, 
+					new String[] {"owners", "allow", type, "block-"+block.getTypeId()}, 
+					block.getX(), block.getY(), block.getZ());
 		}
 		
 		return false;

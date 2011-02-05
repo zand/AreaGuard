@@ -133,26 +133,27 @@ public class Area {
 	 * @return			If they can
 	 */
 	public boolean playerCan(String player, String[] lists) {
+		boolean ret = true;
+		
 		// Find out if any of the events are restricted
-		boolean restrict = false;
 		for (String list : lists) if (listHas("restrict", list)) {
-			restrict = true;
+			ret = false;
 			break;
 		}
 		
-		// If they are check if the player is allowed
-		if (restrict) {
-			for (String list : lists)
-				if (listHas(list, player)) return true;
-			return false;
-		}
-		
-		// If they are not check if the player is not allowed
+		// Check the lists switching between them as seen fit
 		for (String list : lists)
-			if (listHas("no-"+list, player)) return false;
-		return true;
+			if (ret) {
+				if (listHas("no-"+list, player)) ret = false;
+			} else if (listHas(list, player)) ret = true;
+		
+		return ret;
 	}
-
+	
+	/**
+	 * Gets all the messages for this area.
+	 * @return A HashMap of event names to messages.
+	 */
 	public HashMap<String, String> getMsgs() {
 		return ad.getMsgs(id);
 	}
