@@ -1,4 +1,4 @@
-package com.zand.bukkit.areaguard;
+package com.zand.bukkit.areaguard.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -9,6 +9,7 @@ import org.bukkit.event.block.*;
 
 import com.zand.areaguard.Area;
 import com.zand.areaguard.Config;
+import com.zand.bukkit.areaguard.AreaGuard;
 
 public class AreaGuardBlockListener extends BlockListener {
 	

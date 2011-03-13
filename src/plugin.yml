@@ -2,3 +2,7 @@ name: AreaGuard
 author: zand
 main: com.zand.bukkit.areaguard.AreaGuard
 version: 0.2.6
+commands:
+  ag:
+    description: Shows the help for areaguard
+    usage: <command> help

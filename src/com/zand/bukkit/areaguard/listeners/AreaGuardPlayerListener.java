@@ -1,4 +1,4 @@
-package com.zand.bukkit.areaguard;
+package com.zand.bukkit.areaguard.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -8,6 +8,9 @@ import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.zand.areaguard.Area;
+import com.zand.bukkit.areaguard.AreaGuard;
+import com.zand.bukkit.areaguard.HealJob;
+import com.zand.bukkit.areaguard.PlayerSession;
 
 /**
  * Handle events for all Player related events

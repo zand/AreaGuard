@@ -1,25 +1,28 @@
 package com.zand.bukkit.areaguard;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 
 import com.nijikokun.bukkit.Permissions.Permissions;
 import com.zand.areaguard.*;
+import com.zand.bukkit.areaguard.listeners.AreaGuardBlockListener;
+import com.zand.bukkit.areaguard.listeners.AreaGuardEntityListener;
+import com.zand.bukkit.areaguard.listeners.AreaGuardPlayerListener;
+import com.zand.bukkit.areaguard.listeners.AreaGuardWorldListener;
 
 //import com.nijikokun.bukkit.General.General;
 
@@ -29,12 +32,13 @@ import com.zand.areaguard.*;
  * @author zand
  */
 public class AreaGuard extends JavaPlugin {
-	private final String name;
-	public final String versionInfo;
+	private String name;
+	public String versionInfo;
 	private static Logger log = Logger.getLogger("Minecraft");
 	
+	private final CommandHandler commandhandler = new CommandHandler(this);
+	
 	// Are Listeners
-	private final AreaGuardCommandListener commandListener = new AreaGuardCommandListener(this);
 	private final AreaGuardWorldListener worldListener = new AreaGuardWorldListener(this);
 	private final AreaGuardPlayerListener playerListener = new AreaGuardPlayerListener(this);
     private final AreaGuardBlockListener blockListener = new AreaGuardBlockListener(this);
@@ -49,10 +53,9 @@ public class AreaGuard extends JavaPlugin {
     // Are data on each player
     protected final HashMap<String, PlayerSession> playerSessions = new HashMap<String, PlayerSession>();
 
-    public AreaGuard(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
-        super(pluginLoader, instance, desc, folder, plugin, cLoader);
-        
-        Config.setup();
+    public void onEnable() {
+    	PluginDescriptionFile desc = getDescription();
+    	Config.setup();
         name = desc.getName();
         String authors = "";
         for (String author : desc.getAuthors()) authors += ", " + author;
@@ -60,9 +63,7 @@ public class AreaGuard extends JavaPlugin {
         	(authors.isEmpty() ? "" : " by" + authors.substring(1));
         commands.add(name.toLowerCase());
         commands.add("ag");
-    }
-
-    public void onEnable() {
+    	
     	registerEvents();
     	setupOtherPlugins();
     	log.info( versionInfo + " is enabled!" );
@@ -70,6 +71,16 @@ public class AreaGuard extends JavaPlugin {
     
     public void onDisable() {
     	TempBlocks.deleteAll();
+    }
+    
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+    	if (isCommand(command.getName().toLowerCase())) {
+    		if (sender instanceof Player)
+    		commandhandler.ag(getSession((Player)sender), args);
+    		return true;
+    	}
+		return false;
     }
     
     /**
@@ -85,14 +96,10 @@ public class AreaGuard extends JavaPlugin {
 		PluginManager pm = getServer().getPluginManager();
 		Priority preventPriority = Event.Priority.High;
 		
-		pm.registerEvent(Event.Type.PLAYER_COMMAND, commandListener, Event.Priority.Low, this);
-		
 		pm.registerEvent(Event.Type.CHUNK_UNLOADED, worldListener, preventPriority, this);
 		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, preventPriority, this);
 		pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, preventPriority, this);
-		pm.registerEvent(Event.Type.ENTITY_DAMAGEDBY_ENTITY, entityListener, preventPriority, this);
-		pm.registerEvent(Event.Type.ENTITY_DAMAGEDBY_PROJECTILE, entityListener, preventPriority, this);
-		pm.registerEvent(Event.Type.ENTITY_DAMAGEDBY_BLOCK, entityListener, preventPriority, this);
+		pm.registerEvent(Event.Type.ENTITY_DAMAGED, entityListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_PLACED, blockListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_RIGHTCLICKED, blockListener, preventPriority, this);

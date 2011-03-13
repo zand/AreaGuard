@@ -1,4 +1,4 @@
-package com.zand.bukkit.areaguard;
+package com.zand.bukkit.areaguard.listeners;
 
 import java.util.HashSet;
 
@@ -11,6 +11,9 @@ import org.bukkit.event.player.PlayerListener;
 import com.zand.areaguard.Area;
 import com.zand.areaguard.AreaDatabase;
 import com.zand.areaguard.Config;
+import com.zand.bukkit.areaguard.AreaGuard;
+import com.zand.bukkit.areaguard.Messager;
+import com.zand.bukkit.areaguard.PlayerSession;
 
 /**
  * Handle events for all Player related events
@@ -77,8 +80,8 @@ public class AreaGuardCommandListener extends PlayerListener {
 			// Bypass
 			else if (args[index].equals("bypass") && plugin.checkPermission(player, "ag.bypass")) { 
 				PlayerSession ps = plugin.getSession(player);
-				ps.bypassArea = !ps.bypassArea;
-				Messager.warn(player, "Bypassing " + (ps.bypassArea ? "enabled" : "disabled"));
+				//ps.bypassArea = !ps.bypassArea;
+				//Messager.warn(player, "Bypassing " + (ps.bypassArea ? "enabled" : "disabled"));
 			}
 			
 			// Draw
