@@ -50,7 +50,7 @@ public class AreaGuardBlockListener extends BlockListener {
     	}
     	// Check Area
     	else if (event.getItemInHand().getTypeId() == Config.checkTool) {
-    		Area area = Area.getArea(block.getX(), block.getY(), block.getZ());
+    		Area area = Area.getArea(plugin.getSession(player).getWorldId(), block.getX(), block.getY(), block.getZ());
     		if (area != null)
         		plugin.showAreaInfo(event.getPlayer(), area);
     		else player.sendMessage(ChatColor.YELLOW + "not an Area");

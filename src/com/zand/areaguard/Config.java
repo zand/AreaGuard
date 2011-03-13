@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class Config {
-	private static final String config = "AreaGuard/areaguard.properties";
+	private static final String config = getConfigDir() + "/areaguard.properties";
 	private static final AreaDatabase ad = AreaDatabase.getInstance();
 	public static int createTool;
 	public static int checkTool;
@@ -60,22 +60,26 @@ public class Config {
 		String url = props.getProperty("url");
 		
 		// Figure out what driver to use
-		String driver = "org.sqlite.JDBC";
-		String lower = url.toLowerCase().replaceAll("\\\\", "");
-		if 		(lower.startsWith("jdbc:sqlite:")) 	driver = "org.sqlite.JDBC";
-		else if (lower.startsWith("jdbc:mysql:"))	driver = "com.mysql.jdbc.Driver";
-		else System.err.println("Coulden't figuer out driver from url");
+		String driver = props.getProperty("driver");
+		if (driver == null || driver.isEmpty() || driver.equalsIgnoreCase("auto")) {
+			String lower = url.toLowerCase().replaceAll("\\\\", "");
+			if 		(lower.startsWith("jdbc:sqlite:")) 	driver = "org.sqlite.JDBC";
+			else if (lower.startsWith("jdbc:mysql:"))	driver = "com.mysql.jdbc.Driver";
+			else System.err.println("Coulden't figuer out driver from url");
+		}
 		
 		
 		
 		ad.config(driver, url, 
 					props.getProperty("user"), 
 					props.getProperty("password"), 
-					props.getProperty("area-table"), 
-					props.getProperty("msg-table"),
-					props.getProperty("list-table"), 
+					props.getProperty("table-prefix"),  
 					Boolean.valueOf(props.getProperty("keep-connection")));
 		return true;
+	}
+	
+	public static String getConfigDir() {
+		return "plugins/AreaGuard";
 	}
 
 	public static boolean setup() {
@@ -91,7 +95,7 @@ public class Config {
 				System.out.println("Creating \"" + config + "\"");
 				List<String> data = JarFile.toList("data/areaguard.properties");
 				
-				(new File("AreaGuard")).mkdir();
+				(new File(getConfigDir())).mkdir();
 				f.createNewFile();
 				FileWriter w = new FileWriter(config);
 				BufferedWriter out = new BufferedWriter(w);

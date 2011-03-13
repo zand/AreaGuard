@@ -18,8 +18,10 @@ public class PlayerSession extends Session {
 	PlayerSession(Player player) {
 		this.player = player;
 		name = player.getName();
+		setWorld(player.getWorld().getName());
 		lastLoc = player.getLocation();
-		lastArea = Area.getArea(lastLoc.getBlockX(), 
+		lastArea = Area.getArea(getWorldId(),
+								lastLoc.getBlockX(), 
 								lastLoc.getBlockY(), 
 								lastLoc.getBlockZ());
 	}

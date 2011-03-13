@@ -39,7 +39,7 @@ public class Console {
 							out.println("Force Disconnect");
 							for (int i = 1; i < 1000; i++) {
 								//out.println(
-										new Area("bench_"+i, new int[6]);
+										new Area("Test", "bench_"+i, new int[6]);
 										//);
 							}
 					} else if (args[1].equals("erase")) { // debug erase
@@ -88,7 +88,7 @@ public class Console {
 						}
 					} else if (args[1].startsWith("n")) { // select name
 						if (args.length > 2) {
-							Area area = Area.getArea(args[2]);
+							Area area = Area.getArea(-1, args[2]);
 							if (area != null) {
 								session.selected = area.getId();
 								out.println("Selected area id ["
@@ -99,7 +99,7 @@ public class Console {
 						}
 					} else if (args[1].startsWith("p")) { // select point
 						int[] loc = session.getPoint();
-						Area area = Area.getArea(loc[0], loc[1], loc[2]);
+						Area area = Area.getArea(-1, loc[0], loc[1], loc[2]);
 						if (area != null) {
 							session.selected = area.getId();
 							out.println("Selected area id ["
@@ -129,7 +129,7 @@ public class Console {
 				}
 			} else if (args[0].startsWith("a")) { // add
 				if (args.length > 1) {
-					out.println((new Area(args[1], session.getCoords())
+					out.println((new Area("test", args[1], session.getCoords())
 							.getId() != -1 ? "Added" : "Faild to add")
 							+ " \"" + args[1] + "\"");
 				}

@@ -167,7 +167,7 @@ public class CommandHandler {
 		if (plugin.checkPermission(ps.player, "ag.create")) {
 			if (args == null || args.length == 0) { Messager.warn(ps.player, "No name was given."); return; }
 			
-			Area area = new Area(args[0], ps.getCoords());
+			Area area = new Area(ps.getWorldName(), args[0], ps.getCoords());
 			if (area.getId() != -1) {
 				Messager.inform(ps.player, area.toString() + " Added and Selected");
 			
@@ -239,7 +239,7 @@ public class CommandHandler {
 	 */
 	public void getAreaNamed(PlayerSession ps, String args[]) {
 		if (args == null) { Messager.warn(ps.player, " no Name given"); return; }
-		withArea(ps, subargs(args, 1), Area.getArea(args[0]));
+		withArea(ps, subargs(args, 1), Area.getArea(ps.getWorldName(), args[0]));
 	}
 	
 	/**
@@ -270,7 +270,8 @@ public class CommandHandler {
 	 */
 	public void getAreaAt(PlayerSession ps, String args[]) {
 		if (args == null || args.length < 3) { Messager.warn(ps.player, "no coords given"); return; }
-		withArea(ps, subargs(args, 1), Area.getArea(
+		withArea(ps, subargs(args, 3), Area.getArea(
+				ps.getWorldName(),
 				Integer.valueOf(args[0]),
 				Integer.valueOf(args[1]),
 				Integer.valueOf(args[2])));
@@ -282,9 +283,9 @@ public class CommandHandler {
 	 * @param args	The Arguments for the command
 	 */
 	public void getAreaHere(PlayerSession ps, String args[]) {
-		if (args == null || args.length < 3) { Messager.warn(ps.player, "no coords given"); return; }
 		Location loc = ps.player.getLocation();
-		withArea(ps, subargs(args, 1), Area.getArea(
+		withArea(ps, args, Area.getArea(
+				ps.getWorldName(), 
 				loc.getBlockX(),
 				loc.getBlockY(), 
 				loc.getBlockZ()));
@@ -298,9 +299,10 @@ public class CommandHandler {
 	 */
 	public void withArea(PlayerSession ps, String args[], Area area) {
 		if (area == null) { Messager.warn(ps.player, " Area not Found"); return; }
-		if (args[0].equalsIgnoreCase("show")) areaInfo(ps, subargs(args, 1), area);
+		if (args == null) { areaSelect(ps, subargs(args, 1), area); areaInfo(ps, subargs(args, 1), area); }
+		else if (args[0].equalsIgnoreCase("show")) areaInfo(ps, subargs(args, 1), area);
 		else if (args[0].equalsIgnoreCase("info")) areaInfo(ps, subargs(args, 1), area);
-		else if (args[0].equalsIgnoreCase("select")) areaSelect(ps, subargs(args, 1), area);
+		else if (args[0].toLowerCase().startsWith("sel")) areaSelect(ps, subargs(args, 1), area);
 		else if (args[0].equalsIgnoreCase("add")) areaList(ps, args, area);
 		else if (args[0].equalsIgnoreCase("remove")) areaList(ps, args, area);
 		else if (args[0].equalsIgnoreCase("clear")) areaList(ps, args, area);
@@ -309,6 +311,15 @@ public class CommandHandler {
 		else if (args[0].equalsIgnoreCase("move")) areaMove(ps, subargs(args, 1), area);
 		else if (args[0].equalsIgnoreCase("extend")) areaExtend(ps, subargs(args, 1), area);
 		else if (args[0].equalsIgnoreCase("delete")) areaDelete(ps, subargs(args, 1), area);
+		else if (args.length > 1 && (
+				args[0].equalsIgnoreCase("add") ||
+				args[0].equalsIgnoreCase("remove") ||
+				args[0].equalsIgnoreCase("clear"))) { 
+			String temp = args[0];
+			args[0] = args[1]; 
+			args[1] = temp;
+			areaList(ps, args, area);
+		}
 		else { areaSelect(ps, subargs(args, 1), area); areaInfo(ps, subargs(args, 1), area); }
 	}
 	
@@ -388,7 +399,7 @@ public class CommandHandler {
 		if (args.length > 0) {
 			String name = args[0];
 			String msg = "";
-			if (args.length > 1) for (String arg : subargs(args, 2)) msg += arg + " ";
+			if (args.length > 1) for (String arg : subargs(args, 1)) msg += arg + " ";
 			area.setMsg(name, msg.trim());
 			ps.player.sendMessage("Message " + name + " set:" + msg);
 		}

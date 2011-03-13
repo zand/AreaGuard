@@ -40,7 +40,7 @@ public class AreaGuardEntityListener extends EntityListener {
     	
     	if(player == null) return;
     	Location loc = to.getLocation();
-    	Area area = Area.getArea(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    	Area area = Area.getArea(plugin.getSession(player).getWorldId(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 		if (plugin.checkEvent(event, player, new String[] {type}, area) &&
 				to instanceof Player)
 			onPlayerDamage((Player) to, area);

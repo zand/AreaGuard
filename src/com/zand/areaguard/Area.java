@@ -11,12 +11,22 @@ public class Area {
 		return ad.getArea(id);
 	}
 	
-	public static Area getArea(int x, int y, int z) {
-		return ad.getArea(ad.getAreaId(x, y, z));
+	public static Area getArea(String world, int x, int y, int z) {
+		return getArea(ad.getWorldId(world), x, y, z);
 	}
-	public static Area getArea(String name) {
-		return ad.getArea(ad.getAreaId(name));
+	
+	public static Area getArea(int world, int x, int y, int z) {
+		return ad.getArea(ad.getAreaId(world, x, y, z));
 	}
+	
+	public static Area getArea(String world, String name) {
+		return getArea(ad.getWorldId(world), name);
+	}
+	
+	public static Area getArea(int world, String name) {
+		return ad.getArea(ad.getAreaId(world, name));
+	}
+	
 	public static Area getOwnedArea(String owner, String name) {
 		for (int id : ad.getAreaIdsFromListValues("owners", owner)) {
 			Area area = ad.getArea(id);
@@ -31,6 +41,11 @@ public class Area {
 	}
 
 	private Integer id = -1;
+	private Integer parrentId = -1;
+	@SuppressWarnings("unused")
+	private Integer worldId = -1;
+	@SuppressWarnings("unused")
+	private String worldName = "NOT FOUND";
 	
 	// Cache
 	private String name = "NOT FOUND";
@@ -38,19 +53,25 @@ public class Area {
 	
 	private int[] coords = new int[6];
 	
-	protected Area(int id, String name, int priority, int[] coords) {
+	protected Area(int id, int worldId, String name, int priority, int[] coords) {
 		this.id = id;
+		this.worldId = worldId;
+		this.worldName = ad.getWorldName(worldId);
 		this.name = name;
 		this.priority = priority;
 		if (coords.length == 6)
 			this.coords = coords;
 	}
 	
-	public Area(String name, int[] coords) {
+	public Area(String world, String name, int[] coords) {
+		this(ad.getWorldId(world), name, coords);
+	}
+	
+	public Area(int world, String name, int[] coords) {
 		this.name = name;
 		if (coords.length == 6)
 			this.coords = coords;
-		this.id = ad.addArea(name, coords);
+		this.id = ad.addArea(world, name, coords);
 	}
 	
 	public boolean setMsg(String name, String msg) {
@@ -88,6 +109,8 @@ public class Area {
 	}
 	
 	public String getName() {
+		if (parrentId >= 0)
+			return getArea(parrentId).getName();
 		return name;
 	}
 	
@@ -96,6 +119,8 @@ public class Area {
 	}
 	
 	public boolean removeList(String list) {
+		if (parrentId >= 0)
+			return ad.removeList(parrentId, list);
 		return ad.removeList(id, list);
 	}
 	

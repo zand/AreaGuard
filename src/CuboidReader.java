@@ -22,7 +22,7 @@ public class CuboidReader {
 		if (cuboids.isEmpty()) return false;
 		Area area = null;
 		for (CuboidC c : cuboids) {
-			area = new Area(c.name, c.coords);
+			area = new Area(-1, c.name, c.coords);
 			if (area.getId() != -1) {
 				HashSet<String> restrict = new HashSet<String>();
 				if (c.protection) {

@@ -26,9 +26,7 @@ public class AreaDatabase {
 	private String url;
 	private String user;
 	private String password;
-	private String areas;
-	private String areaMsgs;
-	private String areaLists;
+	private String tablePrefix;
 	private boolean keepConn = false;
 
 	private Connection conn = null;
@@ -36,21 +34,119 @@ public class AreaDatabase {
 	protected AreaDatabase() {
 		// Exists only to defeat instantiation.
 	}
+	
+	/**
+	 * Gets the Id from world name and creates it if it doesn't exist.
+	 * @param name The name of the world to look up
+	 * @return The world id and -1 on error
+	 */
+	public int getWorldId(String name) {
+		int ret = -1;
+		String sql = "SELECT Id FROM `" + tablePrefix + "Worlds` WHERE Name = ? LIMIT 1";
 
-	public int addArea(String name, int coords[]) {
+		connect();
+		if (conn != null) {
+			try {
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ps.setString(1, name);
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				if (rs.next()) ret = rs.getInt(1);
+				else ret = addWorld(name);
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return -1;
+			}
+
+			disconnect();
+		} else return -1;
+		return ret;
+	}
+	
+	public String getWorldName(int id) {
+		String ret = "NOT FOUND";
+		String sql = "SELECT Name FROM `" + tablePrefix + "Worlds` WHERE Id = ? LIMIT 1";
+		
+		if (id < 0) return "ERROR";
+
+		connect();
+		if (conn != null) {
+			try {
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ps.setInt(1, id);
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				if (rs.next()) ret = rs.getString(1);
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return "Error";
+			}
+
+			disconnect();
+		} else return "ERROR: Not Connected";
+		return ret;
+	}
+	
+	public int addWorld(String name) {
 		int ret = -1;
 
-		String insert = "INSERT INTO `" + areas
-				+ "` (Name, x1, y1, z1, x2, y2, z2)"
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?);";
+		String insert = "INSERT INTO `" + tablePrefix + "Worlds`"
+				+ "(Name)"
+				+ "VALUES (?);";
 		connect();
 		if (conn == null)
 			return -2;
 		try {
 			PreparedStatement ps = conn.prepareStatement(insert);
 			ps.setString(1, name);
+			ps.execute();
+
+			Statement st = conn.createStatement();
+
+			ResultSet rs = st.executeQuery("SELECT LAST_INSERT_"
+					+ (url.toLowerCase().contains("sqlite") ? "ROW" : "")
+					+ "ID();");
+			if (rs.next())
+				ret = rs.getInt(1);
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return -2;
+		}
+		disconnect();
+		return ret;
+	}
+
+	public int addArea(int world, String name, int coords[]) {
+		int ret = -1;
+
+		String insert = "INSERT INTO `" + tablePrefix + "Areas`"
+				+ "(WorldId, Name, x1, y1, z1, x2, y2, z2)"
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+		connect();
+		if (conn == null)
+			return -2;
+		try {
+			PreparedStatement ps = conn.prepareStatement(insert);
+			ps.setInt(1, world);
+			ps.setString(2, name);
 			for (int i = 0; i < 6; i++)
-				ps.setInt(i + 2, coords[i]);
+				ps.setInt(i + 3, coords[i]);
 			ps.execute();
 
 			Statement st = conn.createStatement();
@@ -76,7 +172,7 @@ public class AreaDatabase {
 		if (conn != null && ret) {
 			try {
 				PreparedStatement ps = conn.prepareStatement("INSERT INTO `"
-						+ areaLists + "` (AreaId, List, Value)" + "VALUES (?, ?, ?)");
+						+ tablePrefix + "Lists` (AreaId, List, Value)" + "VALUES (?, ?, ?)");
 
 				for (String value : values) {
 					ps.setInt(1, area);
@@ -98,14 +194,12 @@ public class AreaDatabase {
 	}
 
 	public void config(String driver, String url, String user, String password,
-			String areas, String areaMsgs, String areaLists, boolean keepConn) {
+			String tablePrefix, boolean keepConn) {
 		this.driver = driver;
 		this.url = url;
 		this.user = user;
 		this.password = password;
-		this.areas = areas;
-		this.areaMsgs = areaMsgs;
-		this.areaLists = areaLists;
+		this.tablePrefix = tablePrefix;
 		this.keepConn = keepConn;
 		instance = this;
 	}
@@ -135,9 +229,7 @@ public class AreaDatabase {
 		String[] lines = JarFile.toString(
 				(url.toLowerCase().contains("sqlite") ? 
 						"data/sqlight.sql" : "data/mysql.sql"))
-				.replace("<areas>", areas)
-				.replace("<areaMsgs>", areaMsgs)
-				.replace("<areaLists>", areaLists)
+				.replaceAll("<tablePrefix>", tablePrefix)
 				.split(";");
 
 		connect();
@@ -182,7 +274,7 @@ public class AreaDatabase {
 	
 	public List<Integer> getAreaIdsFromListValues(String list, String value) {
 		List<Integer> ret = new ArrayList<Integer>();
-		String sql = "SELECT AreaId FROM `" + areaLists + "` WHERE List=? And Value=?";
+		String sql = "SELECT AreaId FROM `" + tablePrefix + "Lists` WHERE List=? And Value=?";
 
 		connect();
 		if (conn != null) {
@@ -222,12 +314,12 @@ public class AreaDatabase {
 			if (conn == null || conn.isClosed())
 				return new ErrorArea();
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `"
-					+ areas + "` WHERE Id=? LIMIT 1");
+					+ tablePrefix + "Areas` WHERE Id=? LIMIT 1");
 			ps.setInt(1, id);
 
 			ResultSet rs = ps.executeQuery();
 			if (rs.next())
-				ret = new Area(id, rs.getString("Name"), rs.getInt("Priority"), new int[] {
+				ret = new Area(id, rs.getInt("WorldId"), rs.getString("Name"), rs.getInt("Priority"), new int[] {
 						rs.getInt("x1"), rs.getInt("y1"), rs.getInt("z1"),
 						rs.getInt("x2"), rs.getInt("y2"), rs.getInt("z2") });
 
@@ -240,23 +332,24 @@ public class AreaDatabase {
 		return ret;
 	}
 
-	public int getAreaId(int x, int y, int z) {
+	public int getAreaId(int world, int x, int y, int z) {
 		int ret = -1;
-		String sql = "SELECT Id FROM `" + areas + "` WHERE x1 <= ? "
+		String sql = "SELECT Id FROM `" + tablePrefix + "Areas` WHERE WorldId = ? AND x1 <= ? "
 				+ "AND x2 >= ? " + "AND y1 <= ? " + "AND y2 >= ? "
-				+ "AND z1 <= ? " + "AND z2 >= ? " + "ORDER BY `" + areas
-				+ "`.Priority DESC LIMIT 1";
+				+ "AND z1 <= ? " + "AND z2 >= ? " + "ORDER BY `" + tablePrefix
+				+ "Areas`.Priority DESC LIMIT 1";
 
 		connect();
 		if (conn != null) {
 			try {
 				PreparedStatement ps = conn.prepareStatement(sql);
-				ps.setInt(1, x);
+				ps.setInt(1, world);
 				ps.setInt(2, x);
-				ps.setInt(3, y);
+				ps.setInt(3, x);
 				ps.setInt(4, y);
-				ps.setInt(5, z);
+				ps.setInt(5, y);
 				ps.setInt(6, z);
+				ps.setInt(7, z);
 				ps.execute();
 
 				// Get the result
@@ -277,9 +370,9 @@ public class AreaDatabase {
 		return ret;
 	}
 
-	public int getAreaId(String name) {
+	public int getAreaId(int world, String name) {
 		int ret = -1;
-		String sql = "SELECT Id FROM `" + areas + "` WHERE name = ? LIMIT 1";
+		String sql = "SELECT Id FROM `" + tablePrefix + "Areas` WHERE name = ? LIMIT 1";
 
 		connect();
 		if (conn != null) {
@@ -309,7 +402,7 @@ public class AreaDatabase {
 	public ArrayList<Integer> getAreaIds() {
 		ArrayList<Integer> ret = new ArrayList<Integer>();
 
-		String sql = "SELECT Id FROM `" + areas + "`";
+		String sql = "SELECT Id FROM `" + tablePrefix + "Areas`";
 
 		connect();
 		if (conn != null) {
@@ -336,23 +429,24 @@ public class AreaDatabase {
 		return ret;
 	}
 	
-	public ArrayList<Integer> getAreaIds(int x, int y, int z) {
+	public ArrayList<Integer> getAreaIds(int world, int x, int y, int z) {
 		ArrayList<Integer> ret = new ArrayList<Integer>();
-		String sql = "SELECT Id FROM `" + areas + "` WHERE x1 <= ? "
+		String sql = "SELECT Id FROM `" + tablePrefix + "Area` WHERE WorldId = ? AND x1 <= ? "
 				+ "AND x2 >= ? " + "AND y1 <= ? " + "AND y2 >= ? "
-				+ "AND z1 <= ? " + "AND z2 >= ? " + "ORDER BY `" + areas
-				+ "`.Id DESC";
+				+ "AND z1 <= ? " + "AND z2 >= ? " + "ORDER BY `" + tablePrefix
+				+ "Area`.Id DESC";
 
 		connect();
 		if (conn != null) {
 			try {
 				PreparedStatement ps = conn.prepareStatement(sql);
-				ps.setInt(1, x);
+				ps.setInt(1, world);
 				ps.setInt(2, x);
-				ps.setInt(3, y);
+				ps.setInt(3, x);
 				ps.setInt(4, y);
-				ps.setInt(5, z);
+				ps.setInt(5, y);
 				ps.setInt(6, z);
+				ps.setInt(7, z);
 				ps.execute();
 
 				// Get the result
@@ -374,15 +468,16 @@ public class AreaDatabase {
 		return ret;
 	}
 
-	public ArrayList<Integer> getAreaIds(String name) {
+	public ArrayList<Integer> getAreaIds(int world, String name) {
 		ArrayList<Integer> ret = new ArrayList<Integer>();
-		String sql = "SELECT Id FROM `" + areas + "` WHERE name = ?";
+		String sql = "SELECT Id FROM `" + tablePrefix + "Areas` WHERE WorldId = ? AND Name = ?";
 
 		connect();
 		if (conn != null) {
 			try {
 				PreparedStatement ps = conn.prepareStatement(sql);
-				ps.setString(1, name);
+				ps.setInt(1, world);
+				ps.setString(2, name);
 				ps.execute();
 
 				// Get the result
@@ -406,7 +501,7 @@ public class AreaDatabase {
 	
 	public ArrayList<String> getList(int area, String list) {
 		ArrayList<String> ret = new ArrayList<String>();
-		String sql = "SELECT Value FROM `" + areaLists + "` WHERE AreaId=? AND List=?";
+		String sql = "SELECT Value FROM `" + tablePrefix + "Lists` WHERE AreaId=? AND List=?";
 
 		connect();
 		if (conn != null) {
@@ -437,7 +532,7 @@ public class AreaDatabase {
 	
 	public Set<String> getLists(int area) {
 		Set<String> ret = new HashSet<String>();
-		String sql = "SELECT List FROM `" + areaLists + "` WHERE AreaId=?";
+		String sql = "SELECT List FROM `" + tablePrefix + "Lists` WHERE AreaId=?";
 
 		connect();
 		if (conn != null) {
@@ -466,7 +561,7 @@ public class AreaDatabase {
 
 	public String getMsg(int area, String name) {
 		String ret = "";
-		String sql = "SELECT Msg FROM `" + areaMsgs + "` WHERE AreaId=? AND Name=? LIMIT 1";
+		String sql = "SELECT Msg FROM `" + tablePrefix + "Msgs` WHERE AreaId=? AND Name=? LIMIT 1";
 
 		connect();
 		if (conn != null) {
@@ -496,7 +591,7 @@ public class AreaDatabase {
 	
 	public HashMap<String, String> getMsgs(int area) {
 		HashMap<String, String> ret = new HashMap<String, String>();
-		String sql = "SELECT Name, Msg FROM `" + areaMsgs + "` WHERE AreaId=?";
+		String sql = "SELECT Name, Msg FROM `" + tablePrefix + "Msgs` WHERE AreaId=?";
 
 		connect();
 		if (conn != null) {
@@ -530,8 +625,8 @@ public class AreaDatabase {
 		if (conn != null) {
 			try {
 				PreparedStatement ps = conn
-						.prepareStatement("SELECT AreaId FROM `" + areaLists
-								+ "`" + "WHERE AreaId=? AND List=? AND Value=? LIMIT 1");
+						.prepareStatement("SELECT AreaId FROM `" + tablePrefix + "Lists`" 
+								+ "WHERE AreaId=? AND List=? AND Value=? LIMIT 1");
 				ps.setInt(1, area);
 				ps.setString(2, list);
 				ps.setString(3, value);
@@ -558,7 +653,7 @@ public class AreaDatabase {
 	}
 
 	public boolean removeArea(int id) {
-		String sql = "DELETE FROM `" + areas + "` WHERE Id=?";
+		String sql = "DELETE FROM `" + tablePrefix + "Areas` WHERE Id=?";
 		if (!removeMsgs(id)) return false;
 		if (!removeLists(id)) return false;
 		connect();
@@ -581,7 +676,7 @@ public class AreaDatabase {
 	}
 
 	public boolean removeList(int area, String list) {
-		String sql = "DELETE FROM `" + areaLists + "` WHERE AreaId=? AND List=?";
+		String sql = "DELETE FROM `" + tablePrefix + "List` WHERE AreaId=? AND List=?";
 		connect();
 		if (conn == null)
 			return false;
@@ -602,7 +697,7 @@ public class AreaDatabase {
 	}
 	
 	public boolean removeList(int area, String list, HashSet<String> values) {
-		String sql = "DELETE FROM `" + areaLists + "` WHERE AreaId=? AND List=? AND Value=?";
+		String sql = "DELETE FROM `" + tablePrefix + "Lists` WHERE AreaId=? AND List=? AND Value=?";
 		connect();
 		if (conn == null)
 			return false;
@@ -626,7 +721,7 @@ public class AreaDatabase {
 	}
 
 	public boolean removeLists(int area) {
-		String sql = "DELETE FROM `" + areaLists + "` WHERE AreaId=?";
+		String sql = "DELETE FROM `" + tablePrefix + "Lists` WHERE AreaId=?";
 		connect();
 		if (conn == null)
 			return false;
@@ -646,7 +741,7 @@ public class AreaDatabase {
 	}
 	
 	public boolean removeMsgs(int area) {
-		String sql = "DELETE FROM `" + areaMsgs + "` WHERE AreaId=?";
+		String sql = "DELETE FROM `" + tablePrefix + "Msgs` WHERE AreaId=?";
 		connect();
 		if (conn == null)
 			return false;
@@ -666,8 +761,8 @@ public class AreaDatabase {
 	}
 
 	public boolean setMsg(int area, String name, String msg) {
-		String delete = "DELETE FROM `" + areaMsgs + "` WHERE AreaId=? AND Name=?";
-		String insert = "INSERT INTO `" + areaMsgs + "` (AreaId, Name, Msg)"
+		String delete = "DELETE FROM `" + tablePrefix + "Msgs` WHERE AreaId=? AND Name=?";
+		String insert = "INSERT INTO `" + tablePrefix + "Msgs` (AreaId, Name, Msg)"
 				+ "VALUES (?, ?, ?);";
 		connect();
 		if (conn == null) return false;
@@ -698,7 +793,7 @@ public class AreaDatabase {
 	}
 
 	public boolean updateArea(Area area) {
-		String update = "UPDATE `" + areas + "` "
+		String update = "UPDATE `" + tablePrefix + "Areas` "
 				+ "SET Name=?, Priority=?, x1=?, y1=?, z1=?, x2=?, y2=?, z2=? "
 				+ "WHERE Id=?;";
 		connect();

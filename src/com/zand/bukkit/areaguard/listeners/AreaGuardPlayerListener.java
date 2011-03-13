@@ -40,7 +40,7 @@ public class AreaGuardPlayerListener extends PlayerListener {
     	if (loc.getBlockX() != ps.lastLoc.getBlockX() ||
     		loc.getBlockY() != ps.lastLoc.getBlockY() ||
     		loc.getBlockZ() != ps.lastLoc.getBlockZ()) {
-    		Area to = Area.getArea(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    		Area to = Area.getArea(ps.getWorldId(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     		
     		// if they entered an area
     		if (to != null)

@@ -220,7 +220,7 @@ public class AreaGuard extends JavaPlugin {
 	* @return if the event was canceled
 	*/
     public boolean checkEvent(Cancellable event, Player player, String[] lists, int x, int y, int z) {
-    	Area area = Area.getArea(x, y, z);
+    	Area area = Area.getArea(AreaDatabase.getInstance().getWorldId(player.getWorld().getName()), x, y, z);
 		return checkEvent(event, player, lists, area);
     }
 	
