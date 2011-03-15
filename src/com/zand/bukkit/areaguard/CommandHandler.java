@@ -5,9 +5,10 @@ import java.util.HashSet;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
-import com.zand.areaguard.Area;
-import com.zand.areaguard.AreaDatabase;
 import com.zand.areaguard.Config;
+import com.zand.areaguard.area.Area;
+import com.zand.areaguard.old.AreaDatabase;
+import com.zand.bukkit.common.Messager;
 
 public class CommandHandler {
 	public final AreaGuard plugin;

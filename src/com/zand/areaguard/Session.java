@@ -1,5 +1,7 @@
 package com.zand.areaguard;
 
+import com.zand.areaguard.old.AreaDatabase;
+
 public class Session{
 	public String name = null;
 	protected int[] loc1 = new int[3];

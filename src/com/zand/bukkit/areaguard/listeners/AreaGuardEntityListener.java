@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.*;
 
-import com.zand.areaguard.Area;
+import com.zand.areaguard.area.Area;
 import com.zand.bukkit.areaguard.AreaGuard;
 import com.zand.bukkit.areaguard.HealJob;
 

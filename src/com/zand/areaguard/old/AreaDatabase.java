@@ -1,4 +1,4 @@
-package com.zand.areaguard;
+package com.zand.areaguard.old;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,6 +11,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.zand.areaguard.JarFile;
+import com.zand.areaguard.area.Area;
+import com.zand.areaguard.area.Data;
+import com.zand.areaguard.error.area.ErrorArea;
 
 public class AreaDatabase {
 	private static AreaDatabase instance = null;
@@ -307,12 +312,12 @@ public class AreaDatabase {
 		Area ret = null;
 		
 		// ErrorArea
-		if (id == -2) return new ErrorArea();
+		if (id == -2) return new Area();
 		connect();
 
 		try {
 			if (conn == null || conn.isClosed())
-				return new ErrorArea();
+				return new Area();
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `"
 					+ tablePrefix + "Areas` WHERE Id=? LIMIT 1");
 			ps.setInt(1, id);
@@ -326,7 +331,7 @@ public class AreaDatabase {
 			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return new ErrorArea();
+			return new Area();
 		}
 		disconnect();
 		return ret;
@@ -499,7 +504,7 @@ public class AreaDatabase {
 		return ret;
 	}
 	
-	public ArrayList<String> getList(int area, String list) {
+	/*public ArrayList<String> getList(int area, String list) {
 		ArrayList<String> ret = new ArrayList<String>();
 		String sql = "SELECT Value FROM `" + tablePrefix + "Lists` WHERE AreaId=? AND List=?";
 
@@ -527,6 +532,49 @@ public class AreaDatabase {
 
 			disconnect();
 		}
+		return ret;
+	}*/
+	
+	public boolean updateData(Data data) {
+		return false;
+	}
+	
+	public boolean updateList(List list) {
+		String sql = "SELECT Value FROM `" + tablePrefix + "Lists` WHERE AreaId=? AND List=?";
+
+		connect();
+		if (conn != null) {
+			try {
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ps.setInt(1, list.getAreaId());
+				ps.setString(2, list.getName());
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				HashSet<String> values = new HashSet<String>();
+				while (rs.next())
+					values.add(rs.getString(1));
+
+				// Close events
+				rs.close();
+				ps.close();
+				
+				list.setValues(values);
+				return true;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			disconnect();
+		}
+		return false;
+	}
+	
+	public List getList(int area, String list) {
+		List ret = new List(area, list);
+		ret.sync();
 		return ret;
 	}
 	

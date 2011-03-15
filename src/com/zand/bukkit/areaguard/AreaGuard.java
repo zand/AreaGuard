@@ -19,10 +19,14 @@ import org.bukkit.plugin.PluginManager;
 
 import com.nijikokun.bukkit.Permissions.Permissions;
 import com.zand.areaguard.*;
+import com.zand.areaguard.area.Area;
+import com.zand.areaguard.error.area.ErrorArea;
+import com.zand.areaguard.old.AreaDatabase;
 import com.zand.bukkit.areaguard.listeners.AreaGuardBlockListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardEntityListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardPlayerListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardWorldListener;
+import com.zand.bukkit.common.Messager;
 
 //import com.nijikokun.bukkit.General.General;
 
@@ -237,7 +241,7 @@ public class AreaGuard extends JavaPlugin {
 		if (area != null) {
 			
 			// In the event of an error
-			if (area instanceof ErrorArea) 
+			if (area instanceof Area) 
 				if (checkPermission(player, "ag.bypass.error")) {
 					Messager.error(player, "AreaGuard Failed! Bypassing error protection");
 					return false;

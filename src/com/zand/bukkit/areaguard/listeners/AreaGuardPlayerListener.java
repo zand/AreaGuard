@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import com.zand.areaguard.Area;
+import com.zand.areaguard.area.Area;
 import com.zand.bukkit.areaguard.AreaGuard;
 import com.zand.bukkit.areaguard.HealJob;
 import com.zand.bukkit.areaguard.PlayerSession;

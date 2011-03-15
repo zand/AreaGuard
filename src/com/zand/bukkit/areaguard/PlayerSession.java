@@ -3,8 +3,8 @@ package com.zand.bukkit.areaguard;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import com.zand.areaguard.Area;
 import com.zand.areaguard.Session;
+import com.zand.areaguard.area.Area;
 
 public class PlayerSession extends Session {
 	public final Player player;

@@ -7,8 +7,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.*;
 
-import com.zand.areaguard.Area;
 import com.zand.areaguard.Config;
+import com.zand.areaguard.area.Area;
 import com.zand.bukkit.areaguard.AreaGuard;
 
 public class AreaGuardBlockListener extends BlockListener {

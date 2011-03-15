@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
+import com.zand.areaguard.old.AreaDatabase;
+
 public class Config {
 	private static final String config = getConfigDir() + "/areaguard.properties";
 	private static final AreaDatabase ad = AreaDatabase.getInstance();

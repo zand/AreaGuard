@@ -5,7 +5,8 @@ import java.util.TimerTask;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import com.zand.areaguard.Area;
+
+import com.zand.areaguard.area.Area;
 
 public class HealJob extends TimerTask {
 	private static Timer healTimer = new Timer();
