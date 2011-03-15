@@ -1,6 +1,6 @@
 package com.zand.areaguard.area;
 
-import java.util.Set;
+import java.util.ArrayList;
 
 
 /**
@@ -9,13 +9,13 @@ import java.util.Set;
  * @author zand
  *
  */
-public interface List extends Data {
+public interface List {
 	
 	/**
 	 * Gets the set of list values.
 	 * @return a set of values.
 	 */
-	public Set<String> getValues();
+	public ArrayList<String> getValues();
 	
 	/**
 	 * Gets the Area Id for the list.
@@ -38,17 +38,19 @@ public interface List extends Data {
 	
 	/**
 	 * Adds values to the List.
+	 * @param creator The values creator.
 	 * @param values The Set of values to add.
 	 * @return False if there was an error.
 	 */
-	public boolean addValues(String values[]);
+	public boolean addValues(String creator, String values[]);
 	
 	/**
 	 * Adds a value to the List.
+	 * @param creator The values creator.
 	 * @param values The value to add.
 	 * @return False if there was an error.
 	 */
-	public boolean addValue(String value);
+	public boolean addValue(String creator, String value);
 	
 	/**
 	 * Removes values from the List.

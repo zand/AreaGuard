@@ -30,12 +30,7 @@ public class ErrorMsg implements Msg {
 	}
 
 	@Override
-	public boolean setMsg(String msg) {
-		return false;
-	}
-
-	@Override
-	public boolean save() {
+	public boolean setMsg(String creator, String msg) {
 		return false;
 	}
 

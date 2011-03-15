@@ -1,6 +1,6 @@
 package com.zand.areaguard.area;
 
-public interface Cubiod extends Data {
+public interface Cubiod {
 	
 	/**
 	 * Gets the {@link Area} that this cubiod is a part of.
@@ -34,12 +34,13 @@ public interface Cubiod extends Data {
 
 	/**
 	 * Tests if a point is in the cubiod.
+	 * @param world The world that the point is in.
 	 * @param x The X vector.
 	 * @param y The Y vector.
 	 * @param z The Z vector.
 	 * @return If the point is in the cubiod
 	 */
-	public boolean pointInCubiod(long x, long y, long z);
+	public boolean pointInside(World world, long x, long y, long z);
 	
 	/**
 	 * Sets the Priority for the cubiod.

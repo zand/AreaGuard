@@ -3,10 +3,25 @@ package com.zand.areaguard.area;
 import java.util.ArrayList;
 
 
-public interface Area extends Data {
+public interface Area {
+	
+	/**
+	 * Gets a list of Cubiods that are a part of that area.
+	 * @return
+	 */
 	public ArrayList<Cubiod> getCubiods();
 	
 	public boolean isOwner(String player);
+	
+	/**
+	 * Tests if a point is in the area.
+	 * @param world The world that the point is in.
+	 * @param x The X vector.
+	 * @param y The Y vector.
+	 * @param z The Z vector.
+	 * @return If the point is in the area
+	 */
+	public boolean pointInside(World world, long x, long y, long z);
 	
 	public boolean hasOwner(String player);
 	

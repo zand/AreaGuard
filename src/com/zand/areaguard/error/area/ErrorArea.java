@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.zand.areaguard.area.Cubiod;
 import com.zand.areaguard.area.List;
 import com.zand.areaguard.area.Msg;
+import com.zand.areaguard.area.World;
 
 
 public class ErrorArea implements com.zand.areaguard.area.Area {
@@ -57,11 +58,6 @@ public class ErrorArea implements com.zand.areaguard.area.Area {
 	}
 
 	@Override
-	public boolean save() {
-		return false;
-	}
-
-	@Override
 	public boolean setName(String name) {
 		return false;
 	}
@@ -77,5 +73,10 @@ public class ErrorArea implements com.zand.areaguard.area.Area {
 	@Override
 	public boolean hasOwner(String player) {
 		return false;
+	}
+
+	@Override
+	public boolean pointInside(World world, long x, long y, long z) {
+		return true;
 	}
 }

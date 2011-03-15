@@ -2,8 +2,13 @@ package com.zand.bukkit.common;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
+/**
+ * A simple class for sending formated messages.
+ * 
+ * @author zand
+ *
+ */
 public class Messager {
 	public static void warn(CommandSender sender, String message) {
 		sender.sendMessage(ChatColor.RED + message);

@@ -1,11 +1,15 @@
 package com.zand.areaguard.sql.area;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Cubiod;
 import com.zand.areaguard.area.List;
 import com.zand.areaguard.area.Msg;
+import com.zand.areaguard.area.World;
 
 public class SqlArea implements Area {
 	final private SqlStorage storage;
@@ -18,8 +22,31 @@ public class SqlArea implements Area {
 
 	@Override
 	public ArrayList<Cubiod> getCubiods() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Cubiod> cubiods = new ArrayList<Cubiod>();
+		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cubiods` WHERE AreaId = ?";
+
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, getId());
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				while (rs.next()) 
+					cubiods.add(new SqlCubiod(storage, rs.getInt(1)));
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			storage.disconnect();
+		}
+		return cubiods;
 	}
 
 	@Override
@@ -29,38 +56,101 @@ public class SqlArea implements Area {
 
 	@Override
 	public List getList(String name) {
-		// TODO Auto-generated method stub
 		return new SqlList(storage, getId(), name);
 	}
 
 	@Override
 	public ArrayList<List> getLists() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<List> lists = new ArrayList<List>();
+		String sql = "SELECT DISTINCT Name FROM `" + storage.tablePrefix + "Lists` WHERE AreaId = ?";
+
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, getId());
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				while (rs.next()) lists.add(getList(rs.getString(1)));
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			storage.disconnect();
+		}
+		return lists;
 	}
 
 	@Override
 	public Msg getMsg(String name) {
-		// TODO Auto-generated method stub
 		return new SqlMsg(storage, getId(), name);
 	}
 
 	@Override
 	public ArrayList<Msg> getMsgs() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Msg> msgs = new ArrayList<Msg>();
+		String sql = "SELECT DISTINCT Name FROM `" + storage.tablePrefix + "Msgs` WHERE AreaId = ?";
+
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, getId());
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				while (rs.next()) msgs.add(getMsg(rs.getString(1)));
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			storage.disconnect();
+		}
+		return msgs;
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		String name = "";
+		String sql = "SELECT Name FROM `" + storage.tablePrefix + "Msgs` WHERE Id = ?";
+
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, getId());
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				while (rs.next()) name = rs.getString(1);
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			storage.disconnect();
+		}
+		return name;
 	}
 
 	@Override
 	public boolean isOwner(String player) {
-		// TODO Auto-generated method stub
-		return false;
+		return getList("owners").hasValue(player);
 	}
 
 	@Override
@@ -76,15 +166,15 @@ public class SqlArea implements Area {
 	}
 
 	@Override
-	public boolean save() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean hasOwner(String player) {
+		return getList("owners").hasValue(player);
 	}
 
 	@Override
-	public boolean hasOwner(String player) {
-		// TODO Auto-generated method stub
+	public boolean pointInside(World world, long x, long y, long z) {
+		for (Cubiod cubiod : getCubiods())
+			if (cubiod.pointInside(world, x, y, z))
+				return true;
 		return false;
 	}
-
 }

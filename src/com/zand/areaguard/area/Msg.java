@@ -6,7 +6,7 @@ package com.zand.areaguard.area;
  * @author zand
  *
  */
-public interface Msg extends Data {
+public interface Msg {
 	/**
 	 * Gets the set of list values.
 	 * @return a set of values.
@@ -27,8 +27,9 @@ public interface Msg extends Data {
 	
 	/**
 	 * Sets the message.
+	 * @param creator The messages creator.
 	 * @param msg what to set the message to.
 	 * @return False if there was an error.
 	 */
-	public boolean setMsg(String msg);
+	public boolean setMsg(String creator, String msg);
 }

@@ -42,9 +42,4 @@ public class ErrorWorld implements World {
 		return name;
 	}
 
-	@Override
-	public boolean save() {
-		return false;
-	}
-
 }

@@ -3,7 +3,7 @@ package com.zand.areaguard.area;
 import java.util.ArrayList;
 
 
-public interface World extends Data {
+public interface World {
 	
 	/**
 	 * Gets a {@link Cubiod} at location in the world.

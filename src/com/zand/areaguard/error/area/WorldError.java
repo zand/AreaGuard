@@ -43,10 +43,4 @@ public class WorldError implements World {
 		return null;
 	}
 
-	@Override
-	public boolean save() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

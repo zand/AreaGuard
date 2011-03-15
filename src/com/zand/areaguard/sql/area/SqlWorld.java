@@ -150,14 +150,31 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 
 	@Override
 	public String getName() {
-		// TODO
-		return null;
-	}
+		String name = "";
+		String sql = "SELECT Name FROM `" + storage.tablePrefix + "Cubiods` WHERE Id = ? " 
+				+ "ORDER BY `" + storage.tablePrefix + "Cubiods`.Priority DESC";
 
-	@Override
-	public boolean save() {
-		// TODO Auto-generated method stub
-		return false;
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, getId());
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				while (rs.next()) name = rs.getString(1);
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			storage.disconnect();
+		}
+		return name;
 	}
 
 }

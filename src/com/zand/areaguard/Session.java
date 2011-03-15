@@ -1,6 +1,6 @@
 package com.zand.areaguard;
 
-import com.zand.areaguard.old.AreaDatabase;
+import com.zand.areaguard.area.World;
 
 public class Session{
 	public String name = null;
@@ -8,22 +8,20 @@ public class Session{
 	protected int[] loc2 = new int[3];
 	public int selected = -1;
 	protected String worldName = "ERROR";
-	protected int worldId = -1;
+	protected World world = null;
 	public boolean ignoreOwnership = false;
 	public boolean debug = false;
 	
-	public void setWorld(int id) {
-		worldId = id;
-		worldName = AreaDatabase.getInstance().getWorldName(id);
+	public void setWorld(World world) {
+		this.world = world;
 	}
 	
 	public void setWorld(String name) {
 		worldName = name;
-		worldId = AreaDatabase.getInstance().getWorldId(name);
 	}
 	
-	public int getWorldId() {
-		return worldId;
+	public World getWorld() {
+		return world;
 	}
 	
 	public String getWorldName() {
@@ -46,7 +44,7 @@ public class Session{
 	}
 	
 	public void coordsUpdated() {
-		// stub
+		// TODO stub
 	}
 	
 	public int[] getPoint() {

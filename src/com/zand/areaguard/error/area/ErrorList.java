@@ -1,7 +1,6 @@
 package com.zand.areaguard.error.area;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
 
 import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.List;
@@ -9,7 +8,7 @@ import com.zand.areaguard.area.List;
 public class ErrorList implements List {
 	Area area;
 	String name;
-	HashSet<String> values = new HashSet<String>();
+	ArrayList<String> values = new ArrayList<String>();
 	String error;
 	
 	public ErrorList(Area area, String name, String values[]) {
@@ -20,12 +19,12 @@ public class ErrorList implements List {
 	}
 
 	@Override
-	public boolean addValue(String value) {
+	public boolean addValue(String creator, String value) {
 		return false;
 	}
 
 	@Override
-	public boolean addValues(String[] values) {
+	public boolean addValues(String creator, String[] values) {
 		return false;
 	}
 
@@ -45,13 +44,12 @@ public class ErrorList implements List {
 	}
 
 	@Override
-	public Set<String> getValues() {
+	public ArrayList<String> getValues() {
 		return values;
 	}
 
 	@Override
 	public boolean hasValue(String value) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -62,11 +60,6 @@ public class ErrorList implements List {
 
 	@Override
 	public boolean removeValues(String[] values) {
-		return false;
-	}
-
-	@Override
-	public boolean save() {
 		return false;
 	}
 

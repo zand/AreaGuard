@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 
 import com.zand.areaguard.Session;
 import com.zand.areaguard.area.Area;
+import com.zand.areaguard.area.Storage;
 
 public class PlayerSession extends Session {
 	public final Player player;
@@ -15,15 +16,16 @@ public class PlayerSession extends Session {
 	boolean drawOutline = false;
 	protected boolean bypassArea = false;
 	
-	PlayerSession(Player player) {
+	PlayerSession(Storage storage, Player player) {
 		this.player = player;
 		name = player.getName();
-		setWorld(player.getWorld().getName());
+		setWorld(storage.getWorld(player.getWorld().getName()));
 		lastLoc = player.getLocation();
-		lastArea = Area.getArea(getWorldId(),
-								lastLoc.getBlockX(), 
-								lastLoc.getBlockY(), 
-								lastLoc.getBlockZ());
+		lastArea = world.getCubiod(
+				lastLoc.getBlockX(), 
+				lastLoc.getBlockY(), 
+				lastLoc.getBlockZ())
+				.getArea();
 	}
 	
 	public void drawOutline(boolean b) {

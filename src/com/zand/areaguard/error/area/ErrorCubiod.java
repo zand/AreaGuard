@@ -29,13 +29,8 @@ public class ErrorCubiod implements Cubiod {
 		return world;
 	}
 	@Override
-	public boolean pointInCubiod(long x, long y, long z) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public boolean save() {
-		return false;
+	public boolean pointInside(World world, long x, long y, long z) {
+		return true;
 	}
 	@Override
 	public boolean setPriority(int priority) {

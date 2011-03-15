@@ -142,11 +142,12 @@ public class SqlCubiod implements Cubiod {
 	}
 
 	@Override
-	public boolean pointInCubiod(long x, long y, long z) {
+	public boolean pointInside(World world, long x, long y, long z) {
 		long coords[] = getCoords();
 		return ((coords[0] <= x && coords[3] >= x) &&
 				(coords[1] <= x && coords[4] >= x) &&
-				(coords[2] <= x && coords[5] >= x));
+				(coords[2] <= x && coords[5] >= x) &&
+				getWorld().getName().equals(world.getName()));
 	}
 
 	@Override
@@ -164,7 +165,6 @@ public class SqlCubiod implements Cubiod {
 			ps.execute();
 			ps.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			storage.disconnect();
 			return false;
@@ -196,11 +196,6 @@ public class SqlCubiod implements Cubiod {
 		
 		storage.disconnect();
 		return true;
-	}
-
-	@Override
-	public boolean save() {
-		return false;
 	}
 
 	@Override
