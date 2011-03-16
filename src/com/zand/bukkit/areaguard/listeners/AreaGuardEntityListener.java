@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.*;
 
+import com.zand.areaguard.Config;
 import com.zand.areaguard.area.Area;
 import com.zand.bukkit.areaguard.AreaGuard;
 import com.zand.bukkit.areaguard.HealJob;
@@ -40,7 +41,9 @@ public class AreaGuardEntityListener extends EntityListener {
     	
     	if(player == null) return;
     	Location loc = to.getLocation();
-    	Area area = Area.getArea(plugin.getSession(player).getWorldId(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    	Area area = Config.storage.getWorld(player.getWorld().getName())
+    	.getCuboid(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())
+    	.getArea();
 		if (plugin.checkEvent(event, player, new String[] {type}, area) &&
 				to instanceof Player)
 			onPlayerDamage((Player) to, area);

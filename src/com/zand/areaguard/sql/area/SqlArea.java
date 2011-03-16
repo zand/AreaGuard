@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.zand.areaguard.area.Area;
-import com.zand.areaguard.area.Cubiod;
+import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.List;
 import com.zand.areaguard.area.Msg;
 import com.zand.areaguard.area.World;
@@ -21,8 +21,8 @@ public class SqlArea implements Area {
 	}
 
 	@Override
-	public ArrayList<Cubiod> getCubiods() {
-		ArrayList<Cubiod> cubiods = new ArrayList<Cubiod>();
+	public ArrayList<Cuboid> getCubiods() {
+		ArrayList<Cuboid> cubiods = new ArrayList<Cuboid>();
 		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cubiods` WHERE AreaId = ?";
 
 		if (storage.connect()) {
@@ -34,7 +34,7 @@ public class SqlArea implements Area {
 				// Get the result
 				ResultSet rs = ps.getResultSet();
 				while (rs.next()) 
-					cubiods.add(new SqlCubiod(storage, rs.getInt(1)));
+					cubiods.add(new SqlCuboid(storage, rs.getInt(1)));
 
 				// Close events
 				rs.close();
@@ -123,7 +123,7 @@ public class SqlArea implements Area {
 	@Override
 	public String getName() {
 		String name = "";
-		String sql = "SELECT Name FROM `" + storage.tablePrefix + "Msgs` WHERE Id = ?";
+		String sql = "SELECT Name FROM `" + storage.tablePrefix + "Areas` WHERE Id = ?";
 
 		if (storage.connect()) {
 			try {
@@ -172,7 +172,7 @@ public class SqlArea implements Area {
 
 	@Override
 	public boolean pointInside(World world, long x, long y, long z) {
-		for (Cubiod cubiod : getCubiods())
+		for (Cuboid cubiod : getCubiods())
 			if (cubiod.pointInside(world, x, y, z))
 				return true;
 		return false;

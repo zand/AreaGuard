@@ -13,7 +13,7 @@ ParrentId int NOT NULL DEFAULT -1,
 PRIMARY KEY (Id) 
 );
 
-CREATE TABLE IF NOT EXISTS `<tablePrefix>Cubiods` ( 
+CREATE TABLE IF NOT EXISTS `<tablePrefix>Cuboids` ( 
 Id INTEGER, 
 AreaId int NOT NULL, 
 WorldId int NOT NULL, 

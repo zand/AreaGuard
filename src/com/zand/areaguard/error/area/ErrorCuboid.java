@@ -2,7 +2,7 @@ package com.zand.areaguard.error.area;
 
 import com.zand.areaguard.area.*;
 
-public class ErrorCubiod implements Cubiod {
+public class ErrorCuboid implements Cuboid {
 	World world;
 	Area area;
 	
@@ -14,10 +14,10 @@ public class ErrorCubiod implements Cubiod {
 		return area;
 	}
 	@Override
-	public long[] getCoords() {
-		return new long[] {
-				Long.MIN_VALUE, Long.MIN_VALUE, Long.MIN_VALUE, 
-				Long.MAX_VALUE, Long.MAX_VALUE, Long.MAX_VALUE, 
+	public int[] getCoords() {
+		return new int[] {
+				Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, 
+				Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, 
 		};
 	}
 	@Override

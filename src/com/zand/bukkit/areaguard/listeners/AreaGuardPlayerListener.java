@@ -7,7 +7,9 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import com.zand.areaguard.Config;
 import com.zand.areaguard.area.Area;
+import com.zand.areaguard.area.Cuboid;
 import com.zand.bukkit.areaguard.AreaGuard;
 import com.zand.bukkit.areaguard.HealJob;
 import com.zand.bukkit.areaguard.PlayerSession;
@@ -25,7 +27,7 @@ public class AreaGuardPlayerListener extends PlayerListener {
 	}
 	
 	public void onPlayerQuit(PlayerEvent event) {
-		plugin.getSession(event.getPlayer()).onQuit();
+		//plugin.getSession(event.getPlayer()).onQuit();
     }
     
     public void onPlayerMove(PlayerMoveEvent event) {
@@ -34,13 +36,19 @@ public class AreaGuardPlayerListener extends PlayerListener {
     	
     	// Check if in area
     	Player player = event.getPlayer();
-    	PlayerSession ps = plugin.getSession(player);
+    	PlayerSession ps = (PlayerSession)plugin.getSession(player);
     	
     	// if they moved to a new block
     	if (loc.getBlockX() != ps.lastLoc.getBlockX() ||
     		loc.getBlockY() != ps.lastLoc.getBlockY() ||
     		loc.getBlockZ() != ps.lastLoc.getBlockZ()) {
-    		Area to = Area.getArea(ps.getWorldId(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    		Cuboid cuboid = Config.storage.getWorld(player.getWorld().getName())
+    		.getCuboid(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    		Area to = null;
+    		cuboid = Config.storage.getWorld(player.getWorld().getName())
+    		.getCuboid(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    		
+    		if (cuboid != null) to = cuboid.getArea();
     		
     		// if they entered an area
     		if (to != null)
@@ -53,7 +61,7 @@ public class AreaGuardPlayerListener extends PlayerListener {
     		// if they left an area
     		if (ps.lastArea != null) 
     			if (to == null || ps.lastArea.getId() != to.getId()) {
-    			String msg = ps.lastArea.getMsg("leave");
+    			String msg = ps.lastArea.getMsg("leave").getMsg();
     			if (!msg.isEmpty()) player.sendMessage(ChatColor.YELLOW + msg);
     		}
     		
@@ -63,7 +71,7 @@ public class AreaGuardPlayerListener extends PlayerListener {
     		else {
     			ps.lastArea = to;
     			ps.lastLoc = loc;
-    			ps.onMove();
+    			//ps.onMove();
     		}
     	}
     }

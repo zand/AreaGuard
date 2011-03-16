@@ -24,7 +24,7 @@ public class SqlList implements List {
 		if (hasValue(value)) return true;
 		boolean success = false;
 
-		String insert = "INSERT INTO `" + storage.tablePrefix + "Msgs`"
+		String insert = "INSERT INTO `" + storage.tablePrefix + "Lists`"
 				+ "(AreaId, Creator, Name, Value)"
 				+ "VALUES (?,?,?,?);";
 		
@@ -34,6 +34,8 @@ public class SqlList implements List {
 			PreparedStatement ps = storage.conn.prepareStatement(insert);
 			ps.setInt(1, areaId);
 			ps.setString(2, creator);
+			ps.setString(3, name);
+			ps.setString(4, value);
 			ps.execute();
 			ps.close();
 			success = true;

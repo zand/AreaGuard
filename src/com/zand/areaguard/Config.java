@@ -6,24 +6,26 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
+import com.zand.areaguard.area.Storage;
+import com.zand.areaguard.sql.area.SqlStorage;
+
 public class Config {
-	private static final String config = getConfigDir() + "/areaguard.properties";;
+	private static final String config = getConfigDir() + "/areaguard.properties";
+	private static String configDir;
 	public static int createTool;
 	public static int checkTool;
 	public static HashSet<String> creators = new HashSet<String>();
 	public static HashSet<String> defaultRestict = new HashSet<String>();
 	
+	public static Storage storage;
 	
-	public static boolean  isCreator(String name) {
+	public static boolean isCreator(String name) {
 		return creators.contains(name.toLowerCase());
-	}
-
-	public Config() {
-		setup();
 	}
 
 	public static void deleteConfig() {
@@ -40,11 +42,11 @@ public class Config {
 		try {
 			props.load(new FileInputStream(file));
 		} catch (FileNotFoundException e) {
-			System.err.println("AreaGuard: Config file not Found \"" + file
+			System.err.println("[AreaGuard]: Config file not Found \"" + file
 					+ "\"");
 			return false;
 		} catch (IOException e) {
-			System.err.println("AreaGuard: IO Error while loading config \""
+			System.err.println("[AreaGuard]: IO Error while loading config \""
 					+ file + "\", " + e.getMessage());
 			return false;
 		}
@@ -55,24 +57,27 @@ public class Config {
 		for (String name : props.getProperty("default-restrict").split(" "))
 			defaultRestict.add(name);
 		
-		// Configure Connection
-		String url = props.getProperty("url");
 		
-		// Figure out what driver to use
-		String driver = props.getProperty("driver");
-		if (driver == null || driver.isEmpty() || driver.equalsIgnoreCase("auto")) {
-			String lower = url.toLowerCase().replaceAll("\\\\", "");
-			if 		(lower.startsWith("jdbc:sqlite:")) 	driver = "org.sqlite.JDBC";
-			else if (lower.startsWith("jdbc:mysql:"))	driver = "com.mysql.jdbc.Driver";
-			else System.err.println("Coulden't figuer out driver from url");
-		}
+		// TODO Add Cacheing
+		//String dataStorage = props.getProperty("data-storage").replaceAll("\\W", "").toLowerCase();
+		if (storage instanceof SqlStorage)
+			((SqlStorage)storage).disconnect();
 		
-		
+		System.out.println("[AreaGuard]: Useing Storage Method \"sql\"");
+		storage = new SqlStorage(config);
 		
 		return true;
 	}
 	
 	public static String getConfigDir() {
+		// Making a new config class to find the Jar's directory
+		if (configDir == null || configDir.isEmpty()) {
+			try {
+				System.out.println(Config.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		}
 		return "plugins/AreaGuard";
 	}
 

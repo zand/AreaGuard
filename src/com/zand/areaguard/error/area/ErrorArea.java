@@ -3,7 +3,7 @@ package com.zand.areaguard.error.area;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.zand.areaguard.area.Cubiod;
+import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.List;
 import com.zand.areaguard.area.Msg;
 import com.zand.areaguard.area.World;
@@ -11,19 +11,19 @@ import com.zand.areaguard.area.World;
 
 public class ErrorArea implements com.zand.areaguard.area.Area {
 	private final String error;
-	ArrayList<Cubiod> cubiods = new ArrayList<Cubiod>();
+	ArrayList<Cuboid> cubiods = new ArrayList<Cuboid>();
 	ArrayList<List> lists = new ArrayList<List>();
 	HashMap<String, Msg> msgs = new HashMap<String, Msg>();
 
 	public ErrorArea(String error) {
 		this.error = error;
-		cubiods.add(new ErrorCubiod());
+		cubiods.add(new ErrorCuboid());
 		lists.add(new ErrorList(this, "restrict", new String[] {"build", "open"}));
 		msgs.put("error", new ErrorMsg(this, "error", error));
 		}
 
 	@Override
-	public ArrayList<Cubiod> getCubiods() {
+	public ArrayList<Cuboid> getCubiods() {
 		return cubiods;
 	}
 

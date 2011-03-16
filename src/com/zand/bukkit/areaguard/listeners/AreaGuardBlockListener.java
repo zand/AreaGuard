@@ -45,12 +45,14 @@ public class AreaGuardBlockListener extends BlockListener {
     	
     	// Set Point
     	if (event.getItemInHand().getTypeId() == Config.createTool) {
-    		plugin.getSession(player).setPoint(block.getX(), block.getY(), block.getZ());
+    		plugin.getSession(player).select(block.getX(), block.getY(), block.getZ());
     		player.sendMessage("Point (" + block.getX() + ", " + block.getY() + ", " + block.getZ() + ") set");
     	}
     	// Check Area
     	else if (event.getItemInHand().getTypeId() == Config.checkTool) {
-    		Area area = Area.getArea(plugin.getSession(player).getWorldId(), block.getX(), block.getY(), block.getZ());
+    		Area area = Config.storage.getWorld(player.getWorld().getName())
+        	.getCuboid(block.getX(), block.getY(), block.getZ())
+        	.getArea();
     		if (area != null)
         		plugin.showAreaInfo(event.getPlayer(), area);
     		else player.sendMessage(ChatColor.YELLOW + "not an Area");

@@ -12,14 +12,15 @@ import java.util.Properties;
 
 import com.zand.areaguard.JarFile;
 import com.zand.areaguard.area.Area;
-import com.zand.areaguard.area.Cubiod;
+import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.Storage;
 import com.zand.areaguard.area.World;
 import com.zand.areaguard.error.area.ErrorArea;
-import com.zand.areaguard.error.area.ErrorCubiod;
+import com.zand.areaguard.error.area.ErrorCuboid;
 import com.zand.areaguard.error.area.ErrorWorld;
 
 public class SqlStorage implements Storage {
+	private String configFilename;
 	private String driver;
 	private String url;
 	private String user;
@@ -37,42 +38,48 @@ public class SqlStorage implements Storage {
 		config(driver, url, user, password, tablePrefix, keepConn);
 	}
 	
+	public boolean loadConfig() {
+		return loadConfig(configFilename);
+	}
+	
 	public boolean loadConfig(String filename) {
+		configFilename = filename;
 		Properties props = new Properties();
 		
 		try {
 			props.load(new FileInputStream(filename));
+			
+			// Configure Connection
+			String url = props.getProperty("url");
+			
+			// Figure out what driver to use
+			String driver = props.getProperty("driver");
+			if (driver == null || driver.isEmpty() || driver.equalsIgnoreCase("auto")) {
+				String lower = url.toLowerCase().replaceAll("\\\\", "");
+				if 		(lower.startsWith("jdbc:sqlite:")) 	driver = "org.sqlite.JDBC";
+				else if (lower.startsWith("jdbc:mysql:"))	driver = "com.mysql.jdbc.Driver";
+				else System.err.println("Coulden't figuer out driver from url");
+			}
+			
+			config(driver, url, 
+						props.getProperty("user"), 
+						props.getProperty("password"), 
+						props.getProperty("table-prefix"),  
+						Boolean.valueOf(props.getProperty("keep-connection")));
+			
+			return true;
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		// Configure Connection
-		String url = props.getProperty("url");
-		
-		// Figure out what driver to use
-		String driver = props.getProperty("driver");
-		if (driver == null || driver.isEmpty() || driver.equalsIgnoreCase("auto")) {
-			String lower = url.toLowerCase().replaceAll("\\\\", "");
-			if 		(lower.startsWith("jdbc:sqlite:")) 	driver = "org.sqlite.JDBC";
-			else if (lower.startsWith("jdbc:mysql:"))	driver = "com.mysql.jdbc.Driver";
-			else System.err.println("Coulden't figuer out driver from url");
-		}
-		
-		
-		
-		config(driver, url, 
-					props.getProperty("user"), 
-					props.getProperty("password"), 
-					props.getProperty("table-prefix"),  
-					Boolean.valueOf(props.getProperty("keep-connection")));
-		
 		return false;
-		
 	}
 	
 	public void config(String driver, String url, String user, String password,
 			String tablePrefix, boolean keepConn) {
+		disconnect(true);
 		this.driver = driver;
 		this.url = url;
 		this.user = user;
@@ -388,8 +395,8 @@ public class SqlStorage implements Storage {
 	}
 
 	@Override
-	public Cubiod newCubiod(Area area, World world, long[] coords) {
-		Cubiod cubiod = null;
+	public Cuboid newCubiod(Area area, World world, long[] coords) {
+		Cuboid cubiod = null;
 
 		String insert = "INSERT INTO `" + tablePrefix + "Areas`"
 				+ "(AreaId, WorldId, x1, y1, z1, x2, y2, z2)"
@@ -397,7 +404,7 @@ public class SqlStorage implements Storage {
 		connect();
 		
 		if (conn == null)
-			return new ErrorCubiod();
+			return new ErrorCuboid();
 		try {
 			PreparedStatement ps = conn.prepareStatement(insert);
 			ps.setInt(1, area.getId());
@@ -412,15 +419,20 @@ public class SqlStorage implements Storage {
 			ResultSet rs = st.executeQuery("SELECT LAST_INSERT_"
 					+ (url.toLowerCase().contains("sqlite") ? "ROW" : "")
 					+ "ID();");
-			if (rs.next()) cubiod = new SqlCubiod(this, rs.getInt(1));
+			if (rs.next()) cubiod = new SqlCuboid(this, rs.getInt(1));
 			rs.close();
 			ps.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			cubiod = new ErrorCubiod();
+			cubiod = new ErrorCuboid();
 		}
 		disconnect();
 		return cubiod;
+	}
+
+	@Override
+	public String getInfo() {
+		return "Sql " + url;
 	}
 	
 	

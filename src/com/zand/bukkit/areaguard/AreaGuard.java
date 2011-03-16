@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -20,8 +19,7 @@ import org.bukkit.plugin.PluginManager;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import com.zand.areaguard.*;
 import com.zand.areaguard.area.Area;
-import com.zand.areaguard.area.Storage;
-import com.zand.areaguard.sql.area.SqlStorage;
+import com.zand.bukkit.areaguard.command.MainCommands;
 import com.zand.bukkit.areaguard.listeners.AreaGuardBlockListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardEntityListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardPlayerListener;
@@ -36,12 +34,25 @@ import com.zand.bukkit.common.Messager;
  * @author zand
  */
 public class AreaGuard extends JavaPlugin {
+	static final private HashMap<CommandSender, Session> sessions = new HashMap<CommandSender, Session>();
+	
+	/**
+	* Gets the senders current session.
+	* @param sender	The sender to get the session for
+	* @return 		The current session for that sender
+	*/
+	public Session getSession(CommandSender sender) {
+		if (!sessions.containsKey(sender)) {
+			if (sender instanceof Player)
+				sessions.put(sender, new PlayerSession((Player)sender));
+			else sessions.put(sender, new Session(sender));
+		}
+		return sessions.get(sender);
+	}
+	
 	private String name;
 	public String versionInfo;
 	private static Logger log = Logger.getLogger("Minecraft");
-	
-	private final CommandHandler commandhandler = new CommandHandler(this);
-	public Storage storage = new SqlStorage("plugins/AreaGuard/areaguard.properties");
 	
 	// Are Listeners
 	private final AreaGuardWorldListener worldListener = new AreaGuardWorldListener(this);
@@ -59,8 +70,8 @@ public class AreaGuard extends JavaPlugin {
     protected final HashMap<String, PlayerSession> playerSessions = new HashMap<String, PlayerSession>();
 
     public void onEnable() {
-    	PluginDescriptionFile desc = getDescription();
     	Config.setup();
+    	PluginDescriptionFile desc = getDescription();
         name = desc.getName();
         String authors = "";
         for (String author : desc.getAuthors()) authors += ", " + author;
@@ -68,6 +79,8 @@ public class AreaGuard extends JavaPlugin {
         	(authors.isEmpty() ? "" : " by" + authors.substring(1));
         commands.add(name.toLowerCase());
         commands.add("ag");
+        
+        getCommand("ag").setExecutor(new MainCommands(this));
     	
     	registerEvents();
     	setupOtherPlugins();
@@ -76,16 +89,6 @@ public class AreaGuard extends JavaPlugin {
     
     public void onDisable() {
     	TempBlocks.deleteAll();
-    }
-    
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-    	if (isCommand(command.getName().toLowerCase())) {
-    		if (sender instanceof Player)
-    		commandhandler.ag(getSession((Player)sender), args);
-    		return true;
-    	}
-		return false;
     }
     
     /**
@@ -123,18 +126,6 @@ public class AreaGuard extends JavaPlugin {
     	    	log.info("[" + name + "] Found Permissions plugin. Using it.");
     	    }
     	}
-    }
-    
-    /**
-	* Gets the players current session.
-	* @param player	The player to get the session for
-	* @return 		The current session for that player
-	*/
-    public PlayerSession getSession(Player player) {
-    	String name = player.getName();
-    	if (!playerSessions.containsKey(name))
-    		playerSessions.put(name, new PlayerSession(storage, player));
-    	return playerSessions.get(name);
     }
     
     /**
@@ -220,21 +211,21 @@ public class AreaGuard extends JavaPlugin {
 				// Send the allowed messages
 				for (String list : lists) {
 					String msg = area.getMsg(list).getMsg();
-					if (getSession(player).debug) 
+					if (getSession(player).isDebuging("lists")) 
 						Messager.debug(player, "Checking " + list + " " 
 								+ (area.getList(list).hasValue(player.getName())));
 					if (!msg.isEmpty()) Messager.inform(player, msg); }
 			} else {
 				
 				// Bypass or Cancel the event
-				if (getSession(player).bypassArea)
+				if (getSession(player).isBypassing())
 					Messager.warn(player, "Bypassing area permissions");
 				else event.setCancelled(true);
 				
 				// Send the not allowed messages
 				for (String list : lists) {
 					String msg = area.getMsg("no-"+list).getMsg();
-					if (getSession(player).debug) 
+					if (getSession(player).isDebuging("lists")) 
 						Messager.debug(player, "Checking no-" + list + " " 
 								+ (area.getList("no-"+list).hasValue(player.getName())));
 					if (!msg.isEmpty()) Messager.warn(player, msg); }
@@ -242,5 +233,10 @@ public class AreaGuard extends JavaPlugin {
 			}	
 		}
 		return true;
+	}
+
+	@Override
+	public void onLoad() {
+		// TODO Auto-generated method stub
 	}
 }

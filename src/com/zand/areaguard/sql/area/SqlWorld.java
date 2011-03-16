@@ -5,8 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import com.zand.areaguard.area.Cubiod;
-import com.zand.areaguard.error.area.ErrorCubiod;
+import com.zand.areaguard.area.Cuboid;
+import com.zand.areaguard.error.area.ErrorCuboid;
 
 public class SqlWorld implements com.zand.areaguard.area.World {
 	final private SqlStorage storage;
@@ -18,8 +18,8 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 	}
 
 	@Override
-	public boolean deleteCubiods() {
-		String sql = "DELETE FROM `" + storage.tablePrefix + "Cubiods` WHERE WorldId=?";
+	public boolean deleteCuboids() {
+		String sql = "DELETE FROM `" + storage.tablePrefix + "Cuboids` WHERE WorldId=?";
 		if (storage.connect())
 			return false;
 		try {
@@ -40,12 +40,12 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 	}
 
 	@Override
-	public Cubiod getCubiod(long x, long y, long z) {
-		Cubiod cubiod = null;
-		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cubiods` WHERE WorldId = ? AND x1 <= ? "
+	public Cuboid getCuboid(long x, long y, long z) {
+		Cuboid cuboid = null;
+		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cuboids` WHERE WorldId = ? AND x1 <= ? "
 				+ "AND x2 >= ? " + "AND y1 <= ? " + "AND y2 >= ? "
 				+ "AND z1 <= ? " + "AND z2 >= ? " + "ORDER BY `" + storage.tablePrefix
-				+ "Cubiods`.Priority DESC LIMIT 1";
+				+ "Cuboids`.Priority DESC LIMIT 1";
 
 		if (storage.connect()) {
 			try {
@@ -61,7 +61,7 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 
 				// Get the result
 				ResultSet rs = ps.getResultSet();
-				if (rs.next()) cubiod = new SqlCubiod(storage, rs.getInt(1));
+				if (rs.next()) cuboid = new SqlCuboid(storage, rs.getInt(1));
 
 				// Close events
 				rs.close();
@@ -69,19 +69,19 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				cubiod = new ErrorCubiod();
+				cuboid = new ErrorCuboid();
 			}
 
 			storage.disconnect();
-		} else cubiod = new ErrorCubiod();
-		return cubiod;
+		} else cuboid = new ErrorCuboid();
+		return cuboid;
 	}
 
 	@Override
-	public ArrayList<Cubiod> getCubiods() {
-		ArrayList<Cubiod> cubiods = new ArrayList<Cubiod>();
-		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cubiods` WHERE WorldId = ? " 
-				+ "ORDER BY `" + storage.tablePrefix + "Cubiods`.Priority DESC";
+	public ArrayList<Cuboid> getCuboids() {
+		ArrayList<Cuboid> cuboids = new ArrayList<Cuboid>();
+		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cuboids` WHERE WorldId = ? " 
+				+ "ORDER BY `" + storage.tablePrefix + "Cuboids`.Priority DESC";
 
 		if (storage.connect()) {
 			try {
@@ -91,7 +91,7 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 
 				// Get the result
 				ResultSet rs = ps.getResultSet();
-				while (rs.next()) cubiods.add(new SqlCubiod(storage, rs.getInt(1)));
+				while (rs.next()) cuboids.add(new SqlCuboid(storage, rs.getInt(1)));
 
 				// Close events
 				rs.close();
@@ -103,16 +103,16 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 
 			storage.disconnect();
 		}
-		return cubiods;
+		return cuboids;
 	}
 
 	@Override
-	public ArrayList<Cubiod> getCubiods(long x, long y, long z) {
-		ArrayList<Cubiod> cubiods = new ArrayList<Cubiod>();
-		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cubiods` WHERE WorldId = ? AND x1 <= ? "
+	public ArrayList<Cuboid> getCuboids(long x, long y, long z) {
+		ArrayList<Cuboid> cuboids = new ArrayList<Cuboid>();
+		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cuboids` WHERE WorldId = ? AND x1 <= ? "
 				+ "AND x2 >= ? " + "AND y1 <= ? " + "AND y2 >= ? "
 				+ "AND z1 <= ? " + "AND z2 >= ? " + "ORDER BY `" + storage.tablePrefix
-				+ "Cubiods`.Priority DESC";
+				+ "Cuboids`.Priority DESC";
 
 		if (storage.connect()) {
 			try {
@@ -128,7 +128,7 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 
 				// Get the result
 				ResultSet rs = ps.getResultSet();
-				while (rs.next()) cubiods.add(new SqlCubiod(storage, rs.getInt(1)));
+				while (rs.next()) cuboids.add(new SqlCuboid(storage, rs.getInt(1)));
 
 				// Close events
 				rs.close();
@@ -140,7 +140,7 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 
 			storage.disconnect();
 		}
-		return cubiods;
+		return cuboids;
 	}
 
 	@Override
@@ -151,8 +151,7 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 	@Override
 	public String getName() {
 		String name = "";
-		String sql = "SELECT Name FROM `" + storage.tablePrefix + "Cubiods` WHERE Id = ? " 
-				+ "ORDER BY `" + storage.tablePrefix + "Cubiods`.Priority DESC";
+		String sql = "SELECT Name FROM `" + storage.tablePrefix + "Worlds` WHERE Id = ? ";
 
 		if (storage.connect()) {
 			try {

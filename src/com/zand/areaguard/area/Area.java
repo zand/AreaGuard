@@ -9,7 +9,7 @@ public interface Area {
 	 * Gets a list of Cubiods that are a part of that area.
 	 * @return
 	 */
-	public ArrayList<Cubiod> getCubiods();
+	public ArrayList<Cuboid> getCubiods();
 	
 	public boolean isOwner(String player);
 	

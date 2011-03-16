@@ -1,6 +1,6 @@
 package com.zand.areaguard.area;
 
-public interface Cubiod {
+public interface Cuboid {
 	
 	/**
 	 * Gets the {@link Area} that this cubiod is a part of.
@@ -12,7 +12,7 @@ public interface Cubiod {
 	 * Gets the coords of the cubiod.
 	 * @return An Array of the cubiod's coords.
 	 */
-	public long[] getCoords();
+	public int[] getCoords();
 	
 	/**
 	 * Gets the cubiod's id

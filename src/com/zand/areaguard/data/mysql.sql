@@ -14,10 +14,10 @@ PRIMARY KEY (Id),
 INDEX(Name)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS `<tablePrefix>Cubiods` ( 
+CREATE TABLE IF NOT EXISTS `<tablePrefix>Cuboids` ( 
 Id int NOT NULL AUTO_INCREMENT, 
 WorldId int NOT NULL, 
-AreaId varchar(32) NOT NULL, 
+AreaId int NOT NULL, 
 Priority int NOT NULL DEFAULT 0, 
 x1 int NOT NULL, 
 y1 int NOT NULL, 

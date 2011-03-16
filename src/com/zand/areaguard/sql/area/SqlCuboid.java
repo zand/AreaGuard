@@ -5,16 +5,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.zand.areaguard.area.Area;
-import com.zand.areaguard.area.Cubiod;
+import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.World;
 import com.zand.areaguard.error.area.ErrorArea;
-import com.zand.areaguard.error.area.WorldError;
+import com.zand.areaguard.error.area.ErrorWorld;
 
-public class SqlCubiod implements Cubiod {
+public class SqlCuboid implements Cuboid {
 	final private SqlStorage storage;
 	final private int id;
 	
-	public SqlCubiod(SqlStorage storage, int id) {
+	public SqlCuboid(SqlStorage storage, int id) {
 		this.storage = storage;
 		this.id = id;
 	}
@@ -22,7 +22,7 @@ public class SqlCubiod implements Cubiod {
 	@Override
 	public Area getArea() {
 		Area area = null;
-		String sql = "SELECT AreaId FROM `" + storage.tablePrefix + "Cubiods` WHERE Id = ?";
+		String sql = "SELECT AreaId FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ?";
 
 		if (storage.connect()) {
 			try {
@@ -50,9 +50,9 @@ public class SqlCubiod implements Cubiod {
 	}
 
 	@Override
-	public long[] getCoords() {
-		long coords[] = new long[6];
-		String sql = "SELECT x1,y1,z1,x2,y2,z2 FROM `" + storage.tablePrefix + "Cubiods` WHERE Id = ?";
+	public int[] getCoords() {
+		int coords[] = new int[6];
+		String sql = "SELECT x1,y1,z1,x2,y2,z2 FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ?";
 
 		if (storage.connect()) {
 			try {
@@ -64,7 +64,7 @@ public class SqlCubiod implements Cubiod {
 				ResultSet rs = ps.getResultSet();
 				if (rs.next()) 
 					for (int i = 0; i < 6; i++)
-						coords[i] = rs.getLong(1 + i);
+						coords[i] = rs.getInt(1 + i);
 
 				// Close events
 				rs.close();
@@ -87,7 +87,7 @@ public class SqlCubiod implements Cubiod {
 	@Override
 	public int getPriority() {
 		int priority = 100;
-		String sql = "SELECT Priority FROM `" + storage.tablePrefix + "Cubiods` WHERE Id = ?";
+		String sql = "SELECT Priority FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ?";
 
 		if (storage.connect()) {
 			try {
@@ -115,7 +115,7 @@ public class SqlCubiod implements Cubiod {
 	@Override
 	public World getWorld() {
 		World world = null;
-		String sql = "SELECT WorldId FROM `" + storage.tablePrefix + "Cubiods` WHERE Id = ?";
+		String sql = "SELECT WorldId FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ?";
 
 		if (storage.connect()) {
 			try {
@@ -133,17 +133,17 @@ public class SqlCubiod implements Cubiod {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				world = new WorldError();
+				world = new ErrorWorld("Sql Error");
 			}
 
 			storage.disconnect();
-		} else world = new WorldError();
+		} else world = new ErrorWorld("Failed to Connect");
 		return world;
 	}
 
 	@Override
 	public boolean pointInside(World world, long x, long y, long z) {
-		long coords[] = getCoords();
+		int coords[] = getCoords();
 		return ((coords[0] <= x && coords[3] >= x) &&
 				(coords[1] <= x && coords[4] >= x) &&
 				(coords[2] <= x && coords[5] >= x) &&
@@ -152,7 +152,7 @@ public class SqlCubiod implements Cubiod {
 
 	@Override
 	public boolean setArea(Area area) {
-		String update = "UPDATE `" + storage.tablePrefix + "Cubiods` "
+		String update = "UPDATE `" + storage.tablePrefix + "Cuboids` "
 		+ "SET AreaId=? "
 		+ "WHERE Id=?;";
 		if (storage.connect())
@@ -176,7 +176,7 @@ public class SqlCubiod implements Cubiod {
 
 	@Override
 	public boolean setPriority(int priority) {
-		String update = "UPDATE `" + storage.tablePrefix + "Cubiods` "
+		String update = "UPDATE `" + storage.tablePrefix + "Cuboids` "
 		+ "SET Priority=? "
 		+ "WHERE Id=?;";
 		if (storage.connect())
@@ -200,7 +200,7 @@ public class SqlCubiod implements Cubiod {
 
 	@Override
 	public boolean setLocation(World world, long[] coords) {
-		String update = "UPDATE `" + storage.tablePrefix + "Cubiods` "
+		String update = "UPDATE `" + storage.tablePrefix + "Cuboids` "
 		+ "SET WorldId=?, x1=?, y1=?, z1=?, x2=?, y2=?, z2=? "
 		+ "WHERE Id=?;";
 		if (storage.connect())

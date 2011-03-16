@@ -6,34 +6,34 @@ import java.util.ArrayList;
 public interface World {
 	
 	/**
-	 * Gets a {@link Cubiod} at location in the world.
+	 * Gets a {@link Cuboid} at location in the world.
 	 * @param x The x coord of the location
 	 * @param y The y coord of the location
 	 * @param z The z coord of the location
-	 * @return The cubiod at that location
+	 * @return The cuboid at that location
 	 */
-	public Cubiod getCubiod(long x, long y, long z);
+	public Cuboid getCuboid(long x, long y, long z);
 	
 	/**
-	 * Gets the {@link Cubiod}s in the world.
-	 * @return A ArrayList of the cubiod in the world.
+	 * Gets the {@link Cuboid}s in the world.
+	 * @return A ArrayList of the cuboid in the world.
 	 */
-	public ArrayList<Cubiod> getCubiods();
+	public ArrayList<Cuboid> getCuboids();
 	
 	/**
-	 * Gets the {@link Cubiod}s at location in the world.
+	 * Gets the {@link Cuboid}s at location in the world.
 	 * @param x The x coord of the location
 	 * @param y The y coord of the location
 	 * @param z The z coord of the location
-	 * @return A ArrayList cubiod at that location
+	 * @return A ArrayList cuboid at that location
 	 */
-	public ArrayList<Cubiod> getCubiods(long x, long y, long z);
+	public ArrayList<Cuboid> getCuboids(long x, long y, long z);
 	
 	/**
-	 * Deletes all the {@link Cubiod}s in the world.
+	 * Deletes all the {@link Cuboid}s in the world.
 	 * @return If success.
 	 */
-	public boolean deleteCubiods();
+	public boolean deleteCuboids();
 	
 	/**
 	 * Gets the Id of the world

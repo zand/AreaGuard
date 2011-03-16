@@ -2,7 +2,19 @@ package com.zand.areaguard.area;
 
 import java.util.ArrayList;
 
+/**
+ * A Class for managing data storage.
+ * 
+ * @author zand
+ *
+ */
 public interface Storage {
+	
+	/**
+	 * Gets the storage info.
+	 * @return A human readable string.
+	 */
+	public String getInfo();
 	
 	/**
 	 * Gets a list of all the {@link World}s.
@@ -68,11 +80,11 @@ public interface Storage {
 	public Area newArea(String creator, String name);
 	
 	/**
-	 * Creates a new {@link Cubiod} in this World.
+	 * Creates a new {@link Cuboid} in this World.
 	 * @param area The area that the cuboid is a part of.
 	 * @param world The world that the cubiod is in.
 	 * @param coords The coords for the cubiod.
 	 * @return The new Cubiod.
 	 */
-	public Cubiod newCubiod(Area area, World world, long[] coords);
+	public Cuboid newCubiod(Area area, World world, long[] coords);
 }
