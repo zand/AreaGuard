@@ -23,6 +23,16 @@ public interface Area {
 	 */
 	public boolean pointInside(World world, long x, long y, long z);
 	
+	/**
+	 * Tests if a point is in the area.
+	 * @param world The name of the world that the point is in.
+	 * @param x The X vector.
+	 * @param y The Y vector.
+	 * @param z The Z vector.
+	 * @return If the point is in the area
+	 */
+	public boolean pointInside(String world, long x, long y, long z);
+	
 	public boolean hasOwner(String player);
 	
 	public boolean playerCan(String player, String[] lists);

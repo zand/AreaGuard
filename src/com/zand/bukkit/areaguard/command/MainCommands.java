@@ -17,7 +17,10 @@ public class MainCommands implements CommandExecutor {
 				// TODO Print version code.
 			}
 			else if (args[0].equalsIgnoreCase("admin")) {
-				admin.onCommand(sender, new Command("admin"), args[0], Java15Compat.Arrays_copyOfRange(args, 1, args.length-1));
+				admin.onCommand(sender, command, args[0], Java15Compat.Arrays_copyOfRange(args, 1, args.length-1));
+			}
+			else if (args[0].equalsIgnoreCase("area")) {
+				area.onCommand(sender, command, args[0], Java15Compat.Arrays_copyOfRange(args, 1, args.length-1));
 			}
 			else {
 				// TODO Print Main Help

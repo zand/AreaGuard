@@ -177,4 +177,9 @@ public class SqlArea implements Area {
 				return true;
 		return false;
 	}
+
+	@Override
+	public boolean pointInside(String world, long x, long y, long z) {
+		return pointInside(storage.getWorld(world), x, y, z);
+	}
 }

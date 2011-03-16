@@ -10,11 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
-import com.zand.areaguard.old.AreaDatabase;
-
 public class Config {
-	private static final String config = getConfigDir() + "/areaguard.properties";
-	private static final AreaDatabase ad = AreaDatabase.getInstance();
+	private static final String config = getConfigDir() + "/areaguard.properties";;
 	public static int createTool;
 	public static int checkTool;
 	public static HashSet<String> creators = new HashSet<String>();
@@ -72,11 +69,6 @@ public class Config {
 		
 		
 		
-		ad.config(driver, url, 
-					props.getProperty("user"), 
-					props.getProperty("password"), 
-					props.getProperty("table-prefix"),  
-					Boolean.valueOf(props.getProperty("keep-connection")));
 		return true;
 	}
 	
@@ -116,7 +108,6 @@ public class Config {
 		// read the config
 		readConfig(config);
 
-		ad.createTables();
 		return true;
 	}
 }

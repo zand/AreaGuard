@@ -1,5 +1,6 @@
 package com.zand.areaguard.sql.area;
 
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -7,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import com.zand.areaguard.JarFile;
 import com.zand.areaguard.area.Area;
@@ -26,9 +28,47 @@ public class SqlStorage implements Storage {
 	private boolean keepConn = false;
 	protected Connection conn = null;
 	
+	public SqlStorage(String filename) {
+		loadConfig(filename);
+	}
+	
 	public SqlStorage(String driver, String url, String user, String password,
 			String tablePrefix, boolean keepConn) {
 		config(driver, url, user, password, tablePrefix, keepConn);
+	}
+	
+	public boolean loadConfig(String filename) {
+		Properties props = new Properties();
+		
+		try {
+			props.load(new FileInputStream(filename));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// Configure Connection
+		String url = props.getProperty("url");
+		
+		// Figure out what driver to use
+		String driver = props.getProperty("driver");
+		if (driver == null || driver.isEmpty() || driver.equalsIgnoreCase("auto")) {
+			String lower = url.toLowerCase().replaceAll("\\\\", "");
+			if 		(lower.startsWith("jdbc:sqlite:")) 	driver = "org.sqlite.JDBC";
+			else if (lower.startsWith("jdbc:mysql:"))	driver = "com.mysql.jdbc.Driver";
+			else System.err.println("Coulden't figuer out driver from url");
+		}
+		
+		
+		
+		config(driver, url, 
+					props.getProperty("user"), 
+					props.getProperty("password"), 
+					props.getProperty("table-prefix"),  
+					Boolean.valueOf(props.getProperty("keep-connection")));
+		
+		return false;
+		
 	}
 	
 	public void config(String driver, String url, String user, String password,

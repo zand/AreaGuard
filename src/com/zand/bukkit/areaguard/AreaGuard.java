@@ -20,8 +20,8 @@ import org.bukkit.plugin.PluginManager;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import com.zand.areaguard.*;
 import com.zand.areaguard.area.Area;
-import com.zand.areaguard.error.area.ErrorArea;
-import com.zand.areaguard.old.AreaDatabase;
+import com.zand.areaguard.area.Storage;
+import com.zand.areaguard.sql.area.SqlStorage;
 import com.zand.bukkit.areaguard.listeners.AreaGuardBlockListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardEntityListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardPlayerListener;
@@ -41,6 +41,7 @@ public class AreaGuard extends JavaPlugin {
 	private static Logger log = Logger.getLogger("Minecraft");
 	
 	private final CommandHandler commandhandler = new CommandHandler(this);
+	public Storage storage = new SqlStorage("plugins/AreaGuard/areaguard.properties");
 	
 	// Are Listeners
 	private final AreaGuardWorldListener worldListener = new AreaGuardWorldListener(this);
@@ -132,7 +133,7 @@ public class AreaGuard extends JavaPlugin {
     public PlayerSession getSession(Player player) {
     	String name = player.getName();
     	if (!playerSessions.containsKey(name))
-    		playerSessions.put(name, new PlayerSession(player));
+    		playerSessions.put(name, new PlayerSession(storage, player));
     	return playerSessions.get(name);
     }
     
@@ -141,48 +142,9 @@ public class AreaGuard extends JavaPlugin {
 	* @param player	The player to send to
 	* @param area	The area to show
 	*/
-    public void showAreaInfo(Player player, Area area) {
-    	player.sendMessage(ChatColor.YELLOW + area.toString());
-    	String[] first = {"owners", "restrict", "allow", "no-allow"};
-    	
-    	// list the set msgs
-    	HashMap<String, String> msgs = area.getMsgs();
-		if (!msgs.isEmpty()) {
-			String msg = ChatColor.YELLOW + "  msg on:" + ChatColor.WHITE;
-			for (String value: msgs.keySet()) 
-				msg += " " + value;
-			player.sendMessage(msg);
-		}
-    	
-    	// Show the lists that come first
-		ArrayList<String> values;
-    	for (String list : first) {
-    		values = area.getList(list);
-    		if (!values.isEmpty()) {
-    			String msg = ChatColor.YELLOW + "  " + list + ":" + ChatColor.WHITE;
-    			for (String value: values) 
-    				msg += " " + value;
-    			player.sendMessage(msg);
-    		}
-    		else player.sendMessage(ChatColor.YELLOW + "  " + list + ":");
-    	}
-    	int i;
-    	for (String list : area.getLists()) {
-    		// Go though the list and break when we find a match
-    		for (i=0; i < first.length; i++) 
-    			if (list.equals(first[i])) break;
-    		
-    		// if we diden't reach the end then there was a match
-    		if (i != first.length) continue;
-    		
-    		values = area.getList(list);
-    		if (!values.isEmpty()) {
-    			String msg = ChatColor.YELLOW + "  " + list + ":" + ChatColor.WHITE;
-    			for (String value: values) 
-    				msg += " " + value;
-    			player.sendMessage(msg);
-    		}
-    	}
+    public void showAreaInfo(CommandSender sender, Area area) {
+    	// TODO area info
+    	sender.sendMessage(ChatColor.YELLOW + area.toString());
     }
     
     /**
@@ -192,7 +154,7 @@ public class AreaGuard extends JavaPlugin {
 	* @return if they can modify the area
 	*/
     public boolean canModify(Area area, Player player) {
-    	return (area.listHas("owners", player.getName()) || checkPermission(player, "ag.create"));
+    	return (area.isOwner(player.getName()) || checkPermission(player, "ag.create"));
     }
     
     /**
@@ -224,7 +186,8 @@ public class AreaGuard extends JavaPlugin {
 	* @return if the event was canceled
 	*/
     public boolean checkEvent(Cancellable event, Player player, String[] lists, int x, int y, int z) {
-    	Area area = Area.getArea(AreaDatabase.getInstance().getWorldId(player.getWorld().getName()), x, y, z);
+    	// TODO fix
+    	Area area = null;
 		return checkEvent(event, player, lists, area);
     }
 	
@@ -256,10 +219,10 @@ public class AreaGuard extends JavaPlugin {
 				
 				// Send the allowed messages
 				for (String list : lists) {
-					String msg = area.getMsg(list);
+					String msg = area.getMsg(list).getMsg();
 					if (getSession(player).debug) 
 						Messager.debug(player, "Checking " + list + " " 
-								+ (area.listHas(list, player.getName())));
+								+ (area.getList(list).hasValue(player.getName())));
 					if (!msg.isEmpty()) Messager.inform(player, msg); }
 			} else {
 				
@@ -270,10 +233,10 @@ public class AreaGuard extends JavaPlugin {
 				
 				// Send the not allowed messages
 				for (String list : lists) {
-					String msg = area.getMsg("no-"+list);
+					String msg = area.getMsg("no-"+list).getMsg();
 					if (getSession(player).debug) 
 						Messager.debug(player, "Checking no-" + list + " " 
-								+ (area.listHas("no-"+list, player.getName())));
+								+ (area.getList("no-"+list).hasValue(player.getName())));
 					if (!msg.isEmpty()) Messager.warn(player, msg); }
 				return false;
 			}	

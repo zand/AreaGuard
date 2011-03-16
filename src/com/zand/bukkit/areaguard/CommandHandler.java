@@ -3,11 +3,9 @@ package com.zand.bukkit.areaguard;
 import java.util.HashSet;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 
 import com.zand.areaguard.Config;
 import com.zand.areaguard.area.Area;
-import com.zand.areaguard.old.AreaDatabase;
 import com.zand.bukkit.common.Messager;
 
 public class CommandHandler {
@@ -112,7 +110,7 @@ public class CommandHandler {
 	 */
 	public void reconfig(PlayerSession ps, String args[]) {
 		if (ps.player.isOp()) {
-			AreaDatabase.getInstance().disconnect(true);
+			//AreaDatabase.getInstance().disconnect(true);
 			Config.setup();
 			Messager.inform(ps.player, "Reloading the config file.");
 		} else Messager.warn(ps.player, "Your not allowed to use that command.");
@@ -165,6 +163,7 @@ public class CommandHandler {
 	 * @param args	The Arguments for the command
 	 */
 	public void create(PlayerSession ps, String args[]) {
+		/*
 		if (plugin.checkPermission(ps.player, "ag.create")) {
 			if (args == null || args.length == 0) { Messager.warn(ps.player, "No name was given."); return; }
 			
@@ -195,7 +194,7 @@ public class CommandHandler {
 					
 				ps.selected = area.getId();
 			}
-		} else Messager.warn(ps.player, "Your not allowed to use that command.");
+		} else Messager.warn(ps.player, "Your not allowed to use that command.");*/
 	}
 	
 	/**
@@ -228,7 +227,7 @@ public class CommandHandler {
 	public void getAreaId(PlayerSession ps, String args[]) {
 		if (args == null) { Messager.warn(ps.player, " no Id given"); return; }
 		try {
-			withArea(ps, subargs(args, 1), Area.getArea(Integer.valueOf(args[0])));
+			//withArea(ps, subargs(args, 1), Area.getArea(Integer.valueOf(args[0])));
 		} catch (NumberFormatException e) {
 			Messager.warn(ps.player, args[0] +" is not a number"); }
 	}
@@ -240,7 +239,7 @@ public class CommandHandler {
 	 */
 	public void getAreaNamed(PlayerSession ps, String args[]) {
 		if (args == null) { Messager.warn(ps.player, " no Name given"); return; }
-		withArea(ps, subargs(args, 1), Area.getArea(ps.getWorldName(), args[0]));
+		//withArea(ps, subargs(args, 1), Area.getArea(ps.getWorldName(), args[0]));
 	}
 	
 	/**
@@ -249,10 +248,10 @@ public class CommandHandler {
 	 * @param args	The Arguments for the command
 	 */
 	public void getAreaOwned(PlayerSession ps, String args[]) {
-		if (args == null) { Messager.warn(ps.player, " no Player Name given"); return; }
-		if (args.length == 1) { Messager.warn(ps.player, " no Player Name given"); return; }
-		if (args.length < 2) { Messager.warn(ps.player, " no Area Name given"); return; }
-		withArea(ps, subargs(args, 1), Area.getOwnedArea(args[0], args[1]));
+		//if (args == null) { Messager.warn(ps.player, " no Player Name given"); return; }
+		//if (args.length == 1) { Messager.warn(ps.player, " no Player Name given"); return; }
+		//if (args.length < 2) { Messager.warn(ps.player, " no Area Name given"); return; }
+		//withArea(ps, subargs(args, 1), Area.getOwnedArea(args[0], args[1]));
 	}
 	
 	/**
@@ -261,7 +260,7 @@ public class CommandHandler {
 	 * @param args	The Arguments for the command
 	 */
 	public void getAreaSelected(PlayerSession ps, String args[]) {
-		withArea(ps, args, Area.getArea(ps.selected));
+		//withArea(ps, args, Area.getArea(ps.selected));
 	}
 	
 	/**
@@ -270,12 +269,12 @@ public class CommandHandler {
 	 * @param args	The Arguments for the command
 	 */
 	public void getAreaAt(PlayerSession ps, String args[]) {
-		if (args == null || args.length < 3) { Messager.warn(ps.player, "no coords given"); return; }
-		withArea(ps, subargs(args, 3), Area.getArea(
-				ps.getWorldName(),
-				Integer.valueOf(args[0]),
-				Integer.valueOf(args[1]),
-				Integer.valueOf(args[2])));
+		//if (args == null || args.length < 3) { Messager.warn(ps.player, "no coords given"); return; }
+		//withArea(ps, subargs(args, 3), Area.getArea(
+		//		ps.getWorldName(),
+		//		Integer.valueOf(args[0]),
+		//		Integer.valueOf(args[1]),
+		//		Integer.valueOf(args[2])));
 	}
 	
 	/**
@@ -284,12 +283,12 @@ public class CommandHandler {
 	 * @param args	The Arguments for the command
 	 */
 	public void getAreaHere(PlayerSession ps, String args[]) {
-		Location loc = ps.player.getLocation();
-		withArea(ps, args, Area.getArea(
-				ps.getWorldName(), 
-				loc.getBlockX(),
-				loc.getBlockY(), 
-				loc.getBlockZ()));
+		//Location loc = ps.player.getLocation();
+		//withArea(ps, args, Area.getArea(
+		//		ps.getWorldName(), 
+		//		loc.getBlockX(),
+		//		loc.getBlockY(), 
+		//		loc.getBlockZ()));
 	}
 	
 	/**
@@ -356,9 +355,9 @@ public class CommandHandler {
 		if (args == null || args.length == 1) { Messager.warn(ps.player, "No list name given"); return; }
 		String list = args[1];
 		if (args[0].equalsIgnoreCase("clear"))  {
-			if (area.removeList(list))
+		//	if (area.removeList(list))
 				Messager.inform(ps.player, "Cleared " + list);
-			else Messager.error(ps.player, "Failed to clear " + list);
+			//else Messager.error(ps.player, "Failed to clear " + list);
 		}
 		else {
 			String v[] = subargs(args, 2);
@@ -369,7 +368,7 @@ public class CommandHandler {
 			
 			else if (args[0].equalsIgnoreCase("add")) { 
 				
-				if (area.addList(list, values)) {
+			//	if (area.addList(list, values)) {
 					// Get added values
 					String s = "";
 					for (String value : values) s += " " + value;
@@ -379,16 +378,16 @@ public class CommandHandler {
 				else Messager.error(ps.player, "Failed to add to " + list);}
 			if (args[0].equalsIgnoreCase("remove")) { 
 				
-				if (area.removeList(list, values)) {
+			//	if (area.removeList(list, values)) {
 					// Get added values
 					String s = "";
-					for (String value : values) s += " " + value;
+			//		for (String value : values) s += " " + value;
 					
 					// Inform the player
 					Messager.inform(ps.player, "Removed from " + list + ":" + ChatColor.WHITE + s); }
 				else Messager.error(ps.player, "Failed to remove from " + list);}
-		}
-	}
+		//}
+	//}
 	
 	/**
 	 * The Commands to set the msg for an area event
@@ -401,7 +400,7 @@ public class CommandHandler {
 			String name = args[0];
 			String msg = "";
 			if (args.length > 1) for (String arg : subargs(args, 1)) msg += arg + " ";
-			area.setMsg(name, msg.trim());
+		//	area.setMsg(name, msg.trim());
 			ps.player.sendMessage("Message " + name + " set:" + msg);
 		}
 	}
@@ -423,11 +422,11 @@ public class CommandHandler {
 				return;
 			}
 		
-			if (area.setPriority(i)) 
+		//	if (area.setPriority(i)) 
 				Messager.inform(ps.player, "Area priority set to " + i);
-			else Messager.error(ps.player, "Faild to set area priority");
+			//else Messager.error(ps.player, "Faild to set area priority");
 		}
-		else Messager.inform(ps.player, "The Area priority is " + area.getPriority());
+		//else Messager.inform(ps.player, "The Area priority is " + area.getPriority());
 	}
 	
 	/**
@@ -438,9 +437,9 @@ public class CommandHandler {
 	 */
 	public void areaMove(PlayerSession ps, String args[], Area area) {
 		if (!plugin.checkPermission(ps.player, "ag.create")) return;
-		if (area.setCoords(ps.getCoords()))
+		//if (area.setCoords(ps.getCoords()))
 			Messager.inform(ps.player, "Area Moved");
-		else Messager.error(ps.player, "Faild to Move Area");
+		//else Messager.error(ps.player, "Faild to Move Area");
 	}
 	
 	/**
@@ -451,16 +450,16 @@ public class CommandHandler {
 	 */
 	public void areaExtend(PlayerSession ps, String args[], Area area) {
 		if (!plugin.checkPermission(ps.player, "ag.create")) return;
-		int coords[] = area.getCoords();
-		int point[] = ps.getPoint();
+		//int coords[] = area.getCoords();
+		//int point[] = ps.getPoint();
 		
-		for (int i=0; i<3; i++) // Extend the coords to include the point
-			if 		(coords[i] > point[i]) 	coords[i] = point[i];
-			else if (coords[i+3] < point[i]) coords[i+3] = point[i];
+		//for (int i=0; i<3; i++) // Extend the coords to include the point
+		//	if 		(coords[i] > point[i]) 	coords[i] = point[i];
+		//	else if (coords[i+3] < point[i]) coords[i+3] = point[i];
 		
-		if (area.setCoords(coords))
+		//if (area.setCoords(coords))
 			Messager.inform(ps.player, "Area Extended");
-		else Messager.error(ps.player, "Faild to Extend Area");
+		//else Messager.error(ps.player, "Faild to Extend Area");
 	}
 	
 	/**
@@ -470,9 +469,8 @@ public class CommandHandler {
 	 * @param area	The area to perform an action on
 	 */
 	public void areaDelete(PlayerSession ps, String args[], Area area) {
-		if (!plugin.checkPermission(ps.player, "ag.create")) return;
-		if (area.remove())
-			Messager.inform(ps.player, "Area Deleted");
-		else Messager.error(ps.player, "Faild to Delete Area");
+		////if (area.remove())
+		//	Messager.inform(ps.player, "Area Deleted");
+		//else Messager.error(ps.player, "Faild to Delete Area");
 	}
 }

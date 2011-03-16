@@ -79,4 +79,9 @@ public class ErrorArea implements com.zand.areaguard.area.Area {
 	public boolean pointInside(World world, long x, long y, long z) {
 		return true;
 	}
+
+	@Override
+	public boolean pointInside(String world, long x, long y, long z) {
+		return true;
+	}
 }

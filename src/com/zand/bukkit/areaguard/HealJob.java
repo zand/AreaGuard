@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.zand.areaguard.area.Area;
-import com.zand.areaguard.area.Storage;
 
 public class HealJob extends TimerTask {
 	private static Timer healTimer = new Timer();
@@ -34,9 +33,9 @@ public class HealJob extends TimerTask {
 		if (player.isOnline() &&
 				area.pointInside(
 				player.getWorld().getName(),
-				loc.getBlockX(), 
-				loc.getBlockY(), 
-				loc.getBlockZ())) {
+				(long)loc.getBlockX(), 
+				(long)loc.getBlockY(), 
+				(long)loc.getBlockZ())) {
 			if (player.getHealth() > 0)
 					player.setHealth(player.getHealth() + healPower);
 			new HealJob(player, area);
