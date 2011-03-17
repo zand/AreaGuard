@@ -1,6 +1,6 @@
 package com.zand.areaguard.area;
 
-public interface Cuboid {
+public interface Cuboid extends Data {
 	
 	/**
 	 * Gets the {@link Area} that this cubiod is a part of.
@@ -9,10 +9,35 @@ public interface Cuboid {
 	public Area getArea();
 	
 	/**
+	 * Gets who created the cuboid.
+	 * @return The name of the person who created the cuboid.
+	 */
+	public String getCreator();
+	
+	/**
 	 * Gets the coords of the cubiod.
 	 * @return An Array of the cubiod's coords.
 	 */
 	public int[] getCoords();
+	
+	/**
+	 * Gets the number of blocks in a cuboid.
+	 * @return The number of blocks.
+	 */
+	public long getBlockCount();
+	
+	/**
+	 * Sets weather the cuboid is active
+	 * @param active cuboid's new active status
+	 * @return True if success.
+	 */
+	public boolean setActive(boolean active);
+	
+	/**
+	 * Gets the cuboids active status.
+	 * @return
+	 */
+	public boolean isActive();
 	
 	/**
 	 * Gets the cubiod's id
@@ -40,7 +65,7 @@ public interface Cuboid {
 	 * @param z The Z vector.
 	 * @return If the point is in the cubiod
 	 */
-	public boolean pointInside(World world, long x, long y, long z);
+	public boolean pointInside(World world, int x, int y, int z);
 	
 	/**
 	 * Sets the Priority for the cubiod.
@@ -62,5 +87,5 @@ public interface Cuboid {
 	 * @param coords The coords to set it to.
 	 * @return If success.
 	 */
-	public boolean setLocation(World world, long coords[]);
+	public boolean setLocation(World world, int coords[]);
 }

@@ -34,4 +34,9 @@ public class ErrorMsg implements Msg {
 		return false;
 	}
 
+	@Override
+	public boolean exsists() {
+		return false;
+	}
+
 }

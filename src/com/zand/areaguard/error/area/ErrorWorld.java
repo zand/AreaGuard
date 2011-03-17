@@ -18,7 +18,7 @@ public class ErrorWorld implements World {
 	}
 
 	@Override
-	public Cuboid getCuboid(long x, long y, long z) {
+	public Cuboid getCuboid(int x, int y, int z) {
 		return null;
 	}
 
@@ -40,6 +40,11 @@ public class ErrorWorld implements World {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public boolean exsists() {
+		return false;
 	}
 
 }

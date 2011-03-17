@@ -18,6 +18,15 @@ public class SqlList implements List {
 		this.areaId = areaId;
 		this.name = name;
 	}
+	
+	public String toString() {
+		String ret = "";
+		for (String value : getValues())
+			ret += ", " + value;
+		if (!ret.isEmpty())
+			ret = ret.substring(2);
+		return ret;
+	}
 
 	@Override
 	public boolean addValue(String creator, String value) {
@@ -150,7 +159,7 @@ public class SqlList implements List {
 	@Override
 	public boolean removeValue(String value) {
 		String sql = "DELETE FROM `" + storage.tablePrefix + "Lists` WHERE AreaId=? AND Name=? AND Value=?";
-		if (storage.connect())
+		if (!storage.connect())
 			return false;
 		try {
 			PreparedStatement ps = storage.conn.prepareStatement(sql);
@@ -177,6 +186,35 @@ public class SqlList implements List {
 			if (!removeValue(value))
 				return false;
 		return true;
+	}
+
+	@Override
+	public boolean exsists() {
+		boolean ret = false;
+		String sql = "SELECT COUNT(*) FROM `" + storage.tablePrefix + "Lists` WHERE AreaId = ? AND Name = ? LIMIT 1";
+
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, areaId);
+				ps.setString(2, getName());
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				while (rs.next()) ret = (rs.getInt(1) > 0);
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			storage.disconnect();
+		}
+		return ret;
 	}
 
 }

@@ -81,10 +81,11 @@ public interface Storage {
 	
 	/**
 	 * Creates a new {@link Cuboid} in this World.
+	 * @param The name of the creator.
 	 * @param area The area that the cuboid is a part of.
 	 * @param world The world that the cubiod is in.
 	 * @param coords The coords for the cubiod.
 	 * @return The new Cubiod.
 	 */
-	public Cuboid newCubiod(Area area, World world, long[] coords);
+	public Cuboid newCubiod(String creator, Area area, World world, long[] coords);
 }

@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `<tablePrefix>Cuboids` (
 Id int NOT NULL AUTO_INCREMENT, 
 WorldId int NOT NULL, 
 AreaId int NOT NULL, 
+Creator varchar(32) NOT NULL, 
 Priority int NOT NULL DEFAULT 0, 
 x1 int NOT NULL, 
 y1 int NOT NULL, 

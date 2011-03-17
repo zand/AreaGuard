@@ -63,4 +63,9 @@ public class ErrorList implements List {
 		return false;
 	}
 
+	@Override
+	public boolean exsists() {
+		return false;
+	}
+
 }

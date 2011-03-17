@@ -29,7 +29,7 @@ public class ErrorCuboid implements Cuboid {
 		return world;
 	}
 	@Override
-	public boolean pointInside(World world, long x, long y, long z) {
+	public boolean pointInside(World world, int x, int y, int z) {
 		return true;
 	}
 	@Override
@@ -41,8 +41,28 @@ public class ErrorCuboid implements Cuboid {
 		return false;
 	}
 	@Override
-	public boolean setLocation(World world, long[] coords) {
+	public boolean setLocation(World world, int[] coords) {
 		return false;
+	}
+	@Override
+	public boolean exsists() {
+		return false;
+	}
+	@Override
+	public long getBlockCount() {
+		return Integer.MAX_VALUE;
+	}
+	@Override
+	public boolean isActive() {
+		return true;
+	}
+	@Override
+	public boolean setActive(boolean active) {
+		return false;
+	}
+	@Override
+	public String getCreator() {
+		return "@Error";
 	}
 
 }

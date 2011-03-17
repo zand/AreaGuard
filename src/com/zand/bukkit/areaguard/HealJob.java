@@ -33,9 +33,9 @@ public class HealJob extends TimerTask {
 		if (player.isOnline() &&
 				area.pointInside(
 				player.getWorld().getName(),
-				(long)loc.getBlockX(), 
-				(long)loc.getBlockY(), 
-				(long)loc.getBlockZ())) {
+				loc.getBlockX(), 
+				loc.getBlockY(), 
+				loc.getBlockZ())) {
 			if (player.getHealth() > 0)
 					player.setHealth(player.getHealth() + healPower);
 			new HealJob(player, area);

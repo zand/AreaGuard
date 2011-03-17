@@ -15,7 +15,7 @@ public class Session {
 	
 	private String name; 
 	private Area selectedArea;
-	private Cuboid selectedCubiod;
+	private Cuboid selectedCuboid;
 	private World selectedWorld;
 	private int lastSelectedPoint = 0;
 	private int selectedPoints[][] = new int[2][3];
@@ -94,15 +94,21 @@ public class Session {
 	}
 	
 	public Area getSelectedArea() {
+		if (selectedArea != null && !selectedArea.exsists())
+			selectedArea = null;
 		return selectedArea;
 	}
 	
 	public World getSelectedWorld() {
+		if (selectedWorld != null && !selectedWorld.exsists())
+			selectedWorld = null;
 		return selectedWorld;
 	}
 	
-	public Cuboid getSelectedCubiod() {
-		return selectedCubiod;
+	public Cuboid getSelectedCuboid() {
+		if (selectedCuboid != null && !selectedCuboid.exsists())
+			selectedCuboid = null;
+		return selectedCuboid;
 	}
 	
 	public int[] getSelectedPoint() {

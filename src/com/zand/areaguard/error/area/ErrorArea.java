@@ -3,6 +3,7 @@ package com.zand.areaguard.error.area;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.List;
 import com.zand.areaguard.area.Msg;
@@ -71,17 +72,32 @@ public class ErrorArea implements com.zand.areaguard.area.Area {
 	public boolean playerCan(String player, String[] lists) { return false; }
 
 	@Override
-	public boolean hasOwner(String player) {
+	public boolean pointInside(World world, int x, int y, int z) {
+		return true;
+	}
+
+	@Override
+	public boolean pointInside(String world, int x, int y, int z) {
+		return true;
+	}
+
+	@Override
+	public boolean exsists() {
 		return false;
 	}
 
 	@Override
-	public boolean pointInside(World world, long x, long y, long z) {
-		return true;
+	public Area getParrent() {
+		return null;
 	}
 
 	@Override
-	public boolean pointInside(String world, long x, long y, long z) {
-		return true;
+	public boolean setParrent(Area parrent) {
+		return false;
+	}
+
+	@Override
+	public String getCreator() {
+		return "@Error";
 	}
 }

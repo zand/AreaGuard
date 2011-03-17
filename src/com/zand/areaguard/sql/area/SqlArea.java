@@ -123,7 +123,7 @@ public class SqlArea implements Area {
 	@Override
 	public String getName() {
 		String name = "";
-		String sql = "SELECT Name FROM `" + storage.tablePrefix + "Areas` WHERE Id = ?";
+		String sql = "SELECT Name FROM `" + storage.tablePrefix + "Areas` WHERE Id = ? LIMIT 1";
 
 		if (storage.connect()) {
 			try {
@@ -133,7 +133,7 @@ public class SqlArea implements Area {
 
 				// Get the result
 				ResultSet rs = ps.getResultSet();
-				while (rs.next()) name = rs.getString(1);
+				if (rs.next()) name = rs.getString(1);
 
 				// Close events
 				rs.close();
@@ -161,17 +161,34 @@ public class SqlArea implements Area {
 
 	@Override
 	public boolean setName(String name) {
-		// TODO Auto-generated method stub
-		return false;
+		if (name == null || name.isEmpty()) return false;
+		
+		String update = "UPDATE `" + storage.tablePrefix + "Areas` "
+		+ "SET Name=? "
+		+ "WHERE Id=? " 
+		+ "LIMIT 1;";
+		if (storage.connect())
+			return false;
+		try {
+			PreparedStatement ps = storage.conn.prepareStatement(update);
+			ps.setString(1, name);
+			ps.setInt(2, getId());
+			
+		
+			ps.execute();
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			storage.disconnect();
+			return false;
+		}
+		
+		storage.disconnect();
+		return true;
 	}
 
 	@Override
-	public boolean hasOwner(String player) {
-		return getList("owners").hasValue(player);
-	}
-
-	@Override
-	public boolean pointInside(World world, long x, long y, long z) {
+	public boolean pointInside(World world, int x, int y, int z) {
 		for (Cuboid cubiod : getCubiods())
 			if (cubiod.pointInside(world, x, y, z))
 				return true;
@@ -179,7 +196,53 @@ public class SqlArea implements Area {
 	}
 
 	@Override
-	public boolean pointInside(String world, long x, long y, long z) {
+	public boolean pointInside(String world, int x, int y, int z) {
 		return pointInside(storage.getWorld(world), x, y, z);
+	}
+
+	@Override
+	public boolean exsists() {
+		boolean ret = false;
+		String sql = "SELECT COUNT(*) FROM `" + storage.tablePrefix + "Areas` WHERE Id = ? LIMIT 1";
+
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, getId());
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				while (rs.next()) ret = (rs.getInt(1) > 0);
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			storage.disconnect();
+		}
+		return ret;
+	}
+
+	@Override
+	public Area getParrent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean setParrent(Area parrent) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getCreator() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

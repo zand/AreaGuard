@@ -6,7 +6,7 @@ package com.zand.areaguard.area;
  * @author zand
  *
  */
-public interface Msg {
+public interface Msg extends Data {
 	/**
 	 * Gets the set of list values.
 	 * @return a set of values.

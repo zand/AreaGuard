@@ -40,7 +40,7 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 	}
 
 	@Override
-	public Cuboid getCuboid(long x, long y, long z) {
+	public Cuboid getCuboid(int x, int y, int z) {
 		Cuboid cuboid = null;
 		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cuboids` WHERE WorldId = ? AND x1 <= ? "
 				+ "AND x2 >= ? " + "AND y1 <= ? " + "AND y2 >= ? "
@@ -151,7 +151,7 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 	@Override
 	public String getName() {
 		String name = "";
-		String sql = "SELECT Name FROM `" + storage.tablePrefix + "Worlds` WHERE Id = ? ";
+		String sql = "SELECT Name FROM `" + storage.tablePrefix + "Worlds` WHERE Id = ? LIMIT 1";
 
 		if (storage.connect()) {
 			try {
@@ -174,6 +174,34 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 			storage.disconnect();
 		}
 		return name;
+	}
+
+	@Override
+	public boolean exsists() {
+		boolean ret = false;
+		String sql = "SELECT COUNT(*) FROM `" + storage.tablePrefix + "Worlds` WHERE Id = ? LIMIT 1";
+
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, getId());
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				while (rs.next()) ret = (rs.getInt(1) > 0);
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			storage.disconnect();
+		}
+		return ret;
 	}
 
 }

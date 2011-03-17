@@ -20,7 +20,7 @@ public class TextMapper {
 	}
 	
 	public TextMapper(World world, int x, int z) {
-		this(world, x, z, 36, 20);
+		this(world, x, z, 26, 20);
 	}
 	
 	public TextMapper(World world, int x, int z, int width, int height) {
@@ -40,8 +40,8 @@ public class TextMapper {
 	public void calcLine(int line) {
 		text[line] = "";
 		for (int i=0; i < width; i++)
-			text[line] += ChatColor.WHITE + blockToString(
-					getHighestBlock(world, x+i, z+height-line));
+			text[line] += ChatColor.WHITE + " " + blockToString(
+					getHighestBlock(world, x+width-i, z+height-line));
 	}
 	
 	Block getHighestBlock(World world, int x, int z) {

@@ -234,7 +234,7 @@ public class SqlStorage implements Storage {
 	@Override
 	public ArrayList<Area> getAreasOwned(String owner) {
 		ArrayList<Area> areas = new ArrayList<Area>();
-		String sql = "SELECT AreaId FROM `" + tablePrefix + "Lists` WHERE Name=? AND Values=?";
+		String sql = "SELECT AreaId FROM `" + tablePrefix + "Lists` WHERE Name=? AND Value=?";
 
 		connect();
 		if (conn != null) {
@@ -243,8 +243,6 @@ public class SqlStorage implements Storage {
 				ps.setString(1, "owners");
 				ps.setString(2, owner);
 				ps.execute();
-				
-				
 				
 				// Get the result
 				ResultSet rs = ps.getResultSet();
@@ -395,11 +393,11 @@ public class SqlStorage implements Storage {
 	}
 
 	@Override
-	public Cuboid newCubiod(Area area, World world, long[] coords) {
+	public Cuboid newCubiod(String creator, Area area, World world, long[] coords) {
 		Cuboid cubiod = null;
 
 		String insert = "INSERT INTO `" + tablePrefix + "Areas`"
-				+ "(AreaId, WorldId, x1, y1, z1, x2, y2, z2)"
+				+ "(Creator, AreaId, WorldId, x1, y1, z1, x2, y2, z2)"
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 		connect();
 		
@@ -407,11 +405,12 @@ public class SqlStorage implements Storage {
 			return new ErrorCuboid();
 		try {
 			PreparedStatement ps = conn.prepareStatement(insert);
-			ps.setInt(1, area.getId());
-			ps.setInt(2, world.getId());
+			ps.setString(1, creator);
+			ps.setInt(2, area.getId());
+			ps.setInt(3, world.getId());
 			for (int i = 0; i < 6; i++)
 				if (coords != null && i < coords.length)
-					ps.setLong(3 + i, coords[i]);
+					ps.setLong(4 + i, coords[i]);
 			ps.execute();
 
 			Statement st = conn.createStatement();

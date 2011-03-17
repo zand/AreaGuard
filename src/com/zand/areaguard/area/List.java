@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * @author zand
  *
  */
-public interface List {
+public interface List extends Data {
 	
 	/**
 	 * Gets the set of list values.

@@ -72,7 +72,7 @@ public class MainCommands implements CommandExecutor {
 		Session s = plugin.getSession(sender);
 		World w = s.getSelectedWorld();
 		Area a = s.getSelectedArea();
-		Cuboid c = s.getSelectedCubiod();
+		Cuboid c = s.getSelectedCuboid();
 		int l[] = s.getSelectedPointLeft();
 		int r[] = s.getSelectedPointRight();
 		

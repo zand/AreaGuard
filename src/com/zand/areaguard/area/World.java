@@ -3,7 +3,7 @@ package com.zand.areaguard.area;
 import java.util.ArrayList;
 
 
-public interface World {
+public interface World extends Data {
 	
 	/**
 	 * Gets a {@link Cuboid} at location in the world.
@@ -12,7 +12,7 @@ public interface World {
 	 * @param z The z coord of the location
 	 * @return The cuboid at that location
 	 */
-	public Cuboid getCuboid(long x, long y, long z);
+	public Cuboid getCuboid(int x, int y, int z);
 	
 	/**
 	 * Gets the {@link Cuboid}s in the world.

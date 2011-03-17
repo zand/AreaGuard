@@ -73,7 +73,11 @@ public class Config {
 		// Making a new config class to find the Jar's directory
 		if (configDir == null || configDir.isEmpty()) {
 			try {
-				System.out.println(Config.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+				return Config.class.getProtectionDomain()
+				.getCodeSource()
+				.getLocation()
+				.toURI().resolve("AreaGuard/")
+				.getPath();
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}

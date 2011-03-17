@@ -26,7 +26,7 @@ public class SqlMsg implements Msg {
 	@Override
 	public String getMsg() {
 		String msg = "";
-		String sql = "SELECT Value FROM `" + storage.tablePrefix + "Lists` WHERE AreaId = ? AND Name=?";
+		String sql = "SELECT Msg FROM `" + storage.tablePrefix + "Msgs` WHERE AreaId = ? AND Name=? LIMIT 1";
 
 		if (storage.connect()) {
 			try {
@@ -62,10 +62,9 @@ public class SqlMsg implements Msg {
 	@Override
 	public boolean setMsg(String creator, String msg) {
 		boolean success = false;
-		if (saved()) {
-			
+		if (exsists()) {
 			if (msg.isEmpty()) { // Delete it
-				String sql = "DELETE FROM `" + storage.tablePrefix + "Lists` WHERE AreaId=? AND Name=?";
+				String sql = "DELETE FROM `" + storage.tablePrefix + "Msgs` WHERE AreaId=? AND Name=?";
 				if (storage.connect())
 					return false;
 				try {
@@ -89,7 +88,7 @@ public class SqlMsg implements Msg {
 				String update = "UPDATE `" + storage.tablePrefix + "Msgs` "
 				+ "SET Creator=?, Msg=? "
 				+ "WHERE AreaId=? AND Name=?;";
-				if (storage.connect())
+				if (!storage.connect())
 					return false;
 				try {
 					PreparedStatement ps = storage.conn.prepareStatement(update);
@@ -138,22 +137,22 @@ public class SqlMsg implements Msg {
 			}
 		}
 	}
-	
-	private boolean saved() {
-		boolean found = false;
-		String sql = "SELECT Value FROM `" + storage.tablePrefix + "Lists` WHERE AreaId = ? AND Name=?";
+
+	@Override
+	public boolean exsists() {
+		boolean ret = false;
+		String sql = "SELECT COUNT(*) FROM `" + storage.tablePrefix + "Msgs` WHERE AreaId = ? AND Name = ? LIMIT 1";
 
 		if (storage.connect()) {
 			try {
 				PreparedStatement ps = storage.conn.prepareStatement(sql);
 				ps.setInt(1, areaId);
-				ps.setString(2, name);
+				ps.setString(2, getName());
 				ps.execute();
 
 				// Get the result
 				ResultSet rs = ps.getResultSet();
-				if (rs.next())
-					found = true;
+				while (rs.next()) ret = (rs.getInt(1) > 0);
 
 				// Close events
 				rs.close();
@@ -165,7 +164,7 @@ public class SqlMsg implements Msg {
 
 			storage.disconnect();
 		}
-		return found;
+		return ret;
 	}
 
 }

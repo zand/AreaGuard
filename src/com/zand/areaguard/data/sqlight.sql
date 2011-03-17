@@ -16,7 +16,8 @@ PRIMARY KEY (Id)
 CREATE TABLE IF NOT EXISTS `<tablePrefix>Cuboids` ( 
 Id INTEGER, 
 AreaId int NOT NULL, 
-WorldId int NOT NULL, 
+WorldId int NOT NULL,  
+Creator varchar(32) NOT NULL, 
 Priority int NOT NULL DEFAULT 0, 
 x1 int NOT NULL, 
 y1 int NOT NULL, 

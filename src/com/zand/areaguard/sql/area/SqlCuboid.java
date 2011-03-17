@@ -22,7 +22,7 @@ public class SqlCuboid implements Cuboid {
 	@Override
 	public Area getArea() {
 		Area area = null;
-		String sql = "SELECT AreaId FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ?";
+		String sql = "SELECT AreaId FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ? LIMIT 1";
 
 		if (storage.connect()) {
 			try {
@@ -52,7 +52,7 @@ public class SqlCuboid implements Cuboid {
 	@Override
 	public int[] getCoords() {
 		int coords[] = new int[6];
-		String sql = "SELECT x1,y1,z1,x2,y2,z2 FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ?";
+		String sql = "SELECT x1,y1,z1,x2,y2,z2 FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ? LIMIT 1";
 
 		if (storage.connect()) {
 			try {
@@ -87,7 +87,7 @@ public class SqlCuboid implements Cuboid {
 	@Override
 	public int getPriority() {
 		int priority = 100;
-		String sql = "SELECT Priority FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ?";
+		String sql = "SELECT Priority FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ? LIMIT 1";
 
 		if (storage.connect()) {
 			try {
@@ -115,7 +115,7 @@ public class SqlCuboid implements Cuboid {
 	@Override
 	public World getWorld() {
 		World world = null;
-		String sql = "SELECT WorldId FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ?";
+		String sql = "SELECT WorldId FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ? LIMIT 1";
 
 		if (storage.connect()) {
 			try {
@@ -142,7 +142,7 @@ public class SqlCuboid implements Cuboid {
 	}
 
 	@Override
-	public boolean pointInside(World world, long x, long y, long z) {
+	public boolean pointInside(World world, int x, int y, int z) {
 		int coords[] = getCoords();
 		return ((coords[0] <= x && coords[3] >= x) &&
 				(coords[1] <= x && coords[4] >= x) &&
@@ -154,7 +154,8 @@ public class SqlCuboid implements Cuboid {
 	public boolean setArea(Area area) {
 		String update = "UPDATE `" + storage.tablePrefix + "Cuboids` "
 		+ "SET AreaId=? "
-		+ "WHERE Id=?;";
+		+ "WHERE Id=? " 
+		+ "LIMIT 1;";
 		if (storage.connect())
 			return false;
 		try {
@@ -178,7 +179,8 @@ public class SqlCuboid implements Cuboid {
 	public boolean setPriority(int priority) {
 		String update = "UPDATE `" + storage.tablePrefix + "Cuboids` "
 		+ "SET Priority=? "
-		+ "WHERE Id=?;";
+		+ "WHERE Id=? " 
+		+ "LIMIT 1;";
 		if (storage.connect())
 			return false;
 		try {
@@ -199,17 +201,18 @@ public class SqlCuboid implements Cuboid {
 	}
 
 	@Override
-	public boolean setLocation(World world, long[] coords) {
+	public boolean setLocation(World world, int[] coords) {
 		String update = "UPDATE `" + storage.tablePrefix + "Cuboids` "
 		+ "SET WorldId=?, x1=?, y1=?, z1=?, x2=?, y2=?, z2=? "
-		+ "WHERE Id=?;";
+		+ "WHERE Id=? " 
+		+ "LIMIT 1;";
 		if (storage.connect())
 			return false;
 		try {
 			PreparedStatement ps = storage.conn.prepareStatement(update);
 			ps.setInt(1, world.getId());
 			for (int i = 0; i < 6; i++)
-				ps.setLong(i + 2,coords[i]);
+				ps.setInt(i + 2,coords[i]);
 			ps.setInt(8, getId());
 		
 			ps.execute();
@@ -222,6 +225,58 @@ public class SqlCuboid implements Cuboid {
 		
 		storage.disconnect();
 		return true;
+	}
+
+	@Override
+	public boolean exsists() {
+		boolean ret = false;
+		String sql = "SELECT COUNT(*) FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ? LIMIT 1";
+
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, getId());
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				while (rs.next()) ret = (rs.getInt(1) > 0);
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			storage.disconnect();
+		}
+		return ret;
+	}
+
+	@Override
+	public long getBlockCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isActive() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean setActive(boolean active) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getCreator() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
