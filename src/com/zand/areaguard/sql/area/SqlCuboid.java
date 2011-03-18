@@ -275,8 +275,54 @@ public class SqlCuboid implements Cuboid {
 
 	@Override
 	public String getCreator() {
-		// TODO Auto-generated method stub
-		return null;
+		String creator = "";
+		String sql = "SELECT Creator FROM `" + storage.tablePrefix + "Cubiods` WHERE Id = ? LIMIT 1";
+
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, getId());
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				if (rs.next()) creator = rs.getString(1);
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			storage.disconnect();
+		}
+		return creator;
+	}
+
+	@Override
+	public boolean delete() {
+		String sql = "DELETE FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ? LIMIT 1";
+
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, getId());
+				ps.execute();
+
+				// Close events
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				storage.disconnect();
+				return false;
+			}
+
+			storage.disconnect();
+		} else return false;
+		return true;
 	}
 
 }

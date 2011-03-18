@@ -43,7 +43,6 @@ public class AreaCommands implements CommandExecutor {
 				if (args.length > 1) {					
 					for (String arg : Java15Compat.Arrays_copyOfRange(args, 1, args.length))
 						name += arg + " ";
-					name = name.replaceAll("^[A-Za-z0-9\\-]", "");
 					name = name.trim();
 				}
 				
@@ -219,10 +218,15 @@ public class AreaCommands implements CommandExecutor {
 			
 			// Delete
 			else if (args[0].equalsIgnoreCase("delete")) {
-				// TODO ya we need this
-				if (session.getSelectedArea() == null)
+				Area area = session.getSelectedArea();
+				if (area == null)
 					Messager.warn(sender, "You have no area selected");
-				Messager.warn(sender, "This hasent been coded yet.");
+				if (!area.isOwner(session.getName())) {
+					// TODO Add area creators
+					Messager.warn(sender, "Your not an Owner of the selected area.");
+					return true; }
+				if (area.delete()) Messager.inform(sender, "Selected Area Deleted.");
+				else Messager.error(sender, "Faild to delete area!");
 			}
 			
 			// Msg Operations

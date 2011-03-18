@@ -100,4 +100,9 @@ public class ErrorArea implements com.zand.areaguard.area.Area {
 	public String getCreator() {
 		return "@Error";
 	}
+
+	@Override
+	public boolean delete() {
+		return false;
+	}
 }

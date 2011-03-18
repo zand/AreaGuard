@@ -58,9 +58,28 @@ public interface Area extends Data {
 	
 	public ArrayList<Msg> getMsgs();
 	
+	/**
+	 * Gets the ID for this Area.
+	 * @return The ID for this area.
+	 */
 	public int getId();
 	
+	/**
+	 * Gets the name for this Area.
+	 * @return The name for this area.
+	 */
 	public String getName();
 	
+	/**
+	 * Sets the name for this area.
+	 * @param name The name to set it to.
+	 * @return True if success.
+	 */
 	public boolean setName(String name);
+	
+	/**
+	 * Deletes this Area and attached {@link List}s, {@link Msg}s, and {@link Cuboid}s.
+	 * @return True if success.
+	 */
+	public boolean delete();
 }

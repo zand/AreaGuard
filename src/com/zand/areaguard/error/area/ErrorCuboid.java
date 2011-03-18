@@ -64,5 +64,9 @@ public class ErrorCuboid implements Cuboid {
 	public String getCreator() {
 		return "@Error";
 	}
+	@Override
+	public boolean delete() {
+		return false;
+	}
 
 }

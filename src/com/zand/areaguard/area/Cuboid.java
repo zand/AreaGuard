@@ -88,4 +88,10 @@ public interface Cuboid extends Data {
 	 * @return If success.
 	 */
 	public boolean setLocation(World world, int coords[]);
+	
+	/**
+	 * Deletes this cuboid.
+	 * @return True if success.
+	 */
+	public boolean delete();
 }
