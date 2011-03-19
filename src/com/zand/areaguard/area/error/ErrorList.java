@@ -1,4 +1,4 @@
-package com.zand.areaguard.error.area;
+package com.zand.areaguard.area.error;
 
 import java.util.ArrayList;
 

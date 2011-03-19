@@ -1,4 +1,4 @@
-package com.zand.areaguard.error.area;
+package com.zand.areaguard.area.error;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,9 @@ import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.World;
 
 public class ErrorWorld implements World {
+	final static public ErrorWorld
+		NOT_FOUND = new ErrorWorld("WORLD NOT FOUND");
+	
 	final private String name;
 	
 	public ErrorWorld(String name) {

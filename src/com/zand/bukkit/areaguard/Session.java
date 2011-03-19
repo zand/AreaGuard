@@ -22,7 +22,7 @@ public class Session {
 	private boolean bypass = false;
 	HashSet<String> debugFlags = new HashSet<String>();
 	
-	public enum Selected { Area, Cubiod, World, Points, None }
+	public enum Selected { Area, Cuboid, World, Points, None }
 	
 	Selected draw;
 	
@@ -55,11 +55,12 @@ public class Session {
 		selectedWorld = world;
 	}
 	
-	public void select(Cuboid cubiod) {
-		select(cubiod.getWorld());
-		select(cubiod.getArea());
+	public void select(Cuboid cuboid) {
+		selectedCuboid = cuboid;
+		select(cuboid.getWorld());
+		select(cuboid.getArea());
 		
-		int coords[] = cubiod.getCoords();
+		int coords[] = cuboid.getCoords();
 		selectRight(coords[0], coords[1], coords[2]);
 		select(coords[3], coords[4], coords[5]);
 	}
@@ -82,7 +83,7 @@ public class Session {
 		if (lastSelectedPoint == 0)
 			lastSelectedPoint = 1;
 		else lastSelectedPoint = 0;
-		selectedPoints[0] = new int[] {x, y, z};
+		selectedPoints[lastSelectedPoint] = new int[] {x, y, z};
 	}
 	
 	public void selectLeft(Location loc) {
@@ -141,5 +142,19 @@ public class Session {
 		if (flag.equals("all")) debugFlags.clear();
 		if (debug) debugFlags.add(flag);
 		else debugFlags.remove(flag);
+	}
+
+	public int[] getCoords() {
+		int coords[] = new int[6];
+		for (int i = 0; i < 3; i++) {
+			if (selectedPoints[0][i] < selectedPoints[1][i]) {
+				coords[i] = selectedPoints[0][i];
+				coords[i+3] = selectedPoints[1][i];
+			} else {
+				coords[i] = selectedPoints[1][i];
+				coords[i+3] = selectedPoints[0][i];
+			}
+		}
+		return coords;
 	}
 }

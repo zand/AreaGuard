@@ -6,3 +6,9 @@ commands:
   ag:
     description: Shows the help for areaguard
     usage: <command> help
+  area:
+    description: Shows the help for areaguard areas
+    usage: <command> help
+  cuboid:
+    description: Shows the help for areaguard cuboids
+    usage: <command> help

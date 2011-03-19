@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.zand.areaguard.area.Storage;
-import com.zand.areaguard.sql.area.SqlStorage;
+import com.zand.areaguard.area.sql.SqlStorage;
 
 public class Config {
 	private static final String config = getConfigDir() + "/areaguard.properties";

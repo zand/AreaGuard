@@ -17,14 +17,18 @@ public class MainCommands implements CommandExecutor {
 	
 	final CommandExecutor admin;
 	final CommandExecutor area;
+	final CommandExecutor cuboid;
 	final CommandExecutor debug;
+	final CommandExecutor point;
 	
 	public MainCommands(AreaGuard plugin) {
 		this.plugin = plugin;
 		
 		admin = new AdminCommands(plugin);
 		area = new AreaCommands(plugin);
-		debug = new DebugCommands(plugin);
+		cuboid = new CuboidCommands(plugin);
+		debug = new DebugCommands(plugin, this);
+		point = new PointCommands(plugin);
 	}
 
 	@Override
@@ -36,16 +40,25 @@ public class MainCommands implements CommandExecutor {
 			}
 			else if (args[0].equalsIgnoreCase("admin")) {
 				return admin.onCommand(sender, command, label + " " + args[0], 
-						(args.length > 1 ? Java15Compat.Arrays_copyOfRange(args, 1, args.length) : null));
+						Java15Compat.Arrays_copyOfRange(args, 1, args.length));
 			}
 			else if (args[0].equalsIgnoreCase("area")) {
 				return area.onCommand(sender, command, label + " " + args[0], 
-						(args.length > 1 ? Java15Compat.Arrays_copyOfRange(args, 1, args.length) : null));
+						Java15Compat.Arrays_copyOfRange(args, 1, args.length));
+			}
+			else if (args[0].equalsIgnoreCase("cuboid")) {
+				return cuboid.onCommand(sender, command, label + " " + args[0], 
+						Java15Compat.Arrays_copyOfRange(args, 1, args.length));
 			}
 			else if (args[0].equalsIgnoreCase("debug")) {
 				return debug.onCommand(sender, command, label + " " + args[0], 
-						(args.length > 1 ? Java15Compat.Arrays_copyOfRange(args, 1, args.length) : null));
-			} else if (args[0].equalsIgnoreCase("info")) {
+						Java15Compat.Arrays_copyOfRange(args, 1, args.length));
+			} 
+			else if (args[0].equalsIgnoreCase("point")) {
+				return point.onCommand(sender, command, label + " " + args[0], 
+						Java15Compat.Arrays_copyOfRange(args, 1, args.length));
+			} 
+			else if (args[0].equalsIgnoreCase("info")) {
 				showInfo(sender);
 				return true;
 			}
@@ -79,11 +92,11 @@ public class MainCommands implements CommandExecutor {
 		sender.sendMessage(ChatColor.DARK_PURPLE + "Session Info");
 		sender.sendMessage(ChatColor.YELLOW + "User: "  + ChatColor.WHITE + s.getName());
 		sender.sendMessage(ChatColor.YELLOW + "Selected: ");
-		sender.sendMessage(ChatColor.YELLOW + "    World: " + ChatColor.WHITE + (w == null ? "none" :  w.getId() + " " + w.getName()));
-		sender.sendMessage(ChatColor.YELLOW + "    Area: " + ChatColor.WHITE + (a == null ? "none" :  a.getId() + " " + a.getName()));
-		sender.sendMessage(ChatColor.YELLOW + "    Cuboid: " + ChatColor.WHITE + (c == null ? "none" :  c.getId()));
-		sender.sendMessage(ChatColor.YELLOW + "    Points: " + ChatColor.WHITE + 
-				"(" + l[0] + ", " + l[1] + ", " + l[2] + 
+		sender.sendMessage(ChatColor.YELLOW + "    World:" + ChatColor.WHITE + " " + (w == null ? "none" : w.getName()));
+		sender.sendMessage(ChatColor.YELLOW + "    Area:" + ChatColor.WHITE + " " + (a == null ? "none" :  "(" + a.getId() + ") " + a.getName()));
+		sender.sendMessage(ChatColor.YELLOW + "    Cuboid:" + ChatColor.WHITE + " " + (c == null ? "none" :  c.getId()));
+		sender.sendMessage(ChatColor.YELLOW + "    Points:" + ChatColor.WHITE + 
+				" (" + l[0] + ", " + l[1] + ", " + l[2] + 
 				") (" + r[0] + ", " + r[1] + ", " + r[2] + ")");
 	}
 }

@@ -1,4 +1,4 @@
-package com.zand.areaguard.error.area;
+package com.zand.areaguard.area.error;
 
 import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Msg;

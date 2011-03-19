@@ -1,4 +1,4 @@
-package com.zand.areaguard.error.area;
+package com.zand.areaguard.area.error;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +11,8 @@ import com.zand.areaguard.area.World;
 
 
 public class ErrorArea implements com.zand.areaguard.area.Area {
+	final static public ErrorArea
+	NOT_FOUND = new ErrorArea("AREA NOT FOUND");
 	private final String error;
 	ArrayList<Cuboid> cubiods = new ArrayList<Cuboid>();
 	ArrayList<List> lists = new ArrayList<List>();

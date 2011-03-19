@@ -1,4 +1,4 @@
-package com.zand.areaguard.sql.area;
+package com.zand.areaguard.area.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,7 +15,7 @@ public class SqlMsg implements Msg {
 	protected SqlMsg(SqlStorage storage, int areaId, String name) {
 		this.storage = storage;
 		this.areaId = areaId;
-		this.name = name;
+		this.name = name.toLowerCase();
 	}
 
 	@Override

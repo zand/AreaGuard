@@ -1,4 +1,4 @@
-package com.zand.areaguard.sql.area;
+package com.zand.areaguard.area.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,10 +7,14 @@ import java.sql.SQLException;
 import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.World;
-import com.zand.areaguard.error.area.ErrorArea;
-import com.zand.areaguard.error.area.ErrorWorld;
+import com.zand.areaguard.area.error.ErrorArea;
+import com.zand.areaguard.area.error.ErrorCuboid;
+import com.zand.areaguard.area.error.ErrorWorld;
 
 public class SqlCuboid implements Cuboid {
+	final static public ErrorCuboid
+		COULD_NOT_CONNECT = new ErrorCuboid(),
+		SQL_ERROR = new ErrorCuboid();
 	final private SqlStorage storage;
 	final private int id;
 	
@@ -33,7 +37,7 @@ public class SqlCuboid implements Cuboid {
 				// Get the result
 				ResultSet rs = ps.getResultSet();
 				if (rs.next()) area = new SqlArea(storage, rs.getInt(1));
-				else area = new ErrorArea("Not Found");
+				else area = ErrorArea.NOT_FOUND;
 
 				// Close events
 				rs.close();
@@ -41,11 +45,11 @@ public class SqlCuboid implements Cuboid {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				area = new ErrorArea("Sql");
+				area = SqlArea.SQL_ERROR;
 			}
 
 			storage.disconnect();
-		} else area = new ErrorArea("No Sql Connection");
+		} else area = SqlArea.COULD_NOT_CONNECT;
 		return area;
 	}
 
@@ -125,7 +129,8 @@ public class SqlCuboid implements Cuboid {
 
 				// Get the result
 				ResultSet rs = ps.getResultSet();
-				if (rs.next()) world = storage.getWorld(rs.getInt(1));
+				if (rs.next()) world = new SqlWorld(storage, rs.getInt(1));
+				if (!world.exsists()) world = ErrorWorld.NOT_FOUND;
 
 				// Close events
 				rs.close();
@@ -133,11 +138,11 @@ public class SqlCuboid implements Cuboid {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				world = new ErrorWorld("Sql Error");
+				world = SqlWorld.SQL_ERROR;
 			}
 
 			storage.disconnect();
-		} else world = new ErrorWorld("Failed to Connect");
+		} else world = SqlWorld.COULD_NOT_CONNECT;
 		return world;
 	}
 
@@ -257,20 +262,63 @@ public class SqlCuboid implements Cuboid {
 
 	@Override
 	public long getBlockCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		int coords[] = getCoords();
+		return 
+		(coords[3]-coords[0]+1)*
+		(coords[4]-coords[1]+1)*
+		(coords[5]-coords[2]+1);
 	}
 
 	@Override
 	public boolean isActive() {
-		// TODO Auto-generated method stub
-		return false;
+		boolean active = true;
+		String sql = "SELECT Active FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ? LIMIT 1";
+
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, getId());
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				if (rs.next()) active = rs.getBoolean(1);
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			storage.disconnect();
+		}
+		return active;
 	}
 
 	@Override
 	public boolean setActive(boolean active) {
-		// TODO Auto-generated method stub
-		return false;
+		String update = "UPDATE `" + storage.tablePrefix + "Cuboids` "
+		+ "SET Active=? "
+		+ "WHERE Id=?";
+		if (!storage.connect())
+			return false;
+		try {
+			PreparedStatement ps = storage.conn.prepareStatement(update);
+			ps.setBoolean(1, active);
+			ps.setInt(2, getId());
+		
+			ps.execute();
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			storage.disconnect();
+			return false;
+		}
+		
+		storage.disconnect();
+		return true;
 	}
 
 	@Override

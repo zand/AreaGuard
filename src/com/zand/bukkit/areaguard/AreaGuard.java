@@ -1,8 +1,6 @@
 package com.zand.bukkit.areaguard;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
@@ -19,14 +17,15 @@ import org.bukkit.plugin.PluginManager;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import com.zand.areaguard.*;
 import com.zand.areaguard.area.Area;
+import com.zand.bukkit.areaguard.command.AreaCommands;
+import com.zand.bukkit.areaguard.command.CuboidCommands;
 import com.zand.bukkit.areaguard.command.MainCommands;
 import com.zand.bukkit.areaguard.listeners.AreaGuardBlockListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardEntityListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardPlayerListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardWorldListener;
 import com.zand.bukkit.common.Messager;
-
-//import com.nijikokun.bukkit.General.General;
+import com.zand.bukkit.common.TempBlocks;
 
 /**
  * AreaGuard for Bukkit
@@ -43,9 +42,16 @@ public class AreaGuard extends JavaPlugin {
 	*/
 	public Session getSession(CommandSender sender) {
 		if (!sessions.containsKey(sender)) {
-			if (sender instanceof Player)
-				sessions.put(sender, new PlayerSession((Player)sender));
-			else sessions.put(sender, new Session(sender));
+			Session session;
+			if (sender instanceof Player) {
+				session = new PlayerSession((Player)sender);
+				session.select(Config.storage.getWorld(((Player)sender).getWorld().getName()));
+			}
+			else {
+				session = new Session(sender);
+				session.select(Config.storage.getWorld(getServer().getWorlds().get(0).getName()));
+			}
+			sessions.put(sender, session);
 		}
 		return sessions.get(sender);
 	}
@@ -63,9 +69,6 @@ public class AreaGuard extends JavaPlugin {
     // Outside Plugins
     public Permissions Permissions = null;
     
-    // Are command prefixes
-    private final List<String> commands = new ArrayList<String>();
-    
     // Are data on each player
     protected final HashMap<String, PlayerSession> playerSessions = new HashMap<String, PlayerSession>();
 
@@ -77,10 +80,10 @@ public class AreaGuard extends JavaPlugin {
         for (String author : desc.getAuthors()) authors += ", " + author;
         versionInfo = name + " version " + desc.getVersion() + 
         	(authors.isEmpty() ? "" : " by" + authors.substring(1));
-        commands.add(name.toLowerCase());
-        commands.add("ag");
         
         getCommand("ag").setExecutor(new MainCommands(this));
+        getCommand("area").setExecutor(new AreaCommands(this));
+        getCommand("cuboid").setExecutor(new CuboidCommands(this));
     	
     	registerEvents();
     	setupOtherPlugins();
@@ -89,15 +92,6 @@ public class AreaGuard extends JavaPlugin {
     
     public void onDisable() {
     	TempBlocks.deleteAll();
-    }
-    
-    /**
-	* Checks if this is a command for us.
-	* @param command 	The first part of the command without the "/"
-	* @return			if it is
-	*/
-    public boolean isCommand(String command) {
-    	return commands.contains(command);
     }
     
     private void registerEvents() {

@@ -1,4 +1,4 @@
-package com.zand.bukkit.areaguard;
+package com.zand.bukkit.common;
 
 import org.bukkit.World;
 import org.bukkit.block.Block;

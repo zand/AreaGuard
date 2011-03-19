@@ -1,4 +1,4 @@
-package com.zand.bukkit.areaguard;
+package com.zand.bukkit.common;
 
 import java.util.ArrayList;
 import java.util.HashMap;

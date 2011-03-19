@@ -1,4 +1,4 @@
-package com.zand.areaguard.sql.area;
+package com.zand.areaguard.area.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,8 +10,12 @@ import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.List;
 import com.zand.areaguard.area.Msg;
 import com.zand.areaguard.area.World;
+import com.zand.areaguard.area.error.ErrorArea;
 
 public class SqlArea implements Area {
+	final static public ErrorArea
+	COULD_NOT_CONNECT = new ErrorArea("COULD NOT CONNECT"),
+	SQL_ERROR = new ErrorArea("SQL ERROR");
 	final private SqlStorage storage;
 	final private int id;
 	
@@ -23,7 +27,7 @@ public class SqlArea implements Area {
 	@Override
 	public ArrayList<Cuboid> getCubiods() {
 		ArrayList<Cuboid> cubiods = new ArrayList<Cuboid>();
-		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cubiods` WHERE AreaId = ?";
+		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cuboids` WHERE AreaId = ?";
 
 		if (storage.connect()) {
 			try {

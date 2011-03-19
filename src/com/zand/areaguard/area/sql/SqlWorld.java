@@ -1,4 +1,4 @@
-package com.zand.areaguard.sql.area;
+package com.zand.areaguard.area.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -6,9 +6,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.zand.areaguard.area.Cuboid;
-import com.zand.areaguard.error.area.ErrorCuboid;
+import com.zand.areaguard.area.error.ErrorWorld;
 
 public class SqlWorld implements com.zand.areaguard.area.World {
+	final static public ErrorWorld
+		COULD_NOT_CONNECT = new ErrorWorld("COULD NOT CONNECT"),
+		SQL_ERROR = new ErrorWorld("SQL ERROR");
 	final private SqlStorage storage;
 	final private int id;
 	
@@ -69,11 +72,11 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				cuboid = new ErrorCuboid();
+				cuboid = SqlCuboid.SQL_ERROR;
 			}
 
 			storage.disconnect();
-		} else cuboid = new ErrorCuboid();
+		} else cuboid = SqlCuboid.COULD_NOT_CONNECT;
 		return cuboid;
 	}
 

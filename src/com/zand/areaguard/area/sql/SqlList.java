@@ -1,4 +1,4 @@
-package com.zand.areaguard.sql.area;
+package com.zand.areaguard.area.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,7 +16,7 @@ public class SqlList implements List {
 	public SqlList(SqlStorage storage, int areaId, String name) {
 		this.storage = storage;
 		this.areaId = areaId;
-		this.name = name;
+		this.name = name.toLowerCase();
 	}
 	
 	public String toString() {
@@ -44,7 +44,7 @@ public class SqlList implements List {
 			ps.setInt(1, areaId);
 			ps.setString(2, creator);
 			ps.setString(3, name);
-			ps.setString(4, value);
+			ps.setString(4, value.toLowerCase());
 			ps.execute();
 			ps.close();
 			success = true;
@@ -135,7 +135,7 @@ public class SqlList implements List {
 				PreparedStatement ps = storage.conn.prepareStatement(sql);
 				ps.setInt(1, areaId);
 				ps.setString(2, name);
-				ps.setString(3, value);
+				ps.setString(3, value.toLowerCase());
 				ps.execute();
 
 				// Get the result
@@ -165,7 +165,7 @@ public class SqlList implements List {
 			PreparedStatement ps = storage.conn.prepareStatement(sql);
 			ps.setInt(1, areaId);
 			ps.setString(2, name);
-			ps.setString(3, value);
+			ps.setString(3, value.toLowerCase());
 			ps.execute();
 
 			// Close events

@@ -53,7 +53,7 @@ public class AreaGuardBlockListener extends BlockListener {
     		Area area = Config.storage.getWorld(player.getWorld().getName())
         	.getCuboid(block.getX(), block.getY(), block.getZ())
         	.getArea();
-    		if (area != null)
+    		if (area != null && area.exsists())
         		plugin.showAreaInfo(event.getPlayer(), area);
     		else player.sendMessage(ChatColor.YELLOW + "not an Area");
     	}

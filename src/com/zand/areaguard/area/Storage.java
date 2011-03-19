@@ -72,6 +72,13 @@ public interface Storage {
 	public Area getArea(int areaId);
 	
 	/**
+	 * Gets a the {@link Area} by Id.
+	 * @param areaId The id of the area.
+	 * @return The Area.
+	 */
+	public Cuboid getCuboid(int cuboidId);
+	
+	/**
 	 * Creates a new {@link Area}.
 	 * @param The name of the creator.
 	 * @param The name of the area.
@@ -83,9 +90,9 @@ public interface Storage {
 	 * Creates a new {@link Cuboid} in this World.
 	 * @param The name of the creator.
 	 * @param area The area that the cuboid is a part of.
-	 * @param world The world that the cubiod is in.
-	 * @param coords The coords for the cubiod.
-	 * @return The new Cubiod.
+	 * @param world The world that the cuboid is in.
+	 * @param coords The coords for the cuboid.
+	 * @return The new Cuboid.
 	 */
-	public Cuboid newCubiod(String creator, Area area, World world, long[] coords);
+	public Cuboid newCuboid(String creator, Area area, World world, int[] coords);
 }

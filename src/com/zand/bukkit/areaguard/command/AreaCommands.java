@@ -69,8 +69,8 @@ public class AreaCommands implements CommandExecutor {
 							Location loc = ((Player)sender).getLocation();
 							Cuboid cuboid = Config.storage.getWorld(loc.getWorld().getName())
 							.getCuboid(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-							if (cuboid != null) area = cuboid.getArea();
-							if (area != null) {
+							if (cuboid != null && cuboid.exsists()) area = cuboid.getArea();
+							if (area != null && area.exsists()) {
 								session.select(area);
 								Messager.inform(sender, "Selected the \"" + area.getName() + "\" area at your current location.");
 								return true;
@@ -80,7 +80,7 @@ public class AreaCommands implements CommandExecutor {
 						// [id]
 						try {
 							area = Config.storage.getArea(Integer.valueOf(args[1]));
-							if (area != null) {
+							if (area != null && area.exsists()) {
 								session.select(area);
 								Messager.inform(sender, "Selected the \"" + area.getName() + "\" area with id of \"" + args[1] + "\".");
 								return true;
@@ -99,7 +99,7 @@ public class AreaCommands implements CommandExecutor {
 									Integer.valueOf(args[2]), 
 									Integer.valueOf(args[3]));
 							if (cuboid != null) area = cuboid.getArea();
-							if (area != null) {
+							if (area != null && area.exsists()) {
 								session.select(area);
 								Messager.inform(sender, "Selected the \"" + area.getName() + 
 										"\" area at (" + args[1] + ", " + args[2] + ", " + args[3] + ").");
@@ -221,10 +221,7 @@ public class AreaCommands implements CommandExecutor {
 				Area area = session.getSelectedArea();
 				if (area == null)
 					Messager.warn(sender, "You have no area selected");
-				if (!area.isOwner(session.getName())) {
-					// TODO Add area creators
-					Messager.warn(sender, "Your not an Owner of the selected area.");
-					return true; }
+				if (!canModify(area, sender)) return true;
 				if (area.delete()) Messager.inform(sender, "Selected Area Deleted.");
 				else Messager.error(sender, "Faild to delete area!");
 			}
@@ -257,10 +254,7 @@ public class AreaCommands implements CommandExecutor {
 				if (area == null) {
 					Messager.warn(sender, "You have no area selected");
 					return true; }
-				if (!area.isOwner(session.getName())) {
-					// TODO Add area creators
-					Messager.warn(sender, "Your not an Owner of the selected area.");
-					return true; }
+				if (!canModify(area, sender)) return true;
 				
 				if (args.length > 1) {
 					String name = getValidMsgName(args[1]);
@@ -295,10 +289,7 @@ public class AreaCommands implements CommandExecutor {
 				if (area == null) {
 					Messager.warn(sender, "You have no area selected");
 					return true; }
-				if (!area.isOwner(session.getName())) {
-					// TODO Add area creators
-					Messager.warn(sender, "Your not an Owner of the selected area.");
-					return true; }
+				if (!canModify(area, sender)) return true;
 				
 				if (args.length > 1) {
 					String name = getValidListName(args[1]);
@@ -329,10 +320,7 @@ public class AreaCommands implements CommandExecutor {
 				if (area == null) {
 					Messager.warn(sender, "You have no area selected");
 					return true; }
-				if (!area.isOwner(session.getName())) {
-					// TODO Add area creators
-					Messager.warn(sender, "Your not an Owner of the selected area.");
-					return true; }
+				if (!canModify(area, sender)) return true;
 				
 				if (args.length > 1) {
 					String name = getValidListName(args[1]);
@@ -369,6 +357,7 @@ public class AreaCommands implements CommandExecutor {
 		sender.sendMessage(ChatColor.DARK_PURPLE + plugin.versionInfo + " Area Help");
 		sender.sendMessage(ChatColor.WHITE + label + " help" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Shows this.");
 		sender.sendMessage(ChatColor.WHITE + label + " create [name]" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Creates a new area.");
+		sender.sendMessage(ChatColor.WHITE + label + " delete" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Deletes the selected area.");
 		sender.sendMessage(ChatColor.WHITE + label + " owned [by <player>]" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Gets areas owned by player.");
 		sender.sendMessage(ChatColor.WHITE + label + " select [...]" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Selects an area. Run it without any arguments for mor info.");
 	}
@@ -438,5 +427,25 @@ public class AreaCommands implements CommandExecutor {
 		if (mat != null && mat.getId() < 256) 
 			return prefix + mat.name().toLowerCase().replaceAll("\\W", "").replaceAll("_", "-");
 		return null;
+	}
+	
+	public boolean canModify(Area area, CommandSender sender) {
+		// areaguard.area.modify.owned
+		// areaguard.area.modify.created
+		// areaguard.area.modify.all
+		
+		if (sender.isOp()) return true;
+		if (sender instanceof Player) {
+			Player player = (Player)sender;
+			if (area.isOwner(player.getName())) return true;
+		}
+		Messager.warn(sender, "Your not an Owner of the selected area.");
+		return false;
+	}
+	
+	public boolean canCreate(CommandSender sender) {
+		if (sender.isOp()) return true;
+		Messager.warn(sender, "Your not allowed to create new areas.");
+		return false;
 	}
 }

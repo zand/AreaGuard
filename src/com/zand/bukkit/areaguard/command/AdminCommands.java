@@ -11,7 +11,7 @@ import com.zand.areaguard.Config;
 import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.World;
-import com.zand.areaguard.sql.area.SqlStorage;
+import com.zand.areaguard.area.sql.SqlStorage;
 import com.zand.bukkit.areaguard.AreaGuard;
 import com.zand.bukkit.areaguard.Session;
 import com.zand.bukkit.common.Messager;

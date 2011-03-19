@@ -1,6 +1,9 @@
-package com.zand.areaguard.sql.area;
+package com.zand.areaguard.area.sql;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,14 +13,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import com.zand.areaguard.JarFile;
 import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.Storage;
 import com.zand.areaguard.area.World;
-import com.zand.areaguard.error.area.ErrorArea;
-import com.zand.areaguard.error.area.ErrorCuboid;
-import com.zand.areaguard.error.area.ErrorWorld;
+import com.zand.areaguard.area.error.ErrorArea;
+import com.zand.areaguard.area.error.ErrorCuboid;
+import com.zand.areaguard.area.error.ErrorWorld;
 
 public class SqlStorage implements Storage {
 	private String configFilename;
@@ -70,11 +72,18 @@ public class SqlStorage implements Storage {
 			return true;
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+		
 		return false;
+	}
+	
+	public boolean createTables() {
+		// Run Table Creation Script
+		String name = "mysql.sql";
+		if (url.toLowerCase().contains("sqlite")) name = "sqlite.sql";
+		return executeSqlScript(SqlStorage.class.getClassLoader().getResourceAsStream(name));
 	}
 	
 	public void config(String driver, String url, String user, String password,
@@ -86,6 +95,7 @@ public class SqlStorage implements Storage {
 		this.password = password;
 		this.tablePrefix = tablePrefix;
 		this.keepConn = keepConn;
+		createTables();
 	}
 
 	public boolean connect() {
@@ -106,36 +116,6 @@ public class SqlStorage implements Storage {
 					+ "\n");
 		}
 		return (conn != null);
-	}
-
-	public boolean createTables() {
-		// Load the sql Data
-		String[] lines = JarFile.toString(
-				(url.toLowerCase().contains("sqlite") ? 
-						"data/sqlight.sql" : "data/mysql.sql"))
-				.replaceAll("<tablePrefix>", tablePrefix)
-				.split(";");
-
-		connect();
-		if (conn == null)
-			return false;
-		
-		// Execute the sql data
-		for (String sql : lines) {
-			if (sql.trim().isEmpty()) continue;
-			sql += ";";
-			//System.out.println(sql);
-			try {
-				Statement st = conn.createStatement();
-				st.execute(sql);
-				st.close();
-			} catch (SQLException e) {
-				System.err.println("Failed to Create Tables: " + e.getMessage());
-				e.printStackTrace();
-			}
-		}
-		disconnect();
-		return true;
 	}
 
 	public void disconnect() {
@@ -194,7 +174,7 @@ public class SqlStorage implements Storage {
 	@Override
 	public ArrayList<Area> getAreas(String name) {
 		ArrayList<Area> areas = new ArrayList<Area>();
-		String sql = "SELECT Id FROM `" + tablePrefix + "Areas` WHERE Name=?";
+		String sql = "SELECT Id FROM `" + tablePrefix + "Areas` WHERE UPPER(Name)=UPPER(?)";
 
 		connect();
 		if (conn != null) {
@@ -241,7 +221,7 @@ public class SqlStorage implements Storage {
 			try {
 				PreparedStatement ps = conn.prepareStatement(sql);
 				ps.setString(1, "owners");
-				ps.setString(2, owner);
+				ps.setString(2, owner.toLowerCase());
 				ps.execute();
 				
 				// Get the result
@@ -393,12 +373,12 @@ public class SqlStorage implements Storage {
 	}
 
 	@Override
-	public Cuboid newCubiod(String creator, Area area, World world, long[] coords) {
+	public Cuboid newCuboid(String creator, Area area, World world, int[] coords) {
 		Cuboid cubiod = null;
 
-		String insert = "INSERT INTO `" + tablePrefix + "Areas`"
+		String insert = "INSERT INTO `" + tablePrefix + "Cuboids`"
 				+ "(Creator, AreaId, WorldId, x1, y1, z1, x2, y2, z2)"
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 		connect();
 		
 		if (conn == null)
@@ -410,7 +390,7 @@ public class SqlStorage implements Storage {
 			ps.setInt(3, world.getId());
 			for (int i = 0; i < 6; i++)
 				if (coords != null && i < coords.length)
-					ps.setLong(4 + i, coords[i]);
+					ps.setInt(4 + i, coords[i]);
 			ps.execute();
 
 			Statement st = conn.createStatement();
@@ -434,5 +414,68 @@ public class SqlStorage implements Storage {
 		return "Sql " + url;
 	}
 	
+	@Override
+	public Cuboid getCuboid(int areaId) {
+		return new SqlCuboid(this, areaId);
+	}
 	
+	public boolean executeSqlScript(File file) {
+		if (!file.exists()) {
+			System.err.println("[AreaGuard] Error running sql script: could not find the file \"" + file.getName() + "\"");
+			return false; }
+		if (!file.canRead()) {
+			System.err.println("[AreaGuard] Error running sql script: do not have permition to read the file \"" + file.getName() + "\"");
+			return false; }
+		
+		boolean ret = false;
+		
+		try {
+			FileInputStream fis = new FileInputStream(file);
+			ret = executeSqlScript(fis);
+			fis.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
+	public boolean executeSqlScript(InputStream is) {
+		if (is == null) {
+			System.err.println("[AreaGuard] Error running sql script: InputStream is null.");
+			return false; }
+		
+		String calls[] = new String[0];
+		
+		// Convert
+		String data = "";
+		byte buffer[] = new byte[1];
+		try {
+			while (is.read(buffer) != -1) {
+				data +=  new String(buffer);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		calls = data.replaceAll("<tablePrefix>", tablePrefix).split(";");
+		
+		connect();
+		
+		if (conn == null) {
+			System.err.println("[AreaGuard] Error running sql script: could not connect to the database.");
+			return false; }
+		try {
+			for (String call : calls) {
+				if (call.trim().isEmpty()) continue;
+				// System.out.println(call);
+				PreparedStatement ps = conn.prepareStatement(call);
+				ps.execute();
+				ps.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		disconnect();
+		
+		return false;
+	}
 }

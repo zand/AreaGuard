@@ -6,7 +6,6 @@ PRIMARY KEY (Id)
 
 CREATE TABLE IF NOT EXISTS `<tablePrefix>Areas` ( 
 Id INTEGER, 
-WorldId int NOT NULL, 
 Name varchar(32) NOT NULL, 
 Creator varchar(32) NOT NULL, 
 ParrentId int NOT NULL DEFAULT -1, 
