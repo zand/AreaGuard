@@ -60,7 +60,6 @@ public class SqlArea implements Area {
 
 	@Override
 	public List getList(String name) {
-		System.out.println("" + id + ": " + name);
 		return new SqlList(storage, getId(), name);
 	}
 

@@ -32,13 +32,13 @@ public class AreaCommands implements CommandExecutor {
 		help.add("create", 	"[name]", 				"Creates a new area.", "");
 		help.add("delete", 	"", 					"Deletes the selected area.", "");
 		help.add("owned", 	"[by <player>]", 		"Gets areas owned by player.", "");
-		help.add("select", 	"[<player>|my] <name>",	"Selects an area with that name owned by player if given.", "");
-		help.add("select", 	"<id>", 				"Selects an area with that id.", "");
+		help.add("select", 	"[<player>|my] <name>",	"Selects an area by name.", "");
+		help.add("select", 	"<id>", 				"Selects an area by id.", "");
 		help.add("select", 	"<x> <y> <z>", 			"Selects an area at that position.", "");
 		help.add("add", 	"<list> [values...]", 	"Adds the values to the list.", "");
-		help.add("remove", 	"<list> [values...]", 	"Removes the values from the list.", "");
+		help.add("remove", 	"<list> [values...]", 	"Removes from the list.", "");
 		help.add("clear", 	"<list>", 				"Removes the list.", "");
-		help.add("msg", 	"<event> [message...]", "Sets the message for that event.", "");
+		help.add("msg", 	"<event> [msg...]", 	"Sets the message for that event.", "");
 		help.add("show", 	"<event>", 				"Shows the message for that event.", "");
 	}
 	
@@ -166,6 +166,8 @@ public class AreaCommands implements CommandExecutor {
 					Messager.warn(sender, "Could not find area \"" + name + "\"");
 				}
 				else help.show(sender, label);
+				
+				return true;
 			}
 			
 			// Owned
@@ -187,6 +189,8 @@ public class AreaCommands implements CommandExecutor {
 				if (msg.isEmpty()) msg = "None";
 				else msg = msg.substring(2);
 				sender.sendMessage(msg);
+				
+				return true;
 			}
 			
 			// Check
@@ -199,6 +203,8 @@ public class AreaCommands implements CommandExecutor {
 					msg = msg.trim();
 					sender.sendMessage(msg);
 				}
+				
+				return true;
 			}
 			
 			// Info
@@ -226,6 +232,8 @@ public class AreaCommands implements CommandExecutor {
 				names = "";
 				for (Msg msg : msgs) names += msg.getName() + " ";
 				if (!names.isEmpty()) sender.sendMessage(names);
+				
+				return true;
 			}
 			
 			// Delete
@@ -236,6 +244,8 @@ public class AreaCommands implements CommandExecutor {
 				if (!canModify(area, sender)) return true;
 				if (area.delete()) Messager.inform(sender, "Selected Area Deleted.");
 				else Messager.error(sender, "Faild to delete area!");
+				
+				return true;
 			}
 			
 			// Msg Operations
@@ -248,15 +258,29 @@ public class AreaCommands implements CommandExecutor {
 				
 				if (args.length > 1) {
 					String name = getValidMsgName(args[1]);
+					if (name == null || name.isEmpty())
+						name = getValidListName(args[1]);
 					
 					if (name == null || name.isEmpty()) {
-						Messager.warn(sender, "\"" + args[1] + "\" is not a valid msg name.");
+						Messager.warn(sender, "\"" + args[1] + "\" is not a valid msg or list name.");
 						return true; }
 					
+					// Show the message
 					Msg msg = area.getMsg(name);
 					if (msg == null) Messager.error(sender, "Could not access the msg \"" + name + "\".");
 					else Messager.inform(sender, name + ":" + ChatColor.WHITE + " " + msg.getMsg());
-				} else Messager.warn(sender, "No message name given.");
+					
+					// Show the list
+					List list = area.getList(name);
+					if (list == null) Messager.error(sender, "Could not access the list \"" + name + "\".");
+					else {
+						String text = ""; 
+						for (String value : list.getValues()) text += value + " ";
+						Messager.inform(sender, ChatColor.WHITE + text + " ");
+					}
+					
+				} else Messager.warn(sender, "No message or list name given.");
+				
 				return true;
 			}
 			
@@ -290,6 +314,7 @@ public class AreaCommands implements CommandExecutor {
 					else Messager.error(sender, "Could not set the msg \"" + name + "\".");
 					return true;
 				} else Messager.warn(sender, "No message name given.");
+				
 				return true;
 			}
 			
@@ -334,6 +359,7 @@ public class AreaCommands implements CommandExecutor {
 					else Messager.error(sender, "Could not set the msg \"" + name + "\".");
 					return true;
 				} else Messager.warn(sender, "No list name given.");
+				
 				return true;
 			}
 			
@@ -365,9 +391,25 @@ public class AreaCommands implements CommandExecutor {
 					else Messager.error(sender, "Could not set the list \"" + name + "\".");
 					return true;
 				} else Messager.warn(sender, "No list name given.");
+				
 				return true;
 			}
 			// List
+			
+			// Reverse Arg Pairs
+			if (args.length > 1) {
+				if (args[1].equalsIgnoreCase("msg") ||
+					args[1].equalsIgnoreCase("show") ||
+					args[1].equalsIgnoreCase("add") ||
+					args[1].equalsIgnoreCase("remove")) {
+					
+					String temp = args[1];
+					args[1] = args[0];
+					args[0] = temp;
+					return onCommand(sender, command, label, args);
+				}
+			}
+			
 			
 			help.show(sender, label);
 		} else {
@@ -445,9 +487,14 @@ public class AreaCommands implements CommandExecutor {
 		if (sender.isOp()) return true;
 		if (sender instanceof Player) {
 			Player player = (Player)sender;
-			if (area.isOwner(player.getName())) return true;
+			
+			if (plugin.checkPermission(player, "areaguard.area.modify.all")) return true;
+			if (area.isOwner(player.getName()) &&
+				plugin.checkPermission(player, "areaguard.area.modify.owned")) return true;
+			if (area.getCreator().equalsIgnoreCase(player.getName()) &&
+					plugin.checkPermission(player, "areaguard.area.modify.created")) return true;
 		}
-		Messager.warn(sender, "Your not an Owner of the selected area.");
+		Messager.warn(sender, "Your not allowed to modify the selected area.");
 		return false;
 	}
 	

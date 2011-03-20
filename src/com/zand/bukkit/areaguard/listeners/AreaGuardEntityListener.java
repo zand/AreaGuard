@@ -52,7 +52,7 @@ public class AreaGuardEntityListener extends EntityListener {
     private  void onPlayerDamage(Player player, Area area) {
     	// if they are in an area
 		if (area != null)
-			if (plugin.playerCan(area, player.getName(), new String[] {"heal"})) // can they auto heal
+			if (plugin.playerCan(area, player, new String[] {"heal"})) // can they auto heal
 					new HealJob(player, area); // start a new HealJob
     }
     

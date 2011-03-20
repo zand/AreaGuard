@@ -215,14 +215,15 @@ public class AreaGuard extends JavaPlugin {
 				}
 			
 			// Check if the player can do the events 
-			if (playerCan(area, player.getName(), lists)) {
+			if (playerCan(area, player, lists)) {
 				
 				// Send the allowed messages
 				for (String list : lists) {
 					String msg = area.getMsg(list).getMsg();
-					if (getSession(player).isDebuging("lists")) 
-						Messager.debug(player, "Checking " + list + " " 
-								+ (area.getList(list).hasValue(player.getName())));
+					
+					// Debug msgs
+					if (getSession(player).isDebuging("msgs")) Messager.debug(player, "Sending msg " + list);
+					
 					if (!msg.isEmpty()) Messager.inform(player, msg); }
 			} else {
 				
@@ -234,9 +235,10 @@ public class AreaGuard extends JavaPlugin {
 				// Send the not allowed messages
 				for (String list : lists) {
 					String msg = area.getMsg("no-"+list).getMsg();
-					if (getSession(player).isDebuging("lists")) 
-						Messager.debug(player, "Checking no-" + list + " " 
-								+ (area.getList("no-"+list).hasValue(player.getName())));
+					
+					// Debug msgs
+					if (getSession(player).isDebuging("msgs")) Messager.debug(player, "Sending msg no-" + list);
+					
 					if (!msg.isEmpty()) Messager.warn(player, msg); }
 				return false;
 			}	
@@ -244,7 +246,8 @@ public class AreaGuard extends JavaPlugin {
 		return true;
 	}
 	
-	public boolean playerCan(Area area, String player, String lists[]) {
+	// TODO fix
+	public boolean playerCan(Area area, Player player, String lists[]) {
 		boolean ret = true;
 		
 		// Find out if any of the events are restricted
@@ -253,11 +256,27 @@ public class AreaGuard extends JavaPlugin {
 			break;
 		}
 		
+		// Debug lists
+		if (getSession(player).isDebuging("lists")) 
+			Messager.debug(player, "Checking list restrict " + !ret);
+		
 		// Check the lists switching between them as seen fit
-		for (String list : lists)
-		if (ret) {
-			if (area.getList("no-"+list).hasValue(player)) ret = false;
-		} else if (area.getList(list).hasValue(player)) ret = true;
+		for (String list : lists) {
+			if (ret) {
+				if (area.getList("no-"+list).hasValue(player.getName())) ret = false;
+				
+				// Debug lists
+				if (getSession(player).isDebuging("lists")) 
+					Messager.debug(player, "Checking list no-" + list + " " + !ret);
+			} else { 
+				if (area.getList(list).hasValue(player.getName())) ret = true;
+				
+				// Debug lists
+				if (getSession(player).isDebuging("lists")) 
+					Messager.debug(player, "Checking list " + list + " " + ret);
+			}
+			
+		}
 		
 		return ret;
 	}
