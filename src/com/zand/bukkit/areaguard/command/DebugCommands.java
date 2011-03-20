@@ -1,6 +1,5 @@
 package com.zand.bukkit.areaguard.command;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,10 +12,15 @@ import com.zand.bukkit.common.TextMapper;
 public class DebugCommands implements CommandExecutor {
 	private AreaGuard plugin;
 	MainCommands main;
+	private CommandHelp help = new CommandHelp("Debug");
 	
 	public DebugCommands(AreaGuard plugin, MainCommands main) {
 		this.plugin = plugin;
 		this.main = main;
+		help.add("cmd", 	"[...]", 	"Debugs ag [...].", "");
+		help.add("map", 	"", 		"Text Map Testing.", "");
+		help.add("start", 	"<flag>", 	"Starts debuging flag.", "");
+		help.add("stop", 	"<flag>",	"Stops debuging flag.", "");
 	}
 
 	@Override
@@ -51,19 +55,11 @@ public class DebugCommands implements CommandExecutor {
 				return ret;
 			}
 			else {
-				showHelp(sender, label);
+				help.show(sender, label);
 			}
 		} else {
-			showHelp(sender, label);
+			help.show(sender, label);
 		}
 		return true;
 	}
-	
-	public void showHelp(CommandSender sender, String label) {
-		sender.sendMessage(ChatColor.DARK_PURPLE + plugin.versionInfo + " Debug Help");
-		sender.sendMessage(ChatColor.WHITE + label + " help" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Shows this.");
-		sender.sendMessage(ChatColor.WHITE + label + " cmd [command...]" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Debugs ag [command...].");
-		sender.sendMessage(ChatColor.WHITE + label + " map" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Text Map Testing.");
-	}
-
 }

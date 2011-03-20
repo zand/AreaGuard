@@ -13,6 +13,7 @@ import com.zand.bukkit.areaguard.AreaGuard;
 import com.zand.bukkit.areaguard.Session;
 
 public class MainCommands implements CommandExecutor {
+	private CommandHelp help = new CommandHelp("Main");
 	private AreaGuard plugin;
 	
 	final CommandExecutor admin;
@@ -29,6 +30,14 @@ public class MainCommands implements CommandExecutor {
 		cuboid = new CuboidCommands(plugin);
 		debug = new DebugCommands(plugin, this);
 		point = new PointCommands(plugin);
+		
+		CommandHelp.program = plugin.versionInfo;
+		help.add("ver", 	"", 		"Shows the version info.", "");
+		help.add("admin", 	"[...]", 	"Admin Commands.", "");
+		help.add("area", 	"[...]", 	"Area Commands.", "");
+		help.add("cuboid", 	"[...]", 	"Cuboid Commands.", "");
+		help.add("debug", 	"[...]", 	"Debug Commands.", "");
+		help.add("info", 	"[...]", 	"Displays the current Session info.", "");
 	}
 
 	@Override
@@ -63,22 +72,12 @@ public class MainCommands implements CommandExecutor {
 				return true;
 			}
 			else {
-				showHelp(sender, label);
+				help.show(sender, label);
 			}
 		} else {
-			showHelp(sender, label);
+			help.show(sender, label);
 		}
 		return true;
-	}
-	
-	public void showHelp(CommandSender sender, String label) {
-		sender.sendMessage(ChatColor.DARK_PURPLE + plugin.versionInfo + " Help");
-		sender.sendMessage(ChatColor.WHITE + label + " help" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Shows this.");
-		sender.sendMessage(ChatColor.WHITE + label + " ver" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Shows the version info.");
-		sender.sendMessage(ChatColor.WHITE + label + " admin [...]" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Admin Commands.");
-		sender.sendMessage(ChatColor.WHITE + label + " area [...]" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Area Commands.");
-		sender.sendMessage(ChatColor.WHITE + label + " debug [...]" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Debug Commands.");
-		sender.sendMessage(ChatColor.WHITE + label + " info" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Displays the current Session info.");
 	}
 	
 	public void showInfo(CommandSender sender) {

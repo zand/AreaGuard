@@ -8,7 +8,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.*;
 
 import com.zand.areaguard.Config;
-import com.zand.areaguard.area.Area;
+import com.zand.areaguard.area.Cuboid;
 import com.zand.bukkit.areaguard.AreaGuard;
 
 public class AreaGuardBlockListener extends BlockListener {
@@ -19,6 +19,7 @@ public class AreaGuardBlockListener extends BlockListener {
     	plugin = instance;
     }
     
+    @Override
     public void onBlockPlace(BlockPlaceEvent event) {
     	if (event.isCancelled()) return;
     	
@@ -28,6 +29,7 @@ public class AreaGuardBlockListener extends BlockListener {
     	checkCanBuild(player, block, event);
     }
     
+    @Override
     public void onBlockDamage(BlockDamageEvent event) {
     	if (event.isCancelled()) return;
     	if (event.getDamageLevel() == BlockDamageLevel.BROKEN) {
@@ -39,6 +41,7 @@ public class AreaGuardBlockListener extends BlockListener {
     	}
     }
     
+    @Override
     public void onBlockRightClick(BlockRightClickEvent event) {
     	Block block = event.getBlock();
     	Player player = event.getPlayer();
@@ -50,15 +53,15 @@ public class AreaGuardBlockListener extends BlockListener {
     	}
     	// Check Area
     	else if (event.getItemInHand().getTypeId() == Config.checkTool) {
-    		Area area = Config.storage.getWorld(player.getWorld().getName())
-        	.getCuboid(block.getX(), block.getY(), block.getZ())
-        	.getArea();
-    		if (area != null && area.exsists())
-        		plugin.showAreaInfo(event.getPlayer(), area);
+    		Cuboid cuboid = Config.storage.getWorld(player.getWorld().getName())
+        		.getCuboid(block.getX(), block.getY(), block.getZ());
+    		if (cuboid != null && cuboid.exsists())
+        		plugin.showCuboidInfo(event.getPlayer(), cuboid);
     		else player.sendMessage(ChatColor.YELLOW + "not an Area");
     	}
     }
 	
+    @Override
 	public void onBlockInteract(BlockInteractEvent event) {
 		if (event.isCancelled()) return;
 		if (!event.isPlayer()) return;
@@ -84,9 +87,8 @@ public class AreaGuardBlockListener extends BlockListener {
 			return false;
 		
 		// Check can use
-		if (checkCanUse(player, block, event))
+		if (!checkCanUse(player, block, event))
 			return false;
-		
 		
 		return true;
 	}
@@ -100,36 +102,10 @@ public class AreaGuardBlockListener extends BlockListener {
 	 */
 	public boolean checkCanUse(Player player, Block block, Cancellable event) {
 		Material mat = block.getType();
-		String type = "";
 		
-		// Check things that can be Opened
-		switch (mat) {
-		case CHEST: type = "chest"; break;
-		case FURNACE: type = "furnace"; break;
-		case DISPENSER: type = "dispenser"; break;
-		case JUKEBOX: type = "jukebox"; break;
-		}
+		return plugin.checkEvent(event, player, 
+			new String[] {"owners", "allow", "open", mat.name().toLowerCase().replaceAll("\\W", "").replaceAll("_", "-")}, 
+			block.getX(), block.getY(), block.getZ());
 		
-		if (!type.isEmpty()) {
-			return plugin.checkEvent(event, player, 
-					new String[] {"owners", "allow", "open", type, "block-"+block.getTypeId()}, 
-					block.getX(), block.getY(), block.getZ());
-		}
-		
-		//Check things that can be operated
-		switch (mat) {
-		case WOOD_DOOR: type = "door"; break;
-		case LEVER: type = "lever"; break;
-		case STONE_BUTTON: type = "button"; break;
-		}
-		
-		if (!type.isEmpty()) {
-			return plugin.checkEvent(event, player, 
-					new String[] {"owners", "allow", type, "block-"+block.getTypeId()}, 
-					block.getX(), block.getY(), block.getZ());
-		}
-		
-		return false;
 	}
-	
 }

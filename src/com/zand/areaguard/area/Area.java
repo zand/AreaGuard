@@ -44,8 +44,6 @@ public interface Area extends Data {
 	 */
 	public boolean pointInside(String world, int x, int y, int z);
 	
-	public boolean playerCan(String player, String[] lists);
-	
 	public List getList(String name);
 	
 	public Area getParrent();

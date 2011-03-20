@@ -24,10 +24,22 @@ import com.zand.bukkit.areaguard.Session;
 import com.zand.bukkit.common.Messager;
 
 public class AreaCommands implements CommandExecutor {
+	private CommandHelp help = new CommandHelp("Area");
 	private AreaGuard plugin;
 	
 	public AreaCommands(AreaGuard plugin) {
 		this.plugin = plugin;
+		help.add("create", 	"[name]", 				"Creates a new area.", "");
+		help.add("delete", 	"", 					"Deletes the selected area.", "");
+		help.add("owned", 	"[by <player>]", 		"Gets areas owned by player.", "");
+		help.add("select", 	"[<player>|my] <name>",	"Selects an area with that name owned by player if given.", "");
+		help.add("select", 	"<id>", 				"Selects an area with that id.", "");
+		help.add("select", 	"<x> <y> <z>", 			"Selects an area at that position.", "");
+		help.add("add", 	"<list> [values...]", 	"Adds the values to the list.", "");
+		help.add("remove", 	"<list> [values...]", 	"Removes the values from the list.", "");
+		help.add("clear", 	"<list>", 				"Removes the list.", "");
+		help.add("msg", 	"<event> [message...]", "Sets the message for that event.", "");
+		help.add("show", 	"<event>", 				"Shows the message for that event.", "");
 	}
 	
 	@Override
@@ -153,7 +165,7 @@ public class AreaCommands implements CommandExecutor {
 					
 					Messager.warn(sender, "Could not find area \"" + name + "\"");
 				}
-				else showSelectHelp(sender, label + " " + args[0]);
+				else help.show(sender, label);
 			}
 			
 			// Owned
@@ -306,6 +318,17 @@ public class AreaCommands implements CommandExecutor {
 						Messager.error(sender, "Could not access the list \"" + name + "\".");
 						return true; }
 					
+					if (name.equals("restrict")) {
+						for (int i = 2; i < args.length; i++) {
+							String restrict = args[i];
+							args[i] = getValidListName(restrict);
+							if (args[i] == null || args[i].isEmpty()) {
+								Messager.warn(sender, "\"" + restrict + "\" is not a valid restriction.");
+							}
+								
+						}
+					}
+					
 					if (list.addValues(session.getRealName(), Java15Compat.Arrays_copyOfRange(args, 2, args.length)))
 						Messager.inform(sender, "Adding to " + name + ":");
 					else Messager.error(sender, "Could not set the msg \"" + name + "\".");
@@ -346,35 +369,20 @@ public class AreaCommands implements CommandExecutor {
 			}
 			// List
 			
-			else showHelp(sender, label);
+			help.show(sender, label);
 		} else {
-			showHelp(sender, label);
+			help.show(sender, label);
 		}
 		return true;
-	}
-	
-	public void showHelp(CommandSender sender, String label) {
-		sender.sendMessage(ChatColor.DARK_PURPLE + plugin.versionInfo + " Area Help");
-		sender.sendMessage(ChatColor.WHITE + label + " help" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Shows this.");
-		sender.sendMessage(ChatColor.WHITE + label + " create [name]" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Creates a new area.");
-		sender.sendMessage(ChatColor.WHITE + label + " delete" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Deletes the selected area.");
-		sender.sendMessage(ChatColor.WHITE + label + " owned [by <player>]" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Gets areas owned by player.");
-		sender.sendMessage(ChatColor.WHITE + label + " select [...]" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Selects an area. Run it without any arguments for mor info.");
-	}
-	
-	public void showSelectHelp(CommandSender sender, String label) {
-		sender.sendMessage(ChatColor.DARK_PURPLE + plugin.versionInfo + " Area Select Help");
-		sender.sendMessage(ChatColor.WHITE + label + " <name>" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Selects an area with that name.");
-		sender.sendMessage(ChatColor.WHITE + label + " <id>" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Selects an area with that id.");
-		sender.sendMessage(ChatColor.WHITE + label + " <x> <y> <z>" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Selects an area at that position.");
-		sender.sendMessage(ChatColor.WHITE + label + " my <name>" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Selects an area you own with that name.");
-		sender.sendMessage(ChatColor.WHITE + label + " <player> <name>" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Selects an area owned by player with that name.");
 	}
 	
 	public String getValidListName(String name) {
 		name = name.toLowerCase();
 		if (name.startsWith("own"))
 			return "owners";
+		
+		if (name.equals("restrict"))
+			return name;
 		
 		String prefix = "";
 		if (name.startsWith("no-") && name.length() > 3) {

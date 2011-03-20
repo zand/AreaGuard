@@ -60,6 +60,7 @@ public class SqlArea implements Area {
 
 	@Override
 	public List getList(String name) {
+		System.out.println("" + id + ": " + name);
 		return new SqlList(storage, getId(), name);
 	}
 
@@ -155,12 +156,6 @@ public class SqlArea implements Area {
 	@Override
 	public boolean isOwner(String player) {
 		return getList("owners").hasValue(player);
-	}
-
-	@Override
-	public boolean playerCan(String player, String[] lists) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override

@@ -18,9 +18,17 @@ import com.zand.bukkit.common.Messager;
 
 public class CuboidCommands implements CommandExecutor {
 	private AreaGuard plugin;
+	private CommandHelp help = new CommandHelp("Cuboid");
 	
 	public CuboidCommands(AreaGuard plugin) {
 		this.plugin = plugin;
+		help.add("create", 		"", 	"Creates a new cuboid for the selected area.", "");
+		help.add("activate", 	"", 	"Activates the selected cuboid.", "");
+		help.add("deactivate", 	"", 	"Deactivates the selected cuboid.", "");
+		help.add("delete", 		"", 	"Deletes the selected cuboid.", "");
+		help.add("list", 		"", 	"Lists the cuboids in the selected area.", "");
+		help.add("move", 		"", 	"Moves the selected area.", "");
+		help.add("select", 		"<id>", "Selects a cuboid by ID.", "");
 	}
 
 	@Override
@@ -197,18 +205,8 @@ public class CuboidCommands implements CommandExecutor {
 				return true;
 			}
 		}
-		showHelp(sender, label);
+		help.show(sender, label);
 		return true;
-	}
-	
-	public void showHelp(CommandSender sender, String label) {
-		sender.sendMessage(ChatColor.DARK_PURPLE + plugin.versionInfo + " Cuboid Help");
-		sender.sendMessage(ChatColor.WHITE + label + " help" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Shows this.");
-		sender.sendMessage(ChatColor.WHITE + label + " create" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Creates a new cuboid for the selected area.");
-		sender.sendMessage(ChatColor.WHITE + label + " info" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Shows the info for the selected cuboid.");
-		sender.sendMessage(ChatColor.WHITE + label + " delete" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Deletes the selected cuboid.");
-		sender.sendMessage(ChatColor.WHITE + label + " list" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Lists the cuboids in the selected area.");
-		sender.sendMessage(ChatColor.WHITE + label + " select <id>" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Selects a cuboid by ID.");
 	}
 	
 	public boolean canActivate(Cuboid cuboid, CommandSender sender, boolean warn) {

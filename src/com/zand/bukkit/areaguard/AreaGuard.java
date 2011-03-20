@@ -17,6 +17,8 @@ import org.bukkit.plugin.PluginManager;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import com.zand.areaguard.*;
 import com.zand.areaguard.area.Area;
+import com.zand.areaguard.area.Cuboid;
+import com.zand.areaguard.area.error.ErrorArea;
 import com.zand.bukkit.areaguard.command.AreaCommands;
 import com.zand.bukkit.areaguard.command.CuboidCommands;
 import com.zand.bukkit.areaguard.command.MainCommands;
@@ -129,7 +131,18 @@ public class AreaGuard extends JavaPlugin {
 	*/
     public void showAreaInfo(CommandSender sender, Area area) {
     	// TODO area info
-    	sender.sendMessage(ChatColor.YELLOW + area.toString());
+    	sender.sendMessage(ChatColor.YELLOW + "Area ID: " + area.getId() + " Name: " + area.getName());
+    }
+    
+    /**
+	* Sends the player a message containing the area info.
+	* @param player	The player to send to
+	* @param area	The area to show
+	*/
+    public void showCuboidInfo(CommandSender sender, Cuboid cuboid) {
+    	// TODO area info
+    	showAreaInfo(sender, cuboid.getArea());
+    	sender.sendMessage(ChatColor.YELLOW + "Cuboid ID: " + cuboid.getId() + " Status: " + (cuboid.isActive() ? "Active" : "Inactive"));
     }
     
     /**
@@ -172,8 +185,10 @@ public class AreaGuard extends JavaPlugin {
 	*/
     public boolean checkEvent(Cancellable event, Player player, String[] lists, int x, int y, int z) {
     	// TODO fix
-    	Area area = null;
-		return checkEvent(event, player, lists, area);
+    	Cuboid cuboid = Config.storage.getWorld(player.getWorld().getName()).getCuboid(x, y, z);
+    	if (cuboid != null && cuboid.exsists())
+		return checkEvent(event, player, lists, cuboid.getArea());
+    	return true;
     }
 	
 	/**
@@ -189,7 +204,7 @@ public class AreaGuard extends JavaPlugin {
 		if (area != null) {
 			
 			// In the event of an error
-			if (area instanceof Area) 
+			if (area instanceof ErrorArea) 
 				if (checkPermission(player, "ag.bypass.error")) {
 					Messager.error(player, "AreaGuard Failed! Bypassing error protection");
 					return false;
@@ -200,7 +215,7 @@ public class AreaGuard extends JavaPlugin {
 				}
 			
 			// Check if the player can do the events 
-			if (area.playerCan(player.getName(), lists)) {
+			if (playerCan(area, player.getName(), lists)) {
 				
 				// Send the allowed messages
 				for (String list : lists) {
@@ -227,6 +242,24 @@ public class AreaGuard extends JavaPlugin {
 			}	
 		}
 		return true;
+	}
+	
+	public boolean playerCan(Area area, String player, String lists[]) {
+		boolean ret = true;
+		
+		// Find out if any of the events are restricted
+		for (String list : lists) if (area.getList("restrict").hasValue(list)) {
+			ret = false;
+			break;
+		}
+		
+		// Check the lists switching between them as seen fit
+		for (String list : lists)
+		if (ret) {
+			if (area.getList("no-"+list).hasValue(player)) ret = false;
+		} else if (area.getList(list).hasValue(player)) ret = true;
+		
+		return ret;
 	}
 
 	@Override

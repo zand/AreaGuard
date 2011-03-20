@@ -71,9 +71,6 @@ public class ErrorArea implements com.zand.areaguard.area.Area {
 	}
 
 	@Override
-	public boolean playerCan(String player, String[] lists) { return false; }
-
-	@Override
 	public boolean pointInside(World world, int x, int y, int z) {
 		return true;
 	}

@@ -26,6 +26,7 @@ public class AdminCommands implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
+		if (!sender.isOp()) return false; // TODO
 		if (args != null && args.length > 0) {
 			if (args[0].equalsIgnoreCase("info")) {
 				sender.sendMessage(ChatColor.YELLOW + "Storage: " + ChatColor.WHITE + Config.storage.getInfo());
@@ -47,6 +48,13 @@ public class AdminCommands implements CommandExecutor {
 					Messager.inform(sender, "Reloading config");
 					((SqlStorage)Config.storage).loadConfig();
 				}
+			}
+			
+			// Bypass
+			else if (args[0].equalsIgnoreCase("bypass")) {
+				Session session = plugin.getSession(sender);
+				session.setBypassing(!session.isBypassing());
+				Messager.inform(sender, "Bypasing " + (session.isBypassing() ? "en" : "dis") + "abled");
 			}
 			
 			else if (args[0].equalsIgnoreCase("alias")) {
