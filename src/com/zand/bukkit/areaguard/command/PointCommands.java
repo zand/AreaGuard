@@ -10,7 +10,7 @@ import org.bukkit.util.Java15Compat;
 
 import com.zand.bukkit.areaguard.AreaGuard;
 import com.zand.bukkit.areaguard.Session;
-import com.zand.bukkit.common.Messager;
+import com.zand.bukkit.util.Messager;
 
 public class PointCommands implements CommandExecutor {
 	final AreaGuard plugin;

@@ -1,4 +1,4 @@
-package com.zand.bukkit.common;
+package com.zand.bukkit.util;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

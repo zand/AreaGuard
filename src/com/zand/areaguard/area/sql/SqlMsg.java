@@ -92,7 +92,7 @@ public class SqlMsg implements Msg {
 					return false;
 				try {
 					PreparedStatement ps = storage.conn.prepareStatement(update);
-					ps.setString(1, creator);
+					ps.setString(1, creator.toLowerCase());
 					ps.setString(2, msg);
 					ps.setInt(3, areaId);
 					ps.setString(4, name);
@@ -123,7 +123,7 @@ public class SqlMsg implements Msg {
 				try {
 					PreparedStatement ps = storage.conn.prepareStatement(insert);
 					ps.setInt(1, areaId);
-					ps.setString(2, creator);
+					ps.setString(2, creator.toLowerCase());
 					ps.setString(3, name);
 					ps.setString(4, msg);
 					ps.execute();

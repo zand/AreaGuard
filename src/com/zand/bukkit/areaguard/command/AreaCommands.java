@@ -21,25 +21,28 @@ import com.zand.areaguard.area.Msg;
 import com.zand.areaguard.area.World;
 import com.zand.bukkit.areaguard.AreaGuard;
 import com.zand.bukkit.areaguard.Session;
-import com.zand.bukkit.common.Messager;
+import com.zand.bukkit.util.Messager;
 
 public class AreaCommands implements CommandExecutor {
-	private CommandHelp help = new CommandHelp("Area");
+	private CommandHelp help;
 	private AreaGuard plugin;
 	
 	public AreaCommands(AreaGuard plugin) {
 		this.plugin = plugin;
-		help.add("create", 	"[name]", 				"Creates a new area.", "");
-		help.add("delete", 	"", 					"Deletes the selected area.", "");
-		help.add("owned", 	"[by <player>]", 		"Gets areas owned by player.", "");
-		help.add("select", 	"[<player>|my] <name>",	"Selects an area by name.", "");
-		help.add("select", 	"<id>", 				"Selects an area by id.", "");
-		help.add("select", 	"<x> <y> <z>", 			"Selects an area at that position.", "");
-		help.add("add", 	"<list> [values...]", 	"Adds the values to the list.", "");
-		help.add("remove", 	"<list> [values...]", 	"Removes from the list.", "");
-		help.add("clear", 	"<list>", 				"Removes the list.", "");
-		help.add("msg", 	"<event> [msg...]", 	"Sets the message for that event.", "");
-		help.add("show", 	"<event>", 				"Shows the message for that event.", "");
+		
+		help = new CommandHelp(plugin, "Area");
+		help.add("create", 	0,	"[name]", 				"Creates a new area.", "");
+		help.add("delete", 	0,	"", 					"Deletes the selected area.", "areaguard.area.modify");
+		help.add("owned", 	3,	"[by <player>]", 		"Gets areas owned by player.", "");
+		help.add("made", 		0,	"[by <player>]",	"Lists the areas that where created.", "");
+		help.add("select", 	3,	"[<player>|my] <name>",	"Selects an area by name.", "");
+		help.add("select", 	3,	"<id>", 				"Selects an area by id.", "");
+		help.add("select", 	3,	"<x> <y> <z>", 			"Selects an area at that position.", "");
+		help.add("add", 	0,	"<list> [values...]", 	"Adds the values to the list.", "areaguard.area.modify");
+		help.add("remove", 	3,	"<list> [values...]", 	"Removes from the list.", "areaguard.area.modify");
+		help.add("clear", 	0,	"<list>", 				"Removes the list.", "areaguard.area.modify");
+		help.add("msg", 	0,	"<event> [msg...]", 	"Sets the message for that event.", "areaguard.area.modify");
+		help.add("show", 	0,	"<event>", 				"Shows the message for that event.", "");
 	}
 	
 	@Override
@@ -51,6 +54,9 @@ public class AreaCommands implements CommandExecutor {
 			
 			//Create
 			if (args[0].equalsIgnoreCase("create")) {
+				if (!canCreate(sender))
+					return true;
+				
 				String name = "";
 				if (args.length > 1) {					
 					for (String arg : Java15Compat.Arrays_copyOfRange(args, 1, args.length))
@@ -172,7 +178,6 @@ public class AreaCommands implements CommandExecutor {
 			
 			// Owned
 			else if (args[0].toLowerCase().startsWith("own")) {
-				String msg = "";
 				String player = session.getName();
 				if (args.length > 2 && args[1].equalsIgnoreCase("by")) {
 					player = args[2];
@@ -183,12 +188,24 @@ public class AreaCommands implements CommandExecutor {
 				if (player == session.getName()) Messager.inform(sender, "Areas you own:" + ChatColor.WHITE + " " + areas.size());
 				else Messager.inform(sender, "Areas owned by " + player + ":" + ChatColor.WHITE + " " + areas.size());
 				
-				for (Area area : areas) {
-					msg += ", (" + area.getId() + ")" + area.getName();
+				show(sender, areas);
+				
+				return true;
+			}
+			
+			// Made
+			else if (args[0].equalsIgnoreCase("made")) {
+				String player = session.getName();
+				if (args.length > 2 && args[1].equalsIgnoreCase("by")) {
+					player = args[2];
 				}
-				if (msg.isEmpty()) msg = "None";
-				else msg = msg.substring(2);
-				sender.sendMessage(msg);
+				
+				ArrayList<Area> areas = Config.storage.getAreasCreated(player);
+				
+				if (player == session.getName()) Messager.inform(sender, "Areas you created:" + ChatColor.WHITE + " " + areas.size() + " Area(s)");
+				else Messager.inform(sender, "Areas created by " + player + ":" + ChatColor.WHITE + " " + areas.size() + " Area(s)");
+				
+				show(sender, areas);
 				
 				return true;
 			}
@@ -224,11 +241,11 @@ public class AreaCommands implements CommandExecutor {
 						+ ChatColor.YELLOW + " Name: " + ChatColor.WHITE + area.getName());
 				sender.sendMessage(ChatColor.YELLOW + "Owners: " + ChatColor.WHITE + area.getList("owners").toString());
 				sender.sendMessage(ChatColor.YELLOW + "Restrict: " + ChatColor.WHITE + area.getList("restrict").toString());
-				sender.sendMessage(ChatColor.YELLOW + "Lists: " + ChatColor.WHITE + lists.size());
+				sender.sendMessage(ChatColor.YELLOW + "Lists: " + ChatColor.WHITE + lists.size() + " Lists(s)");
 				names = "";
 				for (List list : lists) names += list.getName() + " ";
 				if (!names.isEmpty()) sender.sendMessage(names);
-				sender.sendMessage(ChatColor.YELLOW + "Msgs: " + ChatColor.WHITE + msgs.size());
+				sender.sendMessage(ChatColor.YELLOW + "Msgs: " + ChatColor.WHITE + msgs.size() + " Msg(s)");
 				names = "";
 				for (Msg msg : msgs) names += msg.getName() + " ";
 				if (!names.isEmpty()) sender.sendMessage(names);
@@ -364,7 +381,7 @@ public class AreaCommands implements CommandExecutor {
 			}
 			
 			// Remove
-			else if (args[0].equalsIgnoreCase("remove")) {
+			else if (args[0].toLowerCase().startsWith("rem")) {
 				Area area = session.getSelectedArea();
 				if (area == null) {
 					Messager.warn(sender, "You have no area selected");
@@ -401,7 +418,7 @@ public class AreaCommands implements CommandExecutor {
 				if (args[1].equalsIgnoreCase("msg") ||
 					args[1].equalsIgnoreCase("show") ||
 					args[1].equalsIgnoreCase("add") ||
-					args[1].equalsIgnoreCase("remove")) {
+					args[1].toLowerCase().startsWith("rem")) {
 					
 					String temp = args[1];
 					args[1] = args[0];
@@ -488,19 +505,36 @@ public class AreaCommands implements CommandExecutor {
 		if (sender instanceof Player) {
 			Player player = (Player)sender;
 			
-			if (plugin.checkPermission(player, "areaguard.area.modify.all")) return true;
+			if (plugin.Security.permission(player, "areaguard.area.modify.all")) return true;
 			if (area.isOwner(player.getName()) &&
-				plugin.checkPermission(player, "areaguard.area.modify.owned")) return true;
+					plugin.Security.permission(player, "areaguard.area.modify.owned")) return true;
 			if (area.getCreator().equalsIgnoreCase(player.getName()) &&
-					plugin.checkPermission(player, "areaguard.area.modify.created")) return true;
+					plugin.Security.permission(player, "areaguard.area.modify.created")) return true;
 		}
 		Messager.warn(sender, "Your not allowed to modify the selected area.");
 		return false;
 	}
 	
 	public boolean canCreate(CommandSender sender) {
+		// areaguard.area.create
+		
 		if (sender.isOp()) return true;
+		if (sender instanceof Player) {
+			Player player = (Player)sender;
+			plugin.Security.getPermissionInteger(player.getWorld().getName(), player.getName(), "areaguard-area-create-cap");
+			if (plugin.Security.permission(player, "areaguard.area.create")) return true;
+		}
 		Messager.warn(sender, "Your not allowed to create new areas.");
 		return false;
+	}
+	
+	public void show(CommandSender sender, ArrayList<Area> areas) {
+		String msg = "";
+		for (Area area : areas) {
+			msg += ", (" + area.getId() + ")" + area.getName();
+		}
+		if (msg.isEmpty()) msg = "None";
+		else msg = msg.substring(2);
+		sender.sendMessage(msg);
 	}
 }

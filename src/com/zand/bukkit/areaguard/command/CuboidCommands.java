@@ -14,21 +14,24 @@ import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.World;
 import com.zand.bukkit.areaguard.AreaGuard;
 import com.zand.bukkit.areaguard.Session;
-import com.zand.bukkit.common.Messager;
+import com.zand.bukkit.util.Messager;
 
 public class CuboidCommands implements CommandExecutor {
 	private AreaGuard plugin;
-	private CommandHelp help = new CommandHelp("Cuboid");
+	private CommandHelp help;
 	
 	public CuboidCommands(AreaGuard plugin) {
 		this.plugin = plugin;
-		help.add("create", 		"", 	"Creates a new cuboid for the selected area.", "");
-		help.add("activate", 	"", 	"Activates the selected cuboid.", "");
-		help.add("deactivate", 	"", 	"Deactivates the selected cuboid.", "");
-		help.add("delete", 		"", 	"Deletes the selected cuboid.", "");
-		help.add("list", 		"", 	"Lists the cuboids in the selected area.", "");
-		help.add("move", 		"", 	"Moves the selected area.", "");
-		help.add("select", 		"<id>", "Selects a cuboid by ID.", "");
+		
+		help = new CommandHelp(plugin, "Cuboid");
+		help.add("create", 		0,	"", 				"Creates a new cuboid for the selected area.", "");
+		help.add("delete", 		0,	"", 				"Deletes the selected cuboid.", "");
+		help.add("activate", 	4,	"", 				"Activates the selected cuboid.", "");
+		help.add("deactivate", 	6,	"", 				"Deactivates the selected cuboid.", "");
+		help.add("list", 		0,	"", 				"Lists the cuboids in the selected area.", "");
+		help.add("made", 		0,	"[by <player>]",	"Lists the cuboids that where created.", "");
+		help.add("move", 		0,	"", 				"Moves the selected area.", "");
+		help.add("select", 		3,	"<id>", 			"Selects a cuboid by ID.", "");
 	}
 
 	@Override
@@ -148,20 +151,24 @@ public class CuboidCommands implements CommandExecutor {
 				
 				ArrayList<Cuboid> cuboids = area.getCubiods();
 				Messager.inform(sender, "Cuboids in \"" + area.getName() + "\":" + ChatColor.WHITE + " " + cuboids.size());
-				for (Cuboid cuboid : cuboids) {
-					String line = "";
-					line += "ID: \t" + cuboid.getId();
-					line += " Priority: " + cuboid.getPriority();
-					int coords[] = cuboid.getCoords();
-					line += " \t@(" + coords[0] + ", " + coords[1] + ", " + coords[2] + ")";
-					line += "-(" + coords[3] + ", " + coords[4] + ", " + coords[5] + ")";
-					
-					// Active:   
-					// Inactive: 
-					if (cuboid.isActive()) 
-						sender.sendMessage(ChatColor.GREEN + line);
-					else sender.sendMessage(ChatColor.RED + line);
+				show(sender, cuboids);
+				return true;
+			}
+			
+			// Made
+			else if (args[0].equalsIgnoreCase("made")) {
+				String player = session.getName();
+				if (args.length > 2 && args[1].equalsIgnoreCase("by")) {
+					player = args[2];
 				}
+				
+				ArrayList<Cuboid> cuboids = Config.storage.getCuboidsCreated(player);
+				
+				if (player == session.getName()) Messager.inform(sender, "Cuboids you created:" + ChatColor.WHITE + " " + cuboids.size() + " Cuboid(s)");
+				else Messager.inform(sender, "Cuboids created by " + player + ":" + ChatColor.WHITE + " " + cuboids.size() + " Cuboid(s)");
+				
+				show(sender, cuboids);
+				
 				return true;
 			}
 			
@@ -235,5 +242,22 @@ public class CuboidCommands implements CommandExecutor {
 		}
 		if (warn) Messager.warn(sender, "You are not a owner of the area that this cuboid belongs to.");
 		return false;
+	}
+	
+	public void show(CommandSender sender, ArrayList<Cuboid> cuboids) {
+		for (Cuboid cuboid : cuboids) {
+			String line = "";
+			line += "ID: \t" + cuboid.getId();
+			line += " Priority: " + cuboid.getPriority();
+			int coords[] = cuboid.getCoords();
+			line += " \t@(" + coords[0] + ", " + coords[1] + ", " + coords[2] + ")";
+			line += "-(" + coords[3] + ", " + coords[4] + ", " + coords[5] + ")";
+			
+			// Active:   
+			// Inactive: 
+			if (cuboid.isActive()) 
+				sender.sendMessage(ChatColor.GREEN + line);
+			else sender.sendMessage(ChatColor.RED + line);
+		}
 	}
 }

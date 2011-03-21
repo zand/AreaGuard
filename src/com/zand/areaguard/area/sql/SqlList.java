@@ -42,7 +42,7 @@ public class SqlList implements List {
 		try {
 			PreparedStatement ps = storage.conn.prepareStatement(insert);
 			ps.setInt(1, areaId);
-			ps.setString(2, creator);
+			ps.setString(2, creator.toLowerCase());
 			ps.setString(3, name);
 			ps.setString(4, value.toLowerCase());
 			ps.execute();

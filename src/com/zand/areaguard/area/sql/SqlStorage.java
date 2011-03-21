@@ -352,7 +352,7 @@ public class SqlStorage implements Storage {
 			return new ErrorArea("Faild to connect to Sql Database");
 		try {
 			PreparedStatement ps = conn.prepareStatement(insert);
-			ps.setString(1, creator);
+			ps.setString(1, creator.toLowerCase());
 			ps.setString(2, name);
 			ps.execute();
 
@@ -385,7 +385,7 @@ public class SqlStorage implements Storage {
 			return new ErrorCuboid();
 		try {
 			PreparedStatement ps = conn.prepareStatement(insert);
-			ps.setString(1, creator);
+			ps.setString(1, creator.toLowerCase());
 			ps.setInt(2, area.getId());
 			ps.setInt(3, world.getId());
 			for (int i = 0; i < 6; i++)
@@ -477,5 +477,63 @@ public class SqlStorage implements Storage {
 		disconnect();
 		
 		return false;
+	}
+
+	@Override
+	public ArrayList<Area> getAreasCreated(String creator) {
+		ArrayList<Area> areas = new ArrayList<Area>();
+		String sql = "SELECT Id FROM `" + tablePrefix + "Areas` WHERE Creator=?";
+
+		connect();
+		if (conn != null) {
+			try {
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ps.setString(1, creator.toLowerCase());
+				ps.execute();
+				
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				while (rs.next()) areas.add(new SqlArea(this, rs.getInt(1)));
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			disconnect();
+		}
+		return areas;
+	}
+
+	@Override
+	public ArrayList<Cuboid> getCuboidsCreated(String creator) {
+		ArrayList<Cuboid> cuboids = new ArrayList<Cuboid>();
+		String sql = "SELECT Id FROM `" + tablePrefix + "Cuboids` WHERE Creator=?";
+
+		connect();
+		if (conn != null) {
+			try {
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ps.setString(1, creator.toLowerCase());
+				ps.execute();
+				
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				while (rs.next()) cuboids.add(new SqlCuboid(this, rs.getInt(1)));
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			disconnect();
+		}
+		return cuboids;
 	}
 }

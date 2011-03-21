@@ -5,7 +5,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldListener;
 
 import com.zand.bukkit.areaguard.AreaGuard;
-import com.zand.bukkit.common.TempBlocks;
+import com.zand.bukkit.util.TempBlocks;
 
 /**
  * Handles all World related events

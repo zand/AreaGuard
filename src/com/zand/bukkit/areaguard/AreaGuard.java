@@ -9,12 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 
-import com.nijikokun.bukkit.Permissions.Permissions;
 import com.zand.areaguard.*;
 import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Cuboid;
@@ -26,8 +24,9 @@ import com.zand.bukkit.areaguard.listeners.AreaGuardBlockListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardEntityListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardPlayerListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardWorldListener;
-import com.zand.bukkit.common.Messager;
-import com.zand.bukkit.common.TempBlocks;
+import com.zand.bukkit.util.Messager;
+import com.zand.bukkit.util.PermissionsWrapper;
+import com.zand.bukkit.util.TempBlocks;
 
 /**
  * AreaGuard for Bukkit
@@ -69,12 +68,15 @@ public class AreaGuard extends JavaPlugin {
     private final AreaGuardEntityListener entityListener = new AreaGuardEntityListener(this);
     
     // Outside Plugins
-    public Permissions Permissions = null;
+    public PermissionsWrapper Security;
+    //public Permissions Permissions = null;
     
     // Are data on each player
     protected final HashMap<String, PlayerSession> playerSessions = new HashMap<String, PlayerSession>();
 
     public void onEnable() {
+    	Security = new PermissionsWrapper(this);
+    	
     	Config.setup();
     	PluginDescriptionFile desc = getDescription();
         name = desc.getName();
@@ -88,7 +90,7 @@ public class AreaGuard extends JavaPlugin {
         getCommand("cuboid").setExecutor(new CuboidCommands(this));
     	
     	registerEvents();
-    	setupOtherPlugins();
+    	// setupOtherPlugins();
     	log.info( versionInfo + " is enabled!" );
     }
     
@@ -108,20 +110,6 @@ public class AreaGuard extends JavaPlugin {
         pm.registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_RIGHTCLICKED, blockListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_INTERACT, blockListener, preventPriority, this);
-    }
-    
-    /**
-	* Detects and sets up the other plugins for use
-	*/
-    private void setupOtherPlugins() {
-    	// Permissions
-    	Plugin test = this.getServer().getPluginManager().getPlugin("Permissions");
-    	if (this.Permissions == null) {
-    		if(test != null) {
-    			this.Permissions = (Permissions)test;
-    	    	log.info("[" + name + "] Found Permissions plugin. Using it.");
-    	    }
-    	}
     }
     
     /**
@@ -152,24 +140,7 @@ public class AreaGuard extends JavaPlugin {
 	* @return if they can modify the area
 	*/
     public boolean canModify(Area area, Player player) {
-    	return (area.isOwner(player.getName()) || checkPermission(player, "ag.create"));
-    }
-    
-    /**
-     * Checks the permission nodes via the AreaGuard config and Permissions plugin if available.
-     * @param player	The player to check
-     * @param nodes		The nodes to test
-     * @return			If the player has permission
-     */
-    @SuppressWarnings("static-access")
-	public boolean checkPermission(Player player, String nodes) {
-    	if (player.isOp()) return true;
-    	if (Config.isCreator(player.getName()) &&
-    		nodes.startsWith("ag.create") ||
-    		nodes.startsWith("ag.bypass"))
-    	if (this.Permissions != null)
-    		if (this.Permissions.Security.permission(player, nodes)) return true;
-    	return false;
+    	return (area.isOwner(player.getName()) || Security.permission(player, "ag.create"));
     }
     
     /**
@@ -205,7 +176,7 @@ public class AreaGuard extends JavaPlugin {
 			
 			// In the event of an error
 			if (area instanceof ErrorArea) 
-				if (checkPermission(player, "ag.bypass.error")) {
+				if (Security.permission(player, "ag.bypass.error")) {
 					Messager.error(player, "AreaGuard Failed! Bypassing error protection");
 					return false;
 				} else {

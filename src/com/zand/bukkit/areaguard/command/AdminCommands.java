@@ -14,7 +14,7 @@ import com.zand.areaguard.area.World;
 import com.zand.areaguard.area.sql.SqlStorage;
 import com.zand.bukkit.areaguard.AreaGuard;
 import com.zand.bukkit.areaguard.Session;
-import com.zand.bukkit.common.Messager;
+import com.zand.bukkit.util.Messager;
 
 public class AdminCommands implements CommandExecutor {
 	private AreaGuard plugin;
@@ -32,12 +32,12 @@ public class AdminCommands implements CommandExecutor {
 				sender.sendMessage(ChatColor.YELLOW + "Storage: " + ChatColor.WHITE + Config.storage.getInfo());
 				
 				ArrayList<Area> areas = Config.storage.getAreas();
-				sender.sendMessage(ChatColor.YELLOW + "Areas: " + ChatColor.WHITE + areas.size());
+				sender.sendMessage(ChatColor.YELLOW + "Areas: " + ChatColor.WHITE + areas.size() + " Area(s)");
 				sender.sendMessage(ChatColor.YELLOW + "Cubiods: ");
 				ArrayList<World> worlds = Config.storage.getWorlds();
 				for (World world : worlds) {
 					ArrayList<Cuboid> cuboids = world.getCuboids();
-					sender.sendMessage(ChatColor.YELLOW + "  " + world.getName() + ": " + ChatColor.WHITE + cuboids.size());
+					sender.sendMessage(ChatColor.YELLOW + "  " + world.getName() + ": " + ChatColor.WHITE + cuboids.size() + " Cuboid(s)");
 				}
 			} 
 			

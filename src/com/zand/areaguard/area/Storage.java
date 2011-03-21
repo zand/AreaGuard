@@ -65,6 +65,20 @@ public interface Storage {
 	public ArrayList<Area> getAreasOwned(String owner);
 	
 	/**
+	 * Gets a list of all {@link Area}s created by creator.
+	 * @param creator The name of the creator.
+	 * @return An Array list of the Areas.
+	 */
+	public ArrayList<Area> getAreasCreated(String creator);
+	
+	/**
+	 * Gets a list of all {@link Cuboid}s created by creator.
+	 * @param creator The name of the creator.
+	 * @return An Array list of the Cuboids.
+	 */
+	public ArrayList<Cuboid> getCuboidsCreated(String creator);
+	
+	/**
 	 * Gets a the {@link Area} by Id.
 	 * @param areaId The id of the area.
 	 * @return The Area.

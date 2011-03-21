@@ -13,7 +13,7 @@ import com.zand.bukkit.areaguard.AreaGuard;
 import com.zand.bukkit.areaguard.Session;
 
 public class MainCommands implements CommandExecutor {
-	private CommandHelp help = new CommandHelp("Main");
+	private CommandHelp help;
 	private AreaGuard plugin;
 	
 	final CommandExecutor admin;
@@ -32,12 +32,13 @@ public class MainCommands implements CommandExecutor {
 		point = new PointCommands(plugin);
 		
 		CommandHelp.program = plugin.versionInfo;
-		help.add("ver", 	"", 		"Shows the version info.", "");
-		help.add("admin", 	"[...]", 	"Admin Commands.", "");
-		help.add("area", 	"[...]", 	"Area Commands.", "");
-		help.add("cuboid", 	"[...]", 	"Cuboid Commands.", "");
-		help.add("debug", 	"[...]", 	"Debug Commands.", "");
-		help.add("info", 	"[...]", 	"Displays the current Session info.", "");
+		help = new CommandHelp(plugin, "Main");
+		help.add("version", 3,	"", 		"Shows the version info.", "");
+		help.add("admin", 	0,	"[...]", 	"Admin Commands.", "areaguard.admin");
+		help.add("area", 	0,	"[...]", 	"Area Commands.", "");
+		help.add("cuboid", 	0,	"[...]", 	"Cuboid Commands.", "");
+		help.add("debug", 	0,	"[...]", 	"Debug Commands.", "");
+		help.add("info", 	0,	"[...]", 	"Displays the current Session info.", "");
 	}
 
 	@Override

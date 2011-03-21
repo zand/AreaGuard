@@ -102,16 +102,17 @@ public class AreaGuardBlockListener extends BlockListener {
 	 */
 	public boolean checkCanUse(Player player, Block block, Cancellable event) {
 		Material mat = block.getType();
+		String list = mat.name().toLowerCase().replaceAll("\\W", "").replaceAll("_", "-");
 		
 		// If it can be opened
-		if (block instanceof ContainerBlock) {
-			return plugin.checkEvent(event, player, 
-				new String[] {"owners", "allow", "open", mat.name().toLowerCase().replaceAll("\\W", "").replaceAll("_", "-")}, 
-				block.getX(), block.getY(), block.getZ());
+		if (block.getState() instanceof ContainerBlock) {
+			if (!plugin.checkEvent(event, player, 
+				new String[] {"owners", "allow", "open", list}, 
+				block.getX(), block.getY(), block.getZ())) return false;
 		}
 		
 		return plugin.checkEvent(event, player, 
-				new String[] {"owners", "allow", "use", mat.name().toLowerCase().replaceAll("\\W", "").replaceAll("_", "-")}, 
+				new String[] {"owners", "allow", "use", list}, 
 				block.getX(), block.getY(), block.getZ());
 	}
 }

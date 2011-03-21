@@ -1,4 +1,4 @@
-package com.zand.bukkit.common;
+package com.zand.bukkit.util;
 
 import org.bukkit.World;
 import org.bukkit.block.Block;

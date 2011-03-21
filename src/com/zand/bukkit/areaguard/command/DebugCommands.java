@@ -6,21 +6,23 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.util.Java15Compat;
 
 import com.zand.bukkit.areaguard.AreaGuard;
-import com.zand.bukkit.common.Messager;
-import com.zand.bukkit.common.TextMapper;
+import com.zand.bukkit.util.Messager;
+import com.zand.bukkit.util.TextMapper;
 
 public class DebugCommands implements CommandExecutor {
 	private AreaGuard plugin;
 	MainCommands main;
-	private CommandHelp help = new CommandHelp("Debug");
+	private CommandHelp help;
 	
 	public DebugCommands(AreaGuard plugin, MainCommands main) {
 		this.plugin = plugin;
 		this.main = main;
-		help.add("cmd", 	"[...]", 	"Debugs ag [...].", "");
-		help.add("map", 	"", 		"Text Map Testing.", "");
-		help.add("start", 	"<flag>", 	"Starts debuging flag.", "");
-		help.add("stop", 	"<flag>",	"Stops debuging flag.", "");
+		
+		help = new CommandHelp(plugin, "Debug");
+		help.add("cmd", 	0,	"[...]", 	"Debugs ag [...].", "");
+		help.add("map", 	0,	"", 		"Text Map Testing.", "");
+		help.add("start", 	0,	"<flag>", 	"Starts debuging flag.", "");
+		help.add("stop", 	0,	"<flag>",	"Stops debuging flag.", "");
 	}
 
 	@Override

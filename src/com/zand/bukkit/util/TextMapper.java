@@ -1,4 +1,4 @@
-package com.zand.bukkit.common;
+package com.zand.bukkit.util;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -63,11 +63,11 @@ public class TextMapper {
 		switch (block.getTypeId()) {
 		case 0: return " "; // Air
 		case 1: return ChatColor.GRAY + "S"; // Stone
-		case 2: return ChatColor.DARK_GREEN + "G"; // Grass
+		case 2: return ChatColor.GREEN + "G"; // Grass
 		case 3: return ChatColor.GOLD + "D"; // Dirt
 		case 4: return ChatColor.GRAY + "C"; // Cobble
 		case 5: return ChatColor.GOLD + "="; // WoodPlanks
-		case 6: return ChatColor.GREEN + "s"; // Sapling
+		case 6: return ChatColor.DARK_GREEN + "s"; // Sapling
 		case 7: return ChatColor.BLACK + "B"; // Bedrock
 		case 8:
 		case 9: return ChatColor.AQUA + "~"; // Water
@@ -79,10 +79,13 @@ public class TextMapper {
 		case 15: return ChatColor.GRAY + "%"; // Iron
 		case 16: return ChatColor.BLACK + "%"; // Coal
 		case 17: return ChatColor.GOLD + "L"; // Log
-		case 18: return ChatColor.GREEN + "#"; // Leaves
+		case 18: return ChatColor.DARK_GREEN + "#"; // Leaves
 		case 19: return ChatColor.YELLOW + "%"; // Sponge
 		case 20: return ChatColor.WHITE + "#"; // Glass
 		case 21: return ChatColor.BLUE + "%"; // Lapus
+		case 22: return ChatColor.BLUE + "$"; // Lapus Block
+		case 23: return ChatColor.GRAY + "Y"; // Dispenser 
+		case 24: return ChatColor.YELLOW + "S"; // SandStone
 		
 		default: return ChatColor.DARK_PURPLE + "?"; // Uknown
 		}
