@@ -63,7 +63,6 @@ public class CuboidCommands implements CommandExecutor {
 							Messager.warn(sender, "Failed to activate cuboid.");
 					}
 				}
-				System.out.println("[]");
 				return true;
 			}
 			

@@ -25,20 +25,23 @@ z1 int NOT NULL,
 x2 int NOT NULL, 
 y2 int NOT NULL, 
 z2 int NOT NULL, 
-PRIMARY KEY (Id) 
+PRIMARY KEY (Id), 
+FOREIGN KEY(AreaId) REFERENCES <tablePrefix>Areas(Id), 
+FOREIGN KEY(WorldId) REFERENCES <tablePrefix>Worlds(Id) 
 );
 
 CREATE TABLE IF NOT EXISTS `<tablePrefix>Msgs` ( 
 AreaId int NOT NULL, 
 Name varchar(16) NOT NULL, 
 Creator varchar(32) NOT NULL, 
-Msg varchar(100) 
+Msg varchar(100), 
+FOREIGN KEY(AreaId) REFERENCES <tablePrefix>Areas(Id) 
 );
 
 CREATE TABLE IF NOT EXISTS `<tablePrefix>Lists` ( 
 AreaId int NOT NULL, 
 Name varchar(16) NOT NULL, 
 Creator varchar(32) NOT NULL, 
-Value varchar(64) 
-NOT NULL 
+Value varchar(64) NOT NULL, 
+FOREIGN KEY(AreaId) REFERENCES <tablePrefix>Areas(Id) 
 );

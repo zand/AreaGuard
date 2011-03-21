@@ -22,17 +22,17 @@ public class ErrorWorld implements World {
 
 	@Override
 	public Cuboid getCuboid(int x, int y, int z) {
-		return null;
+		return ErrorCuboid.NOT_FOUND;
 	}
 
 	@Override
 	public ArrayList<Cuboid> getCuboids() {
-		return null;
+		return new ArrayList<Cuboid>();
 	}
 
 	@Override
-	public ArrayList<Cuboid> getCuboids(long x, long y, long z) {
-		return null;
+	public ArrayList<Cuboid> getCuboids(int x, int y, int z) {
+		return new ArrayList<Cuboid>();
 	}
 
 	@Override
@@ -48,6 +48,11 @@ public class ErrorWorld implements World {
 	@Override
 	public boolean exsists() {
 		return false;
+	}
+
+	@Override
+	public Cuboid getCuboid(boolean active, int x, int y, int z) {
+		return ErrorCuboid.NOT_FOUND;
 	}
 
 }

@@ -75,6 +75,7 @@ public class AreaCommands implements CommandExecutor {
 						Messager.error(sender, "Failed to add \"" + session.getName() + "\" to owners list.");
 				}
 				else Messager.error(sender, "Failed to create \"" + name + "\".");
+				return true;
 			} 
 			
 			// Select

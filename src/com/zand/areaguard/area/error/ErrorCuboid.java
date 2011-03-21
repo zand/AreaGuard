@@ -3,6 +3,8 @@ package com.zand.areaguard.area.error;
 import com.zand.areaguard.area.*;
 
 public class ErrorCuboid implements Cuboid {
+	final static public ErrorCuboid
+	NOT_FOUND = new ErrorCuboid();
 	World world;
 	Area area;
 	

@@ -23,7 +23,19 @@ public class SqlArea implements Area {
 		this.storage = storage;
 		this.id = id;
 	}
-
+	
+	@Override public boolean equals(Object o) {
+		if (o instanceof SqlArea)
+			return id == ((SqlArea)o).id;
+		if (o instanceof Integer)
+			return id == ((Integer)o).intValue();
+		return false;
+	}
+	
+	@Override public int hashCode() {
+		return id;
+	}
+	
 	@Override
 	public ArrayList<Cuboid> getCubiods() {
 		ArrayList<Cuboid> cubiods = new ArrayList<Cuboid>();
@@ -33,6 +45,36 @@ public class SqlArea implements Area {
 			try {
 				PreparedStatement ps = storage.conn.prepareStatement(sql);
 				ps.setInt(1, getId());
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				while (rs.next()) 
+					cubiods.add(new SqlCuboid(storage, rs.getInt(1)));
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			storage.disconnect();
+		}
+		return cubiods;
+	}
+	
+	@Override
+	public ArrayList<Cuboid> getCubiods(boolean active) {
+		ArrayList<Cuboid> cubiods = new ArrayList<Cuboid>();
+		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cuboids` WHERE AreaId = ? AND Active = ?";
+
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, getId());
+				ps.setBoolean(2, active);
 				ps.execute();
 
 				// Get the result
@@ -187,7 +229,7 @@ public class SqlArea implements Area {
 
 	@Override
 	public boolean pointInside(World world, int x, int y, int z) {
-		for (Cuboid cubiod : getCubiods())
+		for (Cuboid cubiod : getCubiods(true))
 			if (cubiod.pointInside(world, x, y, z))
 				return true;
 		return false;
@@ -272,7 +314,7 @@ public class SqlArea implements Area {
 				"DELETE FROM `" + storage.tablePrefix + "Lists` WHERE AreaId = ?",
 				"DELETE FROM `" + storage.tablePrefix + "Msgs` WHERE AreaId = ?",
 				"DELETE FROM `" + storage.tablePrefix + "Cuboids` WHERE AreaId = ?",
-				"DELETE FROM `" + storage.tablePrefix + "Areas` WHERE Id = ? LIMIT 1" };
+				"DELETE FROM `" + storage.tablePrefix + "Areas` WHERE Id = ?" };
 
 		if (storage.connect()) {
 			for (String sql : sqls) {

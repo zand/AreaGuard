@@ -45,10 +45,10 @@ public class AreaGuardPlayerListener extends PlayerListener {
     		loc.getBlockY() != ps.lastLoc.getBlockY() ||
     		loc.getBlockZ() != ps.lastLoc.getBlockZ()) {
     		Cuboid cuboid = Config.storage.getWorld(player.getWorld().getName())
-    		.getCuboid(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    		.getCuboid(true, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     		Area to = null;
     		cuboid = Config.storage.getWorld(player.getWorld().getName())
-    		.getCuboid(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    		.getCuboid(true, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     		
     		if (cuboid != null) to = cuboid.getArea();
     		

@@ -12,6 +12,16 @@ public class SqlList implements List {
 	final private SqlStorage storage;
 	final private int areaId;
 	final private String name;
+	
+	@Override public boolean equals(Object o) {
+		if (o instanceof SqlList)
+			return areaId == ((SqlList)o).areaId && name == ((SqlList)o).name;
+		return false;
+	}
+	
+	@Override public int hashCode() {
+		return (name + "@" + areaId).hashCode();
+	}
 
 	public SqlList(SqlStorage storage, int areaId, String name) {
 		this.storage = storage;

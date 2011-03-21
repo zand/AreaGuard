@@ -12,6 +12,16 @@ public class SqlMsg implements Msg {
 	final private int areaId;
 	final private String name;
 	
+	@Override public boolean equals(Object o) {
+		if (o instanceof SqlList)
+			return areaId == ((SqlMsg)o).areaId && name == ((SqlMsg)o).name;
+		return false;
+	}
+	
+	@Override public int hashCode() {
+		return (name + "@" + areaId).hashCode();
+	}
+	
 	protected SqlMsg(SqlStorage storage, int areaId, String name) {
 		this.storage = storage;
 		this.areaId = areaId;

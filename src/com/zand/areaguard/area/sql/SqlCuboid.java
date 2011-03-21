@@ -18,6 +18,18 @@ public class SqlCuboid implements Cuboid {
 	final private SqlStorage storage;
 	final private int id;
 	
+	@Override public boolean equals(Object o) {
+		if (o instanceof SqlCuboid)
+			return id == ((SqlCuboid)o).id;
+		if (o instanceof Integer)
+			return id == ((Integer)o).intValue();
+		return false;
+	}
+	
+	@Override public int hashCode() {
+		return id;
+	}
+	
 	public SqlCuboid(SqlStorage storage, int id) {
 		this.storage = storage;
 		this.id = id;

@@ -34,11 +34,11 @@ public class MainCommands implements CommandExecutor {
 		CommandHelp.program = plugin.versionInfo;
 		help = new CommandHelp(plugin, "Main");
 		help.add("version", 3,	"", 		"Shows the version info.", "");
-		help.add("admin", 	0,	"[...]", 	"Admin Commands.", "areaguard.admin");
-		help.add("area", 	0,	"[...]", 	"Area Commands.", "");
-		help.add("cuboid", 	0,	"[...]", 	"Cuboid Commands.", "");
-		help.add("debug", 	0,	"[...]", 	"Debug Commands.", "");
-		help.add("info", 	0,	"[...]", 	"Displays the current Session info.", "");
+		help.add("admin", 	2,	"[...]", 	"Admin Commands.", "areaguard.admin");
+		help.add("area", 	2,	"[...]", 	"Area Commands.", "");
+		help.add("cuboid", 	1,	"[...]", 	"Cuboid Commands.", "");
+		help.add("debug", 	1,	"[...]", 	"Debug Commands.", "");
+		help.add("info", 	1,	"[...]", 	"Displays the current Session info.", "");
 	}
 
 	@Override
@@ -48,27 +48,27 @@ public class MainCommands implements CommandExecutor {
 			if (args[0].toLowerCase().startsWith("ver")) {
 				sender.sendMessage(plugin.versionInfo);
 			}
-			else if (args[0].equalsIgnoreCase("admin")) {
+			else if (args[0].toLowerCase().startsWith("ad")) {
 				return admin.onCommand(sender, command, label + " " + args[0], 
 						Java15Compat.Arrays_copyOfRange(args, 1, args.length));
 			}
-			else if (args[0].equalsIgnoreCase("area")) {
+			else if (args[0].toLowerCase().startsWith("ar")) {
 				return area.onCommand(sender, command, label + " " + args[0], 
 						Java15Compat.Arrays_copyOfRange(args, 1, args.length));
 			}
-			else if (args[0].equalsIgnoreCase("cuboid")) {
+			else if (args[0].toLowerCase().startsWith("c")) {
 				return cuboid.onCommand(sender, command, label + " " + args[0], 
 						Java15Compat.Arrays_copyOfRange(args, 1, args.length));
 			}
-			else if (args[0].equalsIgnoreCase("debug")) {
+			else if (args[0].toLowerCase().startsWith("d")) {
 				return debug.onCommand(sender, command, label + " " + args[0], 
 						Java15Compat.Arrays_copyOfRange(args, 1, args.length));
 			} 
-			else if (args[0].equalsIgnoreCase("point")) {
+			else if (args[0].toLowerCase().startsWith("p")) {
 				return point.onCommand(sender, command, label + " " + args[0], 
 						Java15Compat.Arrays_copyOfRange(args, 1, args.length));
 			} 
-			else if (args[0].equalsIgnoreCase("info")) {
+			else if (args[0].toLowerCase().startsWith("i")) {
 				showInfo(sender);
 				return true;
 			}

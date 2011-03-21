@@ -42,7 +42,7 @@ public class AreaGuardEntityListener extends EntityListener {
     	if(player == null) return;
     	Location loc = to.getLocation();
     	Area area = Config.storage.getWorld(player.getWorld().getName())
-    	.getCuboid(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())
+    	.getCuboid(true, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())
     	.getArea();
 		if (plugin.checkEvent(event, player, new String[] {type}, area) &&
 				to instanceof Player)

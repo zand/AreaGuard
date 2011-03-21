@@ -104,4 +104,9 @@ public class ErrorArea implements com.zand.areaguard.area.Area {
 	public boolean delete() {
 		return false;
 	}
+
+	@Override
+	public ArrayList<Cuboid> getCubiods(boolean active) {
+		return new ArrayList<Cuboid>();
+	}
 }

@@ -15,6 +15,16 @@ public interface World extends Data {
 	public Cuboid getCuboid(int x, int y, int z);
 	
 	/**
+	 * Gets a {@link Cuboid} at location in the world.
+	 * @param active Whether to get active or inactive.
+	 * @param x The x coord of the location
+	 * @param y The y coord of the location
+	 * @param z The z coord of the location
+	 * @return The cuboid at that location
+	 */
+	public Cuboid getCuboid(boolean active, int x, int y, int z);
+	
+	/**
 	 * Gets the {@link Cuboid}s in the world.
 	 * @return A ArrayList of the cuboid in the world.
 	 */
@@ -27,7 +37,7 @@ public interface World extends Data {
 	 * @param z The z coord of the location
 	 * @return A ArrayList cuboid at that location
 	 */
-	public ArrayList<Cuboid> getCuboids(long x, long y, long z);
+	public ArrayList<Cuboid> getCuboids(int x, int y, int z);
 	
 	/**
 	 * Deletes all the {@link Cuboid}s in the world.

@@ -15,6 +15,18 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 	final private SqlStorage storage;
 	final private int id;
 	
+	@Override public boolean equals(Object o) {
+		if (o instanceof SqlWorld)
+			return id == ((SqlWorld)o).id;
+		if (o instanceof Integer)
+			return id == ((Integer)o).intValue();
+		return false;
+	}
+	
+	@Override public int hashCode() {
+		return id;
+	}
+	
 	protected SqlWorld(SqlStorage storage, int id) {
 		this.storage = storage;
 		this.id = id;
@@ -79,6 +91,45 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 		} else cuboid = SqlCuboid.COULD_NOT_CONNECT;
 		return cuboid;
 	}
+	
+	@Override
+	public Cuboid getCuboid(boolean active, int x, int y, int z) {
+		Cuboid cuboid = null;
+		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cuboids` WHERE WorldId = ? AND Active = ? "
+				+ "AND x1 <= ? AND x2 >= ? AND y1 <= ? AND y2 >= ? "
+				+ "AND z1 <= ? AND z2 >= ? ORDER BY `" + storage.tablePrefix
+				+ "Cuboids`.Priority DESC LIMIT 1";
+
+		if (storage.connect()) {
+			try {
+				PreparedStatement ps = storage.conn.prepareStatement(sql);
+				ps.setInt(1, getId());
+				ps.setBoolean(2, active);
+				ps.setLong(3, x);
+				ps.setLong(4, x);
+				ps.setLong(5, y);
+				ps.setLong(6, y);
+				ps.setLong(7, z);
+				ps.setLong(8, z);
+				ps.execute();
+
+				// Get the result
+				ResultSet rs = ps.getResultSet();
+				if (rs.next()) cuboid = new SqlCuboid(storage, rs.getInt(1));
+
+				// Close events
+				rs.close();
+				ps.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				cuboid = SqlCuboid.SQL_ERROR;
+			}
+
+			storage.disconnect();
+		} else cuboid = SqlCuboid.COULD_NOT_CONNECT;
+		return cuboid;
+	}
 
 	@Override
 	public ArrayList<Cuboid> getCuboids() {
@@ -110,7 +161,7 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 	}
 
 	@Override
-	public ArrayList<Cuboid> getCuboids(long x, long y, long z) {
+	public ArrayList<Cuboid> getCuboids(int x, int y, int z) {
 		ArrayList<Cuboid> cuboids = new ArrayList<Cuboid>();
 		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cuboids` WHERE WorldId = ? AND x1 <= ? "
 				+ "AND x2 >= ? " + "AND y1 <= ? " + "AND y2 >= ? "
@@ -121,12 +172,12 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 			try {
 				PreparedStatement ps = storage.conn.prepareStatement(sql);
 				ps.setInt(1, getId());
-				ps.setLong(2, x);
-				ps.setLong(3, x);
-				ps.setLong(4, y);
-				ps.setLong(5, y);
-				ps.setLong(6, z);
-				ps.setLong(7, z);
+				ps.setInt(2, x);
+				ps.setInt(3, x);
+				ps.setInt(4, y);
+				ps.setInt(5, y);
+				ps.setInt(6, z);
+				ps.setInt(7, z);
 				ps.execute();
 
 				// Get the result

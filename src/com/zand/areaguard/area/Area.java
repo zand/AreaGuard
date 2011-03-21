@@ -12,6 +12,13 @@ public interface Area extends Data {
 	public ArrayList<Cuboid> getCubiods();
 	
 	/**
+	 * Gets a list of Cubiods that are a part of that area.
+	 * @param active Whether to get active or inactive.
+	 * @return
+	 */
+	public ArrayList<Cuboid> getCubiods(boolean active);
+	
+	/**
 	 * Gets who created the area.
 	 * @return The name of the person who created the area.
 	 */
