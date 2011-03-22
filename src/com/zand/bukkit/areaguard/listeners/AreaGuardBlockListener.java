@@ -10,6 +10,7 @@ import org.bukkit.event.block.*;
 import com.zand.areaguard.Config;
 import com.zand.areaguard.area.Cuboid;
 import com.zand.bukkit.areaguard.AreaGuard;
+import com.zand.bukkit.areaguard.Session;
 
 public class AreaGuardBlockListener extends BlockListener {
 	
@@ -31,14 +32,24 @@ public class AreaGuardBlockListener extends BlockListener {
     
     @Override
     public void onBlockDamage(BlockDamageEvent event) {
-    	if (event.isCancelled()) return;
-    	if (event.getDamageLevel() == BlockDamageLevel.BROKEN) {
-    		
-    		Player player = (Player)event.getPlayer();
-    		Block block = event.getBlock();
-    		if (!checkCanBuild(player, block, event))
-    			return;
+    	Player player = event.getPlayer();
+    	Block block = event.getBlock();
+    	
+    	// Set Point
+    	if (	event.getDamageLevel() == BlockDamageLevel.STARTED &&
+    			player.getItemInHand().getTypeId() == Config.createTool) {
+    		Session ps = plugin.getSession(player);
+    		ps.select(Config.storage.getWorld(player.getWorld().getName()));
+    		ps.selectLeft(block.getX(), block.getY(), block.getZ());
+    		player.sendMessage("Left Point Selected (" + block.getX() + ", " + block.getY() + ", " + block.getZ() + ") set");
     	}
+    	
+    	// Don't process cancelled events beyond this point
+    	if (event.isCancelled()) return;
+    	
+    	if (event.getDamageLevel() == BlockDamageLevel.BROKEN) {
+    		if (!checkCanBuild(player, block, event))
+    			return; }
     }
     
     @Override
@@ -48,9 +59,12 @@ public class AreaGuardBlockListener extends BlockListener {
     	
     	// Set Point
     	if (event.getItemInHand().getTypeId() == Config.createTool) {
-    		plugin.getSession(player).select(block.getX(), block.getY(), block.getZ());
-    		player.sendMessage("Point (" + block.getX() + ", " + block.getY() + ", " + block.getZ() + ") set");
+    		Session ps = plugin.getSession(player);
+    		ps.select(Config.storage.getWorld(player.getWorld().getName()));
+    		ps.selectRight(block.getX(), block.getY(), block.getZ());
+    		player.sendMessage("Right Point Selected (" + block.getX() + ", " + block.getY() + ", " + block.getZ() + ") set");
     	}
+    	
     	// Check Area
     	else if (event.getItemInHand().getTypeId() == Config.checkTool) {
     		Cuboid cuboid = Config.storage.getWorld(player.getWorld().getName())

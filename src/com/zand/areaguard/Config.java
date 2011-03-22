@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -19,13 +18,16 @@ public class Config {
 	private static String configDir;
 	public static int createTool;
 	public static int checkTool;
-	public static HashSet<String> creators = new HashSet<String>();
-	public static HashSet<String> defaultRestict = new HashSet<String>();
+	public static String[] creators = new String[0];
+	public static String[] defaultRestict = new String[0];
 	
 	public static Storage storage;
 	
 	public static boolean isCreator(String name) {
-		return creators.contains(name.toLowerCase());
+		for (String creator : creators)
+			if (creator.equalsIgnoreCase(name))
+				return true;
+		return false;
 	}
 
 	public static void deleteConfig() {
@@ -50,13 +52,10 @@ public class Config {
 					+ file + "\", " + e.getMessage());
 			return false;
 		}
-		for (String creator : props.getProperty("area-creators").split(" "))
-			creators.add(creator.toLowerCase());
+		creators = props.getProperty("area-creators").split(" ");
 		createTool = Integer.valueOf(props.getProperty("create-tool"));
 		checkTool = Integer.valueOf(props.getProperty("check-tool"));
-		for (String name : props.getProperty("default-restrict").split(" "))
-			defaultRestict.add(name);
-		
+		defaultRestict = props.getProperty("default-restrict").split(" ");
 		
 		// TODO Add Cacheing
 		//String dataStorage = props.getProperty("data-storage").replaceAll("\\W", "").toLowerCase();

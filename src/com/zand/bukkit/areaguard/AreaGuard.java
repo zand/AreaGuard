@@ -57,6 +57,10 @@ public class AreaGuard extends JavaPlugin {
 		return sessions.get(sender);
 	}
 	
+	public void resetSessions() {
+		sessions.clear();
+	}
+	
 	private String name;
 	public String versionInfo;
 	private static Logger log = Logger.getLogger("Minecraft");

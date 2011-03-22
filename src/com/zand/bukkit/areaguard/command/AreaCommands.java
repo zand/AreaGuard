@@ -73,6 +73,9 @@ public class AreaCommands implements CommandExecutor {
 					
 					if (!area.getList("owners").addValue(session.getRealName(), session.getName()))
 						Messager.error(sender, "Failed to add \"" + session.getName() + "\" to owners list.");
+					if (!area.getList("restrict").addValues(session.getRealName(), Config.defaultRestict))
+						Messager.error(sender, "Failed to add the default restricts.");
+				
 				}
 				else Messager.error(sender, "Failed to create \"" + name + "\".");
 				return true;
@@ -202,8 +205,11 @@ public class AreaCommands implements CommandExecutor {
 				}
 				
 				ArrayList<Area> areas = Config.storage.getAreasCreated(player);
+				World world = session.getSelectedWorld();
+				int cap = -1;
+				if (world != null) cap = plugin.Security.getPermissionInteger(world.getName(), player, "areaguard-area-create");
 				
-				if (player == session.getName()) Messager.inform(sender, "Areas you created:" + ChatColor.WHITE + " " + areas.size() + " Area(s)");
+				if (player == session.getName()) Messager.inform(sender, "Areas you created:" + ChatColor.WHITE + " " + areas.size() + "/" + cap + " Area(s)");
 				else Messager.inform(sender, "Areas created by " + player + ":" + ChatColor.WHITE + " " + areas.size() + " Area(s)");
 				
 				show(sender, areas);
@@ -502,7 +508,6 @@ public class AreaCommands implements CommandExecutor {
 		// areaguard.area.modify.created
 		// areaguard.area.modify.all
 		
-		if (sender.isOp()) return true;
 		if (sender instanceof Player) {
 			Player player = (Player)sender;
 			
@@ -511,20 +516,21 @@ public class AreaCommands implements CommandExecutor {
 					plugin.Security.permission(player, "areaguard.area.modify.owned")) return true;
 			if (area.getCreator().equalsIgnoreCase(player.getName()) &&
 					plugin.Security.permission(player, "areaguard.area.modify.created")) return true;
-		}
+		} else if (sender.isOp()) return true;
 		Messager.warn(sender, "Your not allowed to modify the selected area.");
 		return false;
 	}
 	
 	public boolean canCreate(CommandSender sender) {
-		// areaguard.area.create
+		// areaguard-area-create
 		
-		if (sender.isOp()) return true;
 		if (sender instanceof Player) {
 			Player player = (Player)sender;
-			plugin.Security.getPermissionInteger(player.getWorld().getName(), player.getName(), "areaguard-area-create-cap");
-			if (plugin.Security.permission(player, "areaguard.area.create")) return true;
-		}
+			int cap = plugin.Security.getPermissionInteger(player.getWorld().getName(), player.getName(), "areaguard-area-create");
+			int created = Config.storage.getAreasCreated(player.getName()).size();
+			if (cap > created) return true;
+			else if (cap >= 0) Messager.warn(sender, "You have reached your created area cap of " + cap + ".");
+		} else if (sender.isOp()) return true;
 		Messager.warn(sender, "Your not allowed to create new areas.");
 		return false;
 	}

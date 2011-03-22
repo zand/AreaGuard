@@ -95,6 +95,7 @@ public class SqlStorage implements Storage {
 		this.password = password;
 		this.tablePrefix = tablePrefix;
 		this.keepConn = keepConn;
+		
 		createTables();
 	}
 

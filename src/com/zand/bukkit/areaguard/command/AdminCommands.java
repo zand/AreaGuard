@@ -11,7 +11,6 @@ import com.zand.areaguard.Config;
 import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.World;
-import com.zand.areaguard.area.sql.SqlStorage;
 import com.zand.bukkit.areaguard.AreaGuard;
 import com.zand.bukkit.areaguard.Session;
 import com.zand.bukkit.util.Messager;
@@ -43,11 +42,10 @@ public class AdminCommands implements CommandExecutor {
 			
 			
 			else if (args[0].equalsIgnoreCase("reconfig")) {
-				// TODO Make this reload config
-				if (Config.storage instanceof SqlStorage) {
-					Messager.inform(sender, "Reloading config");
-					((SqlStorage)Config.storage).loadConfig();
-				}
+				Messager.inform(sender, "Reloading config");
+				
+				Config.setup();
+				plugin.resetSessions();
 			}
 			
 			// Bypass

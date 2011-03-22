@@ -14,7 +14,7 @@ public class AreaGuardPermissionsWrapper extends PermissionsWrapper {
 	
 	@Override
 	protected int permissionIntegerHard(String world, String player, String nodes) { 
-		return -1;
+		return 10000;
 	}
 	
 	@Override

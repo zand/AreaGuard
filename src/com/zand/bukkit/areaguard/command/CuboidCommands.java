@@ -30,7 +30,8 @@ public class CuboidCommands implements CommandExecutor {
 		help.add("deactivate", 	6,	"", 				"Deactivates the selected cuboid.", "");
 		help.add("list", 		0,	"", 				"Lists the cuboids in the selected area.", "");
 		help.add("made", 		0,	"[by <player>]",	"Lists the cuboids that where created.", "");
-		help.add("move", 		0,	"", 				"Moves the selected area.", "");
+		help.add("move", 		0,	"", 				"Moves the selected cuboid.", "");
+		help.add("priority", 	4,	"<number>", 		"Sets the selected cuboid's priority.", "");
 		help.add("select", 		3,	"<id>", 			"Selects a cuboid by ID.", "");
 	}
 
@@ -162,8 +163,11 @@ public class CuboidCommands implements CommandExecutor {
 				}
 				
 				ArrayList<Cuboid> cuboids = Config.storage.getCuboidsCreated(player);
+				World world = session.getSelectedWorld();
+				int cap = -1;
+				if (world != null) cap = plugin.Security.getPermissionInteger(world.getName(), player, "areaguard-cuboid-create");
 				
-				if (player == session.getName()) Messager.inform(sender, "Cuboids you created:" + ChatColor.WHITE + " " + cuboids.size() + " Cuboid(s)");
+				if (player == session.getName()) Messager.inform(sender, "Cuboids you created:" + ChatColor.WHITE + " " + cuboids.size() + "/" + cap + " Cuboid(s)");
 				else Messager.inform(sender, "Cuboids created by " + player + ":" + ChatColor.WHITE + " " + cuboids.size() + " Cuboid(s)");
 				
 				show(sender, cuboids);
@@ -210,37 +214,102 @@ public class CuboidCommands implements CommandExecutor {
 				
 				return true;
 			}
+			
+			// Priority
+			else if (args[0].toLowerCase().startsWith("prio")) {
+				Cuboid cuboid = session.getSelectedCuboid();
+				if (cuboid == null) {if (cuboid == null) {
+					Messager.warn(sender, "You have no cuboid selected.");
+					return true; }
+				if (!canModify(cuboid, sender, true)) return true;
+					Messager.warn(sender, "You have no cuboid selected.");
+					return true; }
+				if (!canModify(cuboid, sender, true)) return true;
+				if (cuboid.isActive() && !canActivate(cuboid, sender, true)) {
+					Messager.warn(sender, "You can deactivate this cuboid to move it, but it will need to be activated agen.");
+					return true; }
+				
+				if (args.length > 1) {
+					int i;
+					
+					try {
+						i = Integer.valueOf(args[1]);
+					} catch (NumberFormatException e) {
+						Messager.warn(sender, "\"" + args[1] + "\" is not a number.");
+						return true;
+					}
+					
+					if (cuboid.setPriority(i))
+						Messager.inform(sender, "The selected cuboid's priority was set to " + i + ".");
+					else Messager.error(sender, "Faild to set the cuboid's priority!");
+				}
+				else
+					Messager.inform(sender, "The selected cuboid's priority is " + cuboid.getPriority());
+				return true;
+			}
 		}
 		help.show(sender, label);
 		return true;
 	}
 	
-	public boolean canActivate(Cuboid cuboid, CommandSender sender, boolean warn) {
-		// areaguard.cuboid.activate.owned
-		// areaguard.cuboid.activate.created
-		// areaguard.cuboid.activate.all
+	public boolean canCreate(Area area, CommandSender sender, boolean warn) {		
+		// areaguard-cuboid-create
 		
-		if (sender.isOp()) return true;
+		if (!canModify(area, sender, warn)) return false;
+		
+		// If there a Player
+		if (sender instanceof Player) {
+			Player player = (Player)sender;
+			int cap = plugin.Security.getPermissionInteger(player.getWorld().getName(), player.getName(), "areaguard-cuboid-create");
+			int created = Config.storage.getAreasCreated(player.getName()).size();
+			
+			if (cap > created) return true;
+			else if (cap >= 0) if (warn) Messager.warn(sender, "You have reached your created area cap of " + cap + ".");
+		} 
+		
+		// If there not a player but an Op
+		else if (sender.isOp()) return true;
+		
+		if (warn) Messager.warn(sender, "Your not allowed to create new areas.");
+		return false;
+	}
+	
+	public boolean canActivate(Cuboid cuboid, CommandSender sender, boolean warn) {
+		// areaguard.cuboid.activate
+		
+		if (sender instanceof Player) {
+			Player player = (Player)sender;
+			if (plugin.Security.permission(player, "areaguard.cuboid.activate")) return true;
+		} else if (sender.isOp()) return true;
 		if (warn) Messager.warn(sender, "You are not a allowed to activate this cuboid.");
 		return false;
 	}
 	
 	public boolean canModify(Cuboid cuboid, CommandSender sender, boolean warn) {
+		// areaguard.cuboid.modify.created
+		
+		if (sender instanceof Player) {
+			Player player = (Player)sender;
+			if (cuboid.getCreator().equalsIgnoreCase(player.getName()) &&
+					plugin.Security.permission(player, "areaguard.area.modify.created")) return true;
+		}
 		return canModify(cuboid.getArea(), sender, warn);
 	}
 	
 	public boolean canModify(Area area, CommandSender sender, boolean warn) {
 		// areaguard.cuboid.modify.owned
-		// areaguard.cuboid.modify.created
 		// areaguard.cuboid.modify.all
 		
-		if (sender.isOp()) return true;
 		if (sender instanceof Player) {
 			Player player = (Player)sender;
-			if (area.isOwner(player.getName())) return true;
-		}
-		if (warn) Messager.warn(sender, "You are not a owner of the area that this cuboid belongs to.");
+			
+			if (plugin.Security.permission(player, "areaguard.cuboid.modify.all")) return true;
+			if (area.isOwner(player.getName()) &&
+					plugin.Security.permission(player, "areaguard.cuboid.modify.owned")) return true;
+		} else if (sender.isOp()) return true;
+		Messager.warn(sender, "You are not a owner of the area that this cuboid belongs to.");
 		return false;
+		
 	}
 	
 	public void show(CommandSender sender, ArrayList<Cuboid> cuboids) {
