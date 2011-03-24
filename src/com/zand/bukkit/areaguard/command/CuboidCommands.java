@@ -99,8 +99,37 @@ public class CuboidCommands implements CommandExecutor {
 					return true; }
 				
 				if (cuboid.setLocation(world, session.getCoords()))
-					Messager.inform(sender, "The selected cuboid was deleted.");
-				else Messager.error(sender, "Faild to delete cuboid!");
+					Messager.inform(sender, "The selected cuboid was moved.");
+				else Messager.error(sender, "Faild to move cuboid!");
+				
+				return true;
+			}
+			
+			// Extend
+			else if (args[0].equalsIgnoreCase("extend")) {
+				World world = session.getSelectedWorld();
+				Cuboid cuboid = session.getSelectedCuboid();
+				if (cuboid == null) {
+					Messager.warn(sender, "You have no cuboid selected.");
+					return true; }
+				if (!canModify(cuboid, sender, true)) return true;
+				if (cuboid.isActive() && !canActivate(cuboid, sender, true)) {
+					Messager.warn(sender, "You can deactivate this cuboid to move it, but it will need to be activated agen.");
+					return true; }
+				if (world == null || world != cuboid.getWorld()) {
+					Messager.warn(sender, "The point you selected is not in the world \"" + world.getName() + "\".");
+					return true; }
+				
+				int coords[] = cuboid.getCoords();
+				int point[] = session.getSelectedPoint();
+				for (int i=0; i < point.length; i++) {
+					if (coords[i] > point[i]) coords[i] = point[i];
+					else if (coords[i+3] < point[i]) coords[i+3] = point[i];
+				}
+				
+				if (cuboid.setLocation(world, coords))
+					Messager.inform(sender, "The selected cuboid was extended.");
+				else Messager.error(sender, "Faild to extend cuboid!");
 				
 				return true;
 			}

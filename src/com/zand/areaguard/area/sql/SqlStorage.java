@@ -27,9 +27,11 @@ public class SqlStorage implements Storage {
 	private String url;
 	private String user;
 	private String password;
+	private int warnDelay = 1000;
 	protected String tablePrefix;
 	private boolean keepConn = false;
 	protected Connection conn = null;
+	private long connectTime;
 	
 	public SqlStorage(String filename) {
 		loadConfig(filename);
@@ -100,22 +102,27 @@ public class SqlStorage implements Storage {
 	}
 
 	public boolean connect() {
+		long time = System.currentTimeMillis();
 		try {
 			if (conn == null || conn.isClosed()) {
-				System.out.println("Connecting");
+				if (time - connectTime > warnDelay) 
+					System.out.println("[AreaGuard]: Connecting");
 				Class.forName(driver);
 				conn = DriverManager.getConnection(url, user, password);
 			}
 		} catch (java.lang.ClassNotFoundException e) {
 			// Could not find driver
-			System.err.print("AreaGuard: Could not find driver \"" + driver
+			if (time - connectTime > warnDelay)
+				System.err.print("[AreaGuard]: Could not find driver \"" + driver
 					+ "\"\n");
 		} catch (SQLException e) {
 			// Could not connect to the database
 			conn = null;
-			System.err.print("AreaGuard: Can't Connect, " + e.getMessage()
+			if (time - connectTime > warnDelay)
+				System.err.print("[AreaGuard]: Can't Connect, " + e.getMessage()
 					+ "\n");
 		}
+		connectTime = System.currentTimeMillis();
 		return (conn != null);
 	}
 
@@ -133,7 +140,7 @@ public class SqlStorage implements Storage {
 		} catch (SQLException e) {
 			// Could not disconnect from the database?
 			conn = null;
-			System.err.print("AreaGuard:  Can't Disconnect, " + e.getMessage());
+			System.err.print("[AreaGuard]:  Can't Disconnect, " + e.getMessage());
 		}
 	}
 

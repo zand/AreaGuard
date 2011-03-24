@@ -32,16 +32,17 @@ public class AreaCommands implements CommandExecutor {
 		
 		help = new CommandHelp(plugin, "Area");
 		help.add("create", 	0,	"[name]", 				"Creates a new area.", "");
-		help.add("delete", 	0,	"", 					"Deletes the selected area.", "areaguard.area.modify");
+		help.add("delete", 	0,	"", 					"Deletes the selected area.", "");
+		help.add("rename", 	0,	"[name]", 				"Renames the selected area.", "");
 		help.add("owned", 	3,	"[by <player>]", 		"Gets areas owned by player.", "");
 		help.add("made", 		0,	"[by <player>]",	"Lists the areas that where created.", "");
 		help.add("select", 	3,	"[<player>|my] <name>",	"Selects an area by name.", "");
 		help.add("select", 	3,	"<id>", 				"Selects an area by id.", "");
 		help.add("select", 	3,	"<x> <y> <z>", 			"Selects an area at that position.", "");
-		help.add("add", 	0,	"<list> [values...]", 	"Adds the values to the list.", "areaguard.area.modify");
-		help.add("remove", 	3,	"<list> [values...]", 	"Removes from the list.", "areaguard.area.modify");
-		help.add("clear", 	0,	"<list>", 				"Removes the list.", "areaguard.area.modify");
-		help.add("msg", 	0,	"<event> [msg...]", 	"Sets the message for that event.", "areaguard.area.modify");
+		help.add("add", 	0,	"<list> [values...]", 	"Adds the values to the list.", "");
+		help.add("remove", 	3,	"<list> [values...]", 	"Removes from the list.", "");
+		help.add("clear", 	0,	"<list>", 				"Removes the list.", "");
+		help.add("msg", 	0,	"<event> [msg...]", 	"Sets the message for that event.", "");
 		help.add("show", 	0,	"<event>", 				"Shows the message for that event.", "");
 	}
 	
@@ -256,6 +257,26 @@ public class AreaCommands implements CommandExecutor {
 				names = "";
 				for (Msg msg : msgs) names += msg.getName() + " ";
 				if (!names.isEmpty()) sender.sendMessage(names);
+				
+				return true;
+			}
+			
+			// Rename
+			else if (args[0].equalsIgnoreCase("name")) {
+				Area area = session.getSelectedArea();
+				if (area == null)
+					Messager.warn(sender, "You have no area selected");
+				if (!canModify(area, sender)) return true;
+				String name = "";
+				if (args.length > 1) {					
+					for (String arg : Java15Compat.Arrays_copyOfRange(args, 1, args.length))
+						name += arg + " ";
+					name = name.trim();
+				} else {
+					Messager.warn(sender, "No new name given.");
+				}
+				if (area.setName(name)) Messager.inform(sender, "Selected Area renamed to: " + name);
+				else Messager.error(sender, "Faild to rename area!");
 				
 				return true;
 			}

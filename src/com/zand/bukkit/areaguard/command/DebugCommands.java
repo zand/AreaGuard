@@ -42,7 +42,7 @@ public class DebugCommands implements CommandExecutor {
 			} else if (args[0].equalsIgnoreCase("stop")) {
 				String flags[] = Java15Compat.Arrays_copyOfRange(args, 1, args.length);
 				for (String flag : flags) {
-					plugin.getSession(sender).setDebuging(flag, true);
+					plugin.getSession(sender).setDebuging(flag, false);
 					Messager.debug(sender, "Stopping " + flag);
 				}
 			}//admin = new AdminCommands(plugin);

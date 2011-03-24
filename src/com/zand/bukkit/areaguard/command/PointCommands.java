@@ -14,9 +14,13 @@ import com.zand.bukkit.util.Messager;
 
 public class PointCommands implements CommandExecutor {
 	final AreaGuard plugin;
+	private CommandHelp help;
 	
 	public PointCommands(AreaGuard plugin) {
 		this.plugin = plugin;
+		help = new CommandHelp(plugin, "Point");
+		help.add("select", 3,	"[right,left] <x> <y> <z>", "Sellects a point.", "");
+		help.add("select", 3,	"[right,left] here", "Sellects a point at your current location.", "");
 	}
 	
 	@Override
@@ -66,7 +70,7 @@ public class PointCommands implements CommandExecutor {
 			}
 		}
 		
-		showHelp(sender, label);
+		help.show(sender, label);
 		
 		return true;
 	}
@@ -90,11 +94,5 @@ public class PointCommands implements CommandExecutor {
 			} 
 		}
 		return null;
-	}
-	
-	public void showHelp(CommandSender sender, String label) {
-		sender.sendMessage(ChatColor.DARK_PURPLE + plugin.versionInfo + " Point Help");
-		sender.sendMessage(ChatColor.WHITE + label + " help" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Shows this.");
-		sender.sendMessage(ChatColor.WHITE + label + " select [left|right] <here|<x> <y> <z>>" + ChatColor.GOLD + " - " + ChatColor.YELLOW + "Sets the selected point.");
 	}
 }
