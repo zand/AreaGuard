@@ -363,7 +363,7 @@ public class SqlCuboid implements Cuboid {
 
 	@Override
 	public boolean delete() {
-		String sql = "DELETE FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ? LIMIT 1";
+		String sql = "DELETE FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ?";
 
 		if (storage.connect()) {
 			try {
@@ -384,5 +384,4 @@ public class SqlCuboid implements Cuboid {
 		} else return false;
 		return true;
 	}
-
 }

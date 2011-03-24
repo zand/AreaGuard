@@ -67,7 +67,7 @@ The following is what a part of a Permissions `.yml` file would look like with A
         permissions:
            - 'areaguard.area.modify.*'
            - 'areaguard.cuboid.modify.*'
-           - 'areaguard.cuboid.modify.activate'
+           - 'areaguard.cuboid.activate'
     Admins:
         default: false
         info:
@@ -134,7 +134,7 @@ All lists accept for `owners` and `restrict` have a alternate list with a `no-` 
 
 ### Mob Lists ###
 Each has anything matching the first 4 letters of the name as an the alias.  
-`chicken` `cow` `creeper` `ghast` `pig` `pigZombie` `sheep` `skeleton`
+`chicken` `cow` `creeper` `ghast` `pig` `pigzombie` `sheep` `skeleton`
 `spider` `zombie` `squid` `slime`
 
 ### Block Lists ###
@@ -151,7 +151,7 @@ Each one has the block id as an the alias.
 `workbench` `crops` `soil` `furnace` `burning-furnace` `sign-post`
 `wooden-door`
 
-Lists
+Msgs
 =====
 All lists accept for `owners` and `restrict` have a alternate list with a `no-` prefix.
 
@@ -168,7 +168,7 @@ All lists accept for `owners` and `restrict` have a alternate list with a `no-` 
 ### Mob Msgs ###
 Sent when players harm mobs with the same name as the msg.
 Each has anything matching the first 4 letters of the name as an the alias.  
-`chicken` `cow` `creeper` `ghast` `pig` `pigZombie` `sheep` `skeleton`
+`chicken` `cow` `creeper` `ghast` `pig` `pigzombie` `sheep` `skeleton`
 `spider` `zombie` `squid` `slime`
 
 ### Block Msgs ###

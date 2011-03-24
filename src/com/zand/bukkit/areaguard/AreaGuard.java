@@ -17,8 +17,10 @@ import com.zand.areaguard.*;
 import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.error.ErrorArea;
+import com.zand.bukkit.areaguard.command.AdminCommands;
 import com.zand.bukkit.areaguard.command.AreaCommands;
 import com.zand.bukkit.areaguard.command.CuboidCommands;
+import com.zand.bukkit.areaguard.command.DebugCommands;
 import com.zand.bukkit.areaguard.command.MainCommands;
 import com.zand.bukkit.areaguard.listeners.AreaGuardBlockListener;
 import com.zand.bukkit.areaguard.listeners.AreaGuardEntityListener;
@@ -89,9 +91,20 @@ public class AreaGuard extends JavaPlugin {
         versionInfo = name + " version " + desc.getVersion() + 
         	(authors.isEmpty() ? "" : " by" + authors.substring(1));
         
-        getCommand("ag").setExecutor(new MainCommands(this));
-        getCommand("area").setExecutor(new AreaCommands(this));
-        getCommand("cuboid").setExecutor(new CuboidCommands(this));
+        MainCommands main = new MainCommands(this);
+        AreaCommands area = new AreaCommands(this);
+        AdminCommands admin = new AdminCommands(this);
+        CuboidCommands cuboid = new CuboidCommands(this);
+        DebugCommands debug = new DebugCommands(this, main);
+        
+        getCommand("ag").setExecutor(main);
+        getCommand("agmain").setExecutor(main);
+        getCommand("area").setExecutor(area);
+        getCommand("agarea").setExecutor(area);
+        getCommand("agadmin").setExecutor(admin);
+        getCommand("cuboid").setExecutor(cuboid);
+        getCommand("agcuboid").setExecutor(cuboid);
+        getCommand("agdebug").setExecutor(debug);
     	
     	registerEvents();
     	// setupOtherPlugins();
@@ -160,7 +173,7 @@ public class AreaGuard extends JavaPlugin {
 	*/
     public boolean checkEvent(Cancellable event, Player player, String[] lists, int x, int y, int z) {
     	// TODO fix
-    	Cuboid cuboid = Config.storage.getWorld(player.getWorld().getName()).getCuboid(x, y, z);
+    	Cuboid cuboid = Config.storage.getWorld(player.getWorld().getName()).getCuboid(true, x, y, z);
     	if (cuboid != null && cuboid.exsists())
 		return checkEvent(event, player, lists, cuboid.getArea());
     	return true;

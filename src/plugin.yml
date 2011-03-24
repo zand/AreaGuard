@@ -1,7 +1,7 @@
 name: AreaGuard
 author: zand
 main: com.zand.bukkit.areaguard.AreaGuard
-version: 0.9_preview
+version: 0.9.1_preview
 commands:
   ag:
     description: Shows the help for areaguard
@@ -11,4 +11,19 @@ commands:
     usage: <command> help
   cuboid:
     description: Shows the help for areaguard cuboids
+    usage: <command> help
+  agmain:
+    description: Shows the help for areaguard
+    usage: <command> help
+  agarea:
+    description: Shows the help for areaguard areas
+    usage: <command> help
+  agcuboid:
+    description: Shows the help for areaguard cuboids
+    usage: <command> help
+  agadmin:
+    description:
+    usage: <command> help
+  agdebug:
+    description:
     usage: <command> help
