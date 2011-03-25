@@ -2,7 +2,10 @@ package com.zand.areaguard.area.error;
 
 import com.zand.areaguard.area.*;
 
-public class ErrorCuboid implements Cuboid {
+public class ErrorCuboid extends Cuboid {
+	public ErrorCuboid() {
+		super(-1);
+	}
 	final static public ErrorCuboid
 	NOT_FOUND = new ErrorCuboid();
 	World world;

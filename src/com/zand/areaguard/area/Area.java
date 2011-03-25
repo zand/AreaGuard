@@ -3,33 +3,44 @@ package com.zand.areaguard.area;
 import java.util.ArrayList;
 
 
-public interface Area extends Data {
+public abstract class Area extends IdData {
 	
+	public Area(int id) {
+		super(id);
+	}
+
 	/**
 	 * Gets a list of Cubiods that are a part of that area.
 	 * @return
 	 */
-	public ArrayList<Cuboid> getCubiods();
+	public abstract ArrayList<Cuboid> getCuboids();
 	
 	/**
 	 * Gets a list of Cubiods that are a part of that area.
 	 * @param active Whether to get active or inactive.
 	 * @return
 	 */
-	public ArrayList<Cuboid> getCubiods(boolean active);
+	public ArrayList<Cuboid> getCuboids(boolean active) {
+		ArrayList<Cuboid> ret = new ArrayList<Cuboid>();
+		for (Cuboid cuboid : getCuboids())
+			if (cuboid.isActive() == active) ret.add(cuboid);
+		return ret;
+	}
 	
 	/**
 	 * Gets who created the area.
 	 * @return The name of the person who created the area.
 	 */
-	public String getCreator();
+	public abstract String getCreator();
 	
 	/**
 	 * Gets weather the player is an owner of the Area. 
 	 * @param player The player to check.
 	 * @return True if they are
 	 */
-	public boolean isOwner(String player);
+	public boolean isOwner(String player) {
+		return getList("owners").hasValue(player);
+	}
 	
 	/**
 	 * Tests if a point is in the area.
@@ -39,7 +50,12 @@ public interface Area extends Data {
 	 * @param z The Z vector.
 	 * @return If the point is in the area
 	 */
-	public boolean pointInside(World world, int x, int y, int z);
+	public boolean pointInside(World world, int x, int y, int z) {
+		for (Cuboid cubiod : getCuboids(true))
+			if (cubiod.pointInside(world, x, y, z))
+				return true;
+		return false;
+	}
 	
 	/**
 	 * Tests if a point is in the area.
@@ -49,42 +65,35 @@ public interface Area extends Data {
 	 * @param z The Z vector.
 	 * @return If the point is in the area
 	 */
-	public boolean pointInside(String world, int x, int y, int z);
 	
-	public List getList(String name);
+	public abstract List getList(String name);
 	
-	public Area getParrent();
+	public abstract Area getParrent();
 	
-	public boolean setParrent(Area parrent);
+	public abstract boolean setParrent(Area parrent);
 	
-	public ArrayList<List> getLists();
+	public abstract ArrayList<List> getLists();
 	
-	public Msg getMsg(String name);
+	public abstract Msg getMsg(String name);
 	
-	public ArrayList<Msg> getMsgs();
-	
-	/**
-	 * Gets the ID for this Area.
-	 * @return The ID for this area.
-	 */
-	public int getId();
+	public abstract ArrayList<Msg> getMsgs();
 	
 	/**
 	 * Gets the name for this Area.
 	 * @return The name for this area.
 	 */
-	public String getName();
+	public abstract String getName();
 	
 	/**
 	 * Sets the name for this area.
 	 * @param name The name to set it to.
 	 * @return True if success.
 	 */
-	public boolean setName(String name);
+	public abstract boolean setName(String name);
 	
 	/**
 	 * Deletes this Area and attached {@link List}s, {@link Msg}s, and {@link Cuboid}s.
 	 * @return True if success.
 	 */
-	public boolean delete();
+	public abstract boolean delete();
 }

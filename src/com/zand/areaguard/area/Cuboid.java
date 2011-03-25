@@ -1,61 +1,65 @@
 package com.zand.areaguard.area;
 
-public interface Cuboid extends Data {
+public abstract class Cuboid extends IdData {
+	
+	public Cuboid(int id) {
+		super(id);
+	}
 	
 	/**
 	 * Gets the {@link Area} that this cubiod is a part of.
 	 * @return The Area that this cubiod belongs to. 
 	 */
-	public Area getArea();
+	public abstract Area getArea();
 	
 	/**
 	 * Gets who created the cuboid.
 	 * @return The name of the person who created the cuboid.
 	 */
-	public String getCreator();
+	public abstract String getCreator();
 	
 	/**
 	 * Gets the coords of the cubiod.
 	 * @return An Array of the cubiod's coords.
 	 */
-	public int[] getCoords();
+	public abstract int[] getCoords();
 	
 	/**
 	 * Gets the number of blocks in a cuboid.
 	 * @return The number of blocks.
 	 */
-	public long getBlockCount();
+	public long getBlockCount() {
+		int coords[] = getCoords();
+		return 
+		(coords[3]-coords[0]+1)*
+		(coords[4]-coords[1]+1)*
+		(coords[5]-coords[2]+1);
+	}
 	
 	/**
 	 * Sets weather the cuboid is active
 	 * @param active cuboid's new active status
 	 * @return True if success.
 	 */
-	public boolean setActive(boolean active);
+	public abstract boolean setActive(boolean active);
 	
 	/**
 	 * Gets the cuboids active status.
 	 * @return
 	 */
-	public boolean isActive();
-	
-	/**
-	 * Gets the cubiod's id
-	 * @return The cubiod's id
-	 */
-	public int getId();
+	public abstract boolean isActive();
 	
 	/**
 	 * Gets the Priority for the cubiod.
 	 * @return The Priority
 	 */
-	public int getPriority();
+	public abstract int getPriority();
 	
 	/**
 	 * Gets the {@link World} that this cubiod is a part of.
 	 * @return The World that this cubiod belongs to. 
 	 */
-	public World getWorld();
+	public abstract World getWorld();
 
 	/**
 	 * Tests if a point is in the cubiod.
@@ -65,21 +69,21 @@ public interface Cuboid extends Data {
 	 * @param z The Z vector.
 	 * @return If the point is in the cubiod
 	 */
-	public boolean pointInside(World world, int x, int y, int z);
+	public abstract boolean pointInside(World world, int x, int y, int z);
 	
 	/**
 	 * Sets the Priority for the cubiod.
 	 * @param priority The Priority to set it to.
 	 * @return If success.
 	 */
-	public boolean setPriority(int priority);
+	public abstract boolean setPriority(int priority);
 	
 	/**
 	 * Sets the {@link Area} that the cubiod is a part of.
 	 * @param priority The Priority to set it to.
 	 * @return If success.
 	 */
-	public boolean setArea(Area area);
+	public abstract boolean setArea(Area area);
 	
 	/**
 	 * Sets the location for the cubiod.
@@ -87,11 +91,11 @@ public interface Cuboid extends Data {
 	 * @param coords The coords to set it to.
 	 * @return If success.
 	 */
-	public boolean setLocation(World world, int coords[]);
+	public abstract boolean setLocation(World world, int coords[]);
 	
 	/**
 	 * Deletes this cuboid.
 	 * @return True if success.
 	 */
-	public boolean delete();
+	public abstract boolean delete();
 }

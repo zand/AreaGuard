@@ -11,28 +11,15 @@ import com.zand.areaguard.area.error.ErrorArea;
 import com.zand.areaguard.area.error.ErrorCuboid;
 import com.zand.areaguard.area.error.ErrorWorld;
 
-public class SqlCuboid implements Cuboid {
+public class SqlCuboid extends Cuboid {
 	final static public ErrorCuboid
 		COULD_NOT_CONNECT = new ErrorCuboid(),
 		SQL_ERROR = new ErrorCuboid();
 	final private SqlStorage storage;
-	final private int id;
-	
-	@Override public boolean equals(Object o) {
-		if (o instanceof SqlCuboid)
-			return id == ((SqlCuboid)o).id;
-		if (o instanceof Integer)
-			return id == ((Integer)o).intValue();
-		return false;
-	}
-	
-	@Override public int hashCode() {
-		return id;
-	}
 	
 	public SqlCuboid(SqlStorage storage, int id) {
+		super(id);
 		this.storage = storage;
-		this.id = id;
 	}
 
 	@Override
@@ -93,11 +80,6 @@ public class SqlCuboid implements Cuboid {
 			storage.disconnect();
 		}
 		return coords;
-	}
-
-	@Override
-	public int getId() {
-		return id;
 	}
 
 	@Override
@@ -270,15 +252,6 @@ public class SqlCuboid implements Cuboid {
 			storage.disconnect();
 		}
 		return ret;
-	}
-
-	@Override
-	public long getBlockCount() {
-		int coords[] = getCoords();
-		return 
-		(coords[3]-coords[0]+1)*
-		(coords[4]-coords[1]+1)*
-		(coords[5]-coords[2]+1);
 	}
 
 	@Override

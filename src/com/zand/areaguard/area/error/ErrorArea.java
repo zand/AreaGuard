@@ -7,10 +7,9 @@ import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.List;
 import com.zand.areaguard.area.Msg;
-import com.zand.areaguard.area.World;
 
 
-public class ErrorArea implements com.zand.areaguard.area.Area {
+public class ErrorArea extends com.zand.areaguard.area.Area {
 	final static public ErrorArea
 	NOT_FOUND = new ErrorArea("AREA NOT FOUND");
 	private final String error;
@@ -19,6 +18,7 @@ public class ErrorArea implements com.zand.areaguard.area.Area {
 	HashMap<String, Msg> msgs = new HashMap<String, Msg>();
 
 	public ErrorArea(String error) {
+		super(-2);
 		this.error = error;
 		cubiods.add(new ErrorCuboid());
 		lists.add(new ErrorList(this, "restrict", new String[] {"build", "open"}));
@@ -26,13 +26,8 @@ public class ErrorArea implements com.zand.areaguard.area.Area {
 		}
 
 	@Override
-	public ArrayList<Cuboid> getCubiods() {
+	public ArrayList<Cuboid> getCuboids() {
 		return cubiods;
-	}
-
-	@Override
-	public int getId() {
-		return -2;
 	}
 
 	@Override
@@ -66,21 +61,6 @@ public class ErrorArea implements com.zand.areaguard.area.Area {
 	}
 
 	@Override
-	public boolean isOwner(String player) {
-		return false;
-	}
-
-	@Override
-	public boolean pointInside(World world, int x, int y, int z) {
-		return true;
-	}
-
-	@Override
-	public boolean pointInside(String world, int x, int y, int z) {
-		return true;
-	}
-
-	@Override
 	public boolean exsists() {
 		return false;
 	}
@@ -103,10 +83,5 @@ public class ErrorArea implements com.zand.areaguard.area.Area {
 	@Override
 	public boolean delete() {
 		return false;
-	}
-
-	@Override
-	public ArrayList<Cuboid> getCubiods(boolean active) {
-		return new ArrayList<Cuboid>();
 	}
 }
