@@ -181,8 +181,7 @@ public class SqlArea extends Area {
 		
 		String update = "UPDATE `" + storage.tablePrefix + "Areas` "
 		+ "SET Name=? "
-		+ "WHERE Id=? " 
-		+ "LIMIT 1;";
+		+ "WHERE Id=?;";
 		if (storage.connect())
 			return false;
 		try {

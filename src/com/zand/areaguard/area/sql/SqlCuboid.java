@@ -153,8 +153,7 @@ public class SqlCuboid extends Cuboid {
 	public boolean setArea(Area area) {
 		String update = "UPDATE `" + storage.tablePrefix + "Cuboids` "
 		+ "SET AreaId=? "
-		+ "WHERE Id=? " 
-		+ "LIMIT 1;";
+		+ "WHERE Id=?;";
 		if (storage.connect())
 			return false;
 		try {
@@ -178,8 +177,7 @@ public class SqlCuboid extends Cuboid {
 	public boolean setPriority(int priority) {
 		String update = "UPDATE `" + storage.tablePrefix + "Cuboids` "
 		+ "SET Priority=? "
-		+ "WHERE Id=? " 
-		+ "LIMIT 1;";
+		+ "WHERE Id=?;";
 		if (storage.connect())
 			return false;
 		try {
@@ -203,8 +201,7 @@ public class SqlCuboid extends Cuboid {
 	public boolean setLocation(World world, int[] coords) {
 		String update = "UPDATE `" + storage.tablePrefix + "Cuboids` "
 		+ "SET WorldId=?, x1=?, y1=?, z1=?, x2=?, y2=?, z2=? "
-		+ "WHERE Id=? " 
-		+ "LIMIT 1;";
+		+ "WHERE Id=?;";
 		if (storage.connect())
 			return false;
 		try {
