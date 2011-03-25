@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.World;
 
-public class ErrorWorld implements World {
+public class ErrorWorld extends World {
 	final static public ErrorWorld
 		NOT_FOUND = new ErrorWorld("WORLD NOT FOUND");
 	
 	final private String name;
 	
 	public ErrorWorld(String name) {
+		super(-2);
 		this.name = name;
 	}
 
@@ -33,11 +34,6 @@ public class ErrorWorld implements World {
 	@Override
 	public ArrayList<Cuboid> getCuboids(int x, int y, int z) {
 		return new ArrayList<Cuboid>();
-	}
-
-	@Override
-	public int getId() {
-		return -2;
 	}
 
 	@Override

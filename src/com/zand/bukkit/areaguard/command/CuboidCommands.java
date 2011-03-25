@@ -179,7 +179,7 @@ public class CuboidCommands implements CommandExecutor {
 					Messager.warn(sender, "You have no area selected");
 					return true; }
 				
-				ArrayList<Cuboid> cuboids = area.getCubiods();
+				ArrayList<Cuboid> cuboids = area.getCuboids();
 				Messager.inform(sender, "Cuboids in \"" + area.getName() + "\":" + ChatColor.WHITE + " " + cuboids.size());
 				show(sender, cuboids);
 				return true;

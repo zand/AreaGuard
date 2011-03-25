@@ -9,32 +9,53 @@ import java.util.ArrayList;
  * @author zand
  *
  */
-public interface List extends Data {
+public abstract class List implements Data {
+	final private Area area;
+	final private String name;
+	
+	public List(Area area, String name) {
+		this.area = area;
+		this.name = name;
+	}
+	
+	@Override public boolean equals(Object o) {
+		if (o instanceof List)
+			return area == ((List)o).area && name == ((List)o).name;
+		return false;
+	}
+	
+	@Override public int hashCode() {
+		return (name + "@" + area.getId()).hashCode();
+	}
 	
 	/**
 	 * Gets the set of list values.
 	 * @return a set of values.
 	 */
-	public ArrayList<String> getValues();
+	public abstract ArrayList<String> getValues();
 	
 	/**
 	 * Gets the Area Id for the list.
 	 * @return The Area Id.
 	 */
-	public Area getArea();
+	public Area getArea() {
+		return area;
+	}
 	
 	/**
 	 * Gets the Name of the list.
 	 * @return The name of the list.
 	 */
-	public String getName();
+	public String getName() {
+		return name;
+	}
 	
 	/**
 	 * Test if the list has a value.
 	 * @param value The value to test for.
 	 * @return If the value is in the list.
 	 */
-	public boolean hasValue(String value);
+	public abstract boolean hasValue(String value);
 	
 	/**
 	 * Adds values to the List.
@@ -42,7 +63,11 @@ public interface List extends Data {
 	 * @param values The Set of values to add.
 	 * @return False if there was an error.
 	 */
-	public boolean addValues(String creator, String values[]);
+	public boolean addValues(String creator, String values[]) {
+		for (String value : values)
+			if (!addValue(creator, value)) return false;
+		return true;
+	}
 	
 	/**
 	 * Adds a value to the List.
@@ -50,25 +75,31 @@ public interface List extends Data {
 	 * @param values The value to add.
 	 * @return False if there was an error.
 	 */
-	public boolean addValue(String creator, String value);
+	public abstract boolean addValue(String creator, String value);
 	
 	/**
 	 * Removes values from the List.
 	 * @param values The Set of values to remove.
 	 * @return False if there was an error.
 	 */
-	public boolean removeValues(String values[]);
+	public boolean removeValues(String values[]) {
+		for (String value : values)
+			if (!removeValue(value)) return false;
+		return true;
+	}
 	
 	/**
 	 * Removes a value from the List.
 	 * @param value The value to remove.
 	 * @return False if there was an error.
 	 */
-	public boolean removeValue(String value);
+	public abstract boolean removeValue(String value);
 	
 	/**
 	 * Clears the List
 	 * @return False if there was an error.
 	 */
-	public boolean clear();
+	public boolean clear() {
+		return removeValues((String[]) getValues().toArray());
+	}
 }
