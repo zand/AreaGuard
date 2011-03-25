@@ -31,6 +31,7 @@ public class CuboidCommands implements CommandExecutor {
 		help.add("list", 		0,	"", 				"Lists the cuboids in the selected area.", "");
 		help.add("made", 		0,	"[by <player>]",	"Lists the cuboids that where created.", "");
 		help.add("move", 		0,	"", 				"Moves the selected cuboid.", "");
+		help.add("extend", 		0,	"", 				"Extends the selected cuboid to cover the last selected point.", "");
 		help.add("priority", 	4,	"<number>", 		"Sets the selected cuboid's priority.", "");
 		help.add("select", 		3,	"<id>", 			"Selects a cuboid by ID.", "");
 	}
