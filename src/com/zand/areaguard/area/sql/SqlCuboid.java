@@ -141,15 +141,6 @@ public class SqlCuboid extends Cuboid {
 	}
 
 	@Override
-	public boolean pointInside(World world, int x, int y, int z) {
-		int coords[] = getCoords();
-		return ((coords[0] <= x && coords[3] >= x) &&
-				(coords[1] <= x && coords[4] >= x) &&
-				(coords[2] <= x && coords[5] >= x) &&
-				getWorld().getName().equals(world.getName()));
-	}
-
-	@Override
 	public boolean setArea(Area area) {
 		String update = "UPDATE `" + storage.tablePrefix + "Cuboids` "
 		+ "SET AreaId=? "

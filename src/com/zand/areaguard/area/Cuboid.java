@@ -69,7 +69,13 @@ public abstract class Cuboid extends IdData {
 	 * @param z The Z vector.
 	 * @return If the point is in the cubiod
 	 */
-	public abstract boolean pointInside(World world, int x, int y, int z);
+	public boolean pointInside(World world, int x, int y, int z) {
+		int coords[] = getCoords();
+		return ((coords[0] <= x && coords[3] >= x) &&
+				(coords[1] <= x && coords[4] >= x) &&
+				(coords[2] <= x && coords[5] >= x) &&
+				getWorld().getName().equals(world.getName()));
+	}
 	
 	/**
 	 * Sets the Priority for the cubiod.
