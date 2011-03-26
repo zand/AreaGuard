@@ -41,7 +41,7 @@ public class CacheCuboid extends Cuboid implements CacheData {
 			coords = cuboid.getCoords();
 			active = cuboid.isActive();
 			
-			System.out.println("Updated Cuboid " + getId());
+			if (CacheStorage.debug) System.out.println("Updated Cuboid " + getId());
 		}
 		
 		return true;

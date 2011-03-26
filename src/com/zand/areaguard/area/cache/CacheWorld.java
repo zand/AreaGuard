@@ -94,7 +94,7 @@ public class CacheWorld extends World implements CacheData {
 			for (Cuboid cuboid : world.getCuboids())
 				cuboids.add(storage.getCuboid(cuboid.getId()));
 			
-			System.out.println("Updated World " + getName());
+			if (CacheStorage.debug) System.out.println("Updated World " + getName());
 		}
 		
 		return true;

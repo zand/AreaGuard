@@ -42,7 +42,7 @@ public class CacheMsg extends Msg implements CacheData {
 			exsists = msg.exsists();
 			value = msg.getMsg();
 			
-			System.out.println("Updated Msg " + getName() + "@" + getArea().getId());
+			if (CacheStorage.debug) System.out.println("Updated Msg " + getName() + "@" + getArea().getId());
 		}
 		
 		return true;

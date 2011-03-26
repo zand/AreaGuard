@@ -61,7 +61,7 @@ public class CacheArea extends Area implements CacheData {
 				if (!msgs.containsKey(msg.getName()))
 					msgs.put(msg.getName(), new CacheMsg(storage, msg));
 			
-			System.out.println("Updated Area " + getId());
+			if (CacheStorage.debug) System.out.println("Updated Area " + getId());
 		}
 		
 		return true;

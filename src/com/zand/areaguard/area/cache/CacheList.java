@@ -58,7 +58,7 @@ public class CacheList extends List implements CacheData {
 			exsists = list.exsists();
 			values = list.getValues();
 			
-			System.out.println("Updated List " + getName() + "@" + getArea().getId());
+			if (CacheStorage.debug) System.out.println("Updated List " + getName() + "@" + getArea().getId());
 		}
 		
 		return true;

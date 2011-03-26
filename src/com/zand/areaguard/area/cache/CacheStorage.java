@@ -8,6 +8,7 @@ import com.zand.areaguard.area.Storage;
 import com.zand.areaguard.area.World;
 
 public class CacheStorage implements Storage, CacheData {
+	final static protected boolean debug = false;
 	final private Storage storage;
 	static private int updateTime = 30000;
 	private long lastUpdate = 0;
@@ -193,7 +194,7 @@ public class CacheStorage implements Storage, CacheData {
 			for (Cuboid cuboid : cuboids)
 				if (!cuboid.exsists()) cuboids.remove(cuboid);
 			
-			System.out.println("Updated Storage");
+			if (debug) System.out.println("Updated Storage");
 		}
 		
 		return true;
