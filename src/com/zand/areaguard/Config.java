@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.zand.areaguard.area.Storage;
+import com.zand.areaguard.area.cache.CacheStorage;
 import com.zand.areaguard.area.sql.SqlStorage;
 
 public class Config {
@@ -63,7 +64,7 @@ public class Config {
 			((SqlStorage)storage).disconnect();
 		
 		System.out.println("[AreaGuard]: Useing Storage Method \"sql\"");
-		storage = new SqlStorage(config);
+		storage = new CacheStorage(new SqlStorage(config));
 		
 		return true;
 	}

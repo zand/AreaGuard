@@ -86,15 +86,18 @@ public class CacheWorld extends World implements CacheData {
 		long time = System.currentTimeMillis();
 		
 		if (time - lastUpdate > updateTime) {
+			lastUpdate = time;
+			
 			exsists = world.exsists();
 			name = world.getName();
 			cuboids.clear();
-			for (Cuboid cuboid : storage.getCuboids())
-				if (cuboid.getWorld().getId() == getId() && !cuboids.contains(cuboid)) 
-					cuboids.add(cuboid);
+			for (Cuboid cuboid : world.getCuboids())
+				if (cuboid.getWorld().getId() == getId() && !cuboids.contains(cuboid))
+					cuboids.add(new CacheCuboid(storage, cuboid));
 			
-			lastUpdate = time;
+			System.out.println("Updated World " + getName());
 		}
+		
 		return true;
 	}
 

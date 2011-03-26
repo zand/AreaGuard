@@ -18,15 +18,14 @@ public class CacheArea extends Area implements CacheData {
 	private String name;
 	private String creator;
 	private Area parrent;
-	protected ArrayList<Cuboid> cuboids;
-	private ArrayList<List> lists;
-	private ArrayList<Msg> msgs;
+	final protected ArrayList<Cuboid> cuboids = new ArrayList<Cuboid>();
+	final private ArrayList<List> lists = new ArrayList<List>();
+	final private ArrayList<Msg> msgs = new ArrayList<Msg>();
 	
 	protected CacheArea(CacheStorage storage, Area area) {
 		super(area.getId());
 		this.storage = storage;
 		this.area = area;
-		update();
 	}
 	
 	@Override
@@ -34,10 +33,14 @@ public class CacheArea extends Area implements CacheData {
 		long time = System.currentTimeMillis();
 		
 		if (time - lastUpdate > updateTime) {
+			lastUpdate = time;
+			
 			exsists = area.exsists();
 			name = area.getName();
 			creator = area.getCreator();
-			parrent = storage.getArea(area.getParrent().getId());
+			parrent = area.getParrent();
+			if (parrent != null) 
+				parrent = storage.getArea(parrent.getId());
 			cuboids.clear();
 			for (Cuboid cuboid : storage.getCuboids())
 				if (cuboid.getArea().getId() == getId() && !cuboids.contains(cuboid)) 
@@ -46,15 +49,18 @@ public class CacheArea extends Area implements CacheData {
 				if (!list.exsists()) 
 					lists.remove(list);
 			for (List list : area.getLists())
-				getList(list.getName());
+				if (!lists.contains(list))
+					lists.add(new CacheList(storage, list));
 			for (Msg msg : msgs)
 				if (!msg.exsists()) 
 					msgs.remove(msg);
 			for (Msg msg : area.getMsgs())
-				getMsg(msg.getName());
+				if (!msgs.contains(msg))
+					msgs.add(new CacheMsg(storage, msg));
 			
-			lastUpdate = time;
+			System.out.println("Updated Area " + getId());
 		}
+		
 		return true;
 	}
 

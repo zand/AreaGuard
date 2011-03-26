@@ -53,11 +53,14 @@ public class CacheList extends List implements CacheData {
 		long time = System.currentTimeMillis();
 		
 		if (time - lastUpdate > updateTime) {
+			lastUpdate = time;
+			
 			exsists = list.exsists();
 			values = list.getValues();
 			
-			lastUpdate = time;
+			System.out.println("Updated List " + getName() + "@" + getArea().getId());
 		}
+		
 		return true;
 	}
 

@@ -31,6 +31,8 @@ public class CacheCuboid extends Cuboid implements CacheData {
 		long time = System.currentTimeMillis();
 		
 		if (time - lastUpdate > updateTime) {
+			lastUpdate = time;
+			
 			exsists = cuboid.exsists();
 			world = storage.getWorld(cuboid.getWorld().getId());
 			area = storage.getArea(cuboid.getArea().getId());
@@ -39,8 +41,9 @@ public class CacheCuboid extends Cuboid implements CacheData {
 			coords = cuboid.getCoords();
 			active = cuboid.isActive();
 			
-			lastUpdate = time;
+			System.out.println("Updated Cuboid " + getId());
 		}
+		
 		return true;
 	}
 

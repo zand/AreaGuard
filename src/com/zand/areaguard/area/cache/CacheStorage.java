@@ -176,21 +176,26 @@ public class CacheStorage implements Storage, CacheData {
 		long time = System.currentTimeMillis();
 		
 		if (time - lastUpdate > updateTime) {
+			lastUpdate = time;
+			
 			for (World world : worlds)
 				if (!world.exsists()) worlds.remove(world);
 			for (World world : storage.getWorlds())
-				getWorld(world.getId());
+				if (!worlds.contains(world))
+					worlds.add(new CacheWorld(this, world));
 			
 			for (Area area : areas)
 				if (!area.exsists()) areas.remove(area);
 			for (Area area : storage.getAreas())
-				getArea(area.getId());
+				if (!areas.contains(area))
+					areas.add(new CacheArea(this, area));
 			
 			for (Cuboid cuboid : cuboids)
 				if (!cuboid.exsists()) cuboids.remove(cuboid);
 			
-			lastUpdate = time;
+			System.out.println("Updated Storage");
 		}
+		
 		return true;
 	}
 

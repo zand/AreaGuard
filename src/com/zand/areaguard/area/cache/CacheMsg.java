@@ -37,11 +37,14 @@ public class CacheMsg extends Msg implements CacheData {
 		long time = System.currentTimeMillis();
 		
 		if (time - lastUpdate > updateTime) {
+			lastUpdate = time;
+			
 			exsists = msg.exsists();
 			value = msg.getMsg();
 			
-			lastUpdate = time;
+			System.out.println("Updated Msg " + getName() + "@" + getArea().getId());
 		}
+		
 		return true;
 	}
 
