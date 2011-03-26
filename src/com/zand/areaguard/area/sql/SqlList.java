@@ -8,34 +8,12 @@ import java.util.ArrayList;
 import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.List;
 
-public class SqlList implements List {
+public class SqlList extends List {
 	final private SqlStorage storage;
-	final private int areaId;
-	final private String name;
-	
-	@Override public boolean equals(Object o) {
-		if (o instanceof SqlList)
-			return areaId == ((SqlList)o).areaId && name == ((SqlList)o).name;
-		return false;
-	}
-	
-	@Override public int hashCode() {
-		return (name + "@" + areaId).hashCode();
-	}
 
-	public SqlList(SqlStorage storage, int areaId, String name) {
+	public SqlList(SqlStorage storage, Area area, String name) {
+		super(area, name.toLowerCase());
 		this.storage = storage;
-		this.areaId = areaId;
-		this.name = name.toLowerCase();
-	}
-	
-	public String toString() {
-		String ret = "";
-		for (String value : getValues())
-			ret += ", " + value;
-		if (!ret.isEmpty())
-			ret = ret.substring(2);
-		return ret;
 	}
 
 	@Override
@@ -51,9 +29,9 @@ public class SqlList implements List {
 			return false;
 		try {
 			PreparedStatement ps = storage.conn.prepareStatement(insert);
-			ps.setInt(1, areaId);
+			ps.setInt(1, getArea().getId());
 			ps.setString(2, creator.toLowerCase());
-			ps.setString(3, name);
+			ps.setString(3, getName());
 			ps.setString(4, value.toLowerCase());
 			ps.execute();
 			ps.close();
@@ -66,22 +44,14 @@ public class SqlList implements List {
 	}
 
 	@Override
-	public boolean addValues(String creator, String[] values) {
-		for (String value : values) 
-			if (!addValue(creator, value))
-				return false;
-		return true;
-	}
-
-	@Override
 	public boolean clear() {
 		String sql = "DELETE FROM `" + storage.tablePrefix + "Lists` WHERE AreaId=? AND Name=?";
 		if (storage.connect())
 			return false;
 		try {
 			PreparedStatement ps = storage.conn.prepareStatement(sql);
-			ps.setInt(1, areaId);
-			ps.setString(2, name);
+			ps.setInt(1, getArea().getId());
+			ps.setString(2, getName());
 			ps.execute();
 
 			// Close events
@@ -97,16 +67,6 @@ public class SqlList implements List {
 	}
 
 	@Override
-	public Area getArea() {
-		return storage.getArea(areaId);
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
 	public ArrayList<String> getValues() {
 		ArrayList<String> values = new ArrayList<String>();
 		String sql = "SELECT Value FROM `" + storage.tablePrefix + "Lists` WHERE AreaId = ? AND Name=?";
@@ -114,8 +74,8 @@ public class SqlList implements List {
 		if (storage.connect()) {
 			try {
 				PreparedStatement ps = storage.conn.prepareStatement(sql);
-				ps.setInt(1, areaId);
-				ps.setString(2, name);
+				ps.setInt(1, getArea().getId());
+				ps.setString(2, getName());
 				ps.execute();
 
 				// Get the result
@@ -143,8 +103,8 @@ public class SqlList implements List {
 		if (storage.connect()) {
 			try {
 				PreparedStatement ps = storage.conn.prepareStatement(sql);
-				ps.setInt(1, areaId);
-				ps.setString(2, name);
+				ps.setInt(1, getArea().getId());
+				ps.setString(2, getName());
 				ps.setString(3, value.toLowerCase());
 				ps.execute();
 
@@ -173,8 +133,8 @@ public class SqlList implements List {
 			return false;
 		try {
 			PreparedStatement ps = storage.conn.prepareStatement(sql);
-			ps.setInt(1, areaId);
-			ps.setString(2, name);
+			ps.setInt(1, getArea().getId());
+			ps.setString(2, getName());
 			ps.setString(3, value.toLowerCase());
 			ps.execute();
 
@@ -191,14 +151,6 @@ public class SqlList implements List {
 	}
 
 	@Override
-	public boolean removeValues(String[] values) {
-		for (String value : values) 
-			if (!removeValue(value))
-				return false;
-		return true;
-	}
-
-	@Override
 	public boolean exsists() {
 		boolean ret = false;
 		String sql = "SELECT COUNT(*) FROM `" + storage.tablePrefix + "Lists` WHERE AreaId = ? AND Name = ? LIMIT 1";
@@ -206,7 +158,7 @@ public class SqlList implements List {
 		if (storage.connect()) {
 			try {
 				PreparedStatement ps = storage.conn.prepareStatement(sql);
-				ps.setInt(1, areaId);
+				ps.setInt(1, getArea().getId());
 				ps.setString(2, getName());
 				ps.execute();
 

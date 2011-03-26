@@ -9,35 +9,21 @@ import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.List;
 import com.zand.areaguard.area.Msg;
-import com.zand.areaguard.area.World;
 import com.zand.areaguard.area.error.ErrorArea;
 
-public class SqlArea implements Area {
+public class SqlArea extends Area {
 	final static public ErrorArea
 	COULD_NOT_CONNECT = new ErrorArea("COULD NOT CONNECT"),
 	SQL_ERROR = new ErrorArea("SQL ERROR");
 	final private SqlStorage storage;
-	final private int id;
 	
 	protected SqlArea(SqlStorage storage, int id) {
+		super(id);
 		this.storage = storage;
-		this.id = id;
-	}
-	
-	@Override public boolean equals(Object o) {
-		if (o instanceof SqlArea)
-			return id == ((SqlArea)o).id;
-		if (o instanceof Integer)
-			return id == ((Integer)o).intValue();
-		return false;
-	}
-	
-	@Override public int hashCode() {
-		return id;
 	}
 	
 	@Override
-	public ArrayList<Cuboid> getCubiods() {
+	public ArrayList<Cuboid> getCuboids() {
 		ArrayList<Cuboid> cubiods = new ArrayList<Cuboid>();
 		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cuboids` WHERE AreaId = ?";
 
@@ -66,7 +52,7 @@ public class SqlArea implements Area {
 	}
 	
 	@Override
-	public ArrayList<Cuboid> getCubiods(boolean active) {
+	public ArrayList<Cuboid> getCuboids(boolean active) {
 		ArrayList<Cuboid> cubiods = new ArrayList<Cuboid>();
 		String sql = "SELECT Id FROM `" + storage.tablePrefix + "Cuboids` WHERE AreaId = ? AND Active = ?";
 
@@ -96,13 +82,8 @@ public class SqlArea implements Area {
 	}
 
 	@Override
-	public int getId() {
-		return id;
-	}
-
-	@Override
 	public List getList(String name) {
-		return new SqlList(storage, getId(), name);
+		return new SqlList(storage, this, name);
 	}
 
 	@Override
@@ -135,7 +116,7 @@ public class SqlArea implements Area {
 
 	@Override
 	public Msg getMsg(String name) {
-		return new SqlMsg(storage, getId(), name);
+		return new SqlMsg(storage, this, name);
 	}
 
 	@Override
@@ -195,11 +176,6 @@ public class SqlArea implements Area {
 	}
 
 	@Override
-	public boolean isOwner(String player) {
-		return getList("owners").hasValue(player);
-	}
-
-	@Override
 	public boolean setName(String name) {
 		if (name == null || name.isEmpty()) return false;
 		
@@ -224,19 +200,6 @@ public class SqlArea implements Area {
 		
 		storage.disconnect();
 		return true;
-	}
-
-	@Override
-	public boolean pointInside(World world, int x, int y, int z) {
-		for (Cuboid cubiod : getCubiods(true))
-			if (cubiod.pointInside(world, x, y, z))
-				return true;
-		return false;
-	}
-
-	@Override
-	public boolean pointInside(String world, int x, int y, int z) {
-		return pointInside(storage.getWorld(world), x, y, z);
 	}
 
 	@Override

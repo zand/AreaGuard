@@ -8,28 +8,15 @@ import java.util.ArrayList;
 import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.error.ErrorWorld;
 
-public class SqlWorld implements com.zand.areaguard.area.World {
+public class SqlWorld extends com.zand.areaguard.area.World {
 	final static public ErrorWorld
 		COULD_NOT_CONNECT = new ErrorWorld("COULD NOT CONNECT"),
 		SQL_ERROR = new ErrorWorld("SQL ERROR");
 	final private SqlStorage storage;
-	final private int id;
-	
-	@Override public boolean equals(Object o) {
-		if (o instanceof SqlWorld)
-			return id == ((SqlWorld)o).id;
-		if (o instanceof Integer)
-			return id == ((Integer)o).intValue();
-		return false;
-	}
-	
-	@Override public int hashCode() {
-		return id;
-	}
 	
 	protected SqlWorld(SqlStorage storage, int id) {
+		super(id);
 		this.storage = storage;
-		this.id = id;
 	}
 
 	@Override
@@ -195,11 +182,6 @@ public class SqlWorld implements com.zand.areaguard.area.World {
 			storage.disconnect();
 		}
 		return cuboids;
-	}
-
-	@Override
-	public int getId() {
-		return id;
 	}
 
 	@Override

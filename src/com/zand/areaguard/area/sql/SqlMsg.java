@@ -7,30 +7,12 @@ import java.sql.SQLException;
 import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Msg;
 
-public class SqlMsg implements Msg {
+public class SqlMsg extends Msg {
 	final private SqlStorage storage;
-	final private int areaId;
-	final private String name;
 	
-	@Override public boolean equals(Object o) {
-		if (o instanceof SqlList)
-			return areaId == ((SqlMsg)o).areaId && name == ((SqlMsg)o).name;
-		return false;
-	}
-	
-	@Override public int hashCode() {
-		return (name + "@" + areaId).hashCode();
-	}
-	
-	protected SqlMsg(SqlStorage storage, int areaId, String name) {
+	protected SqlMsg(SqlStorage storage, Area area, String name) {
+		super(area, name.toLowerCase());
 		this.storage = storage;
-		this.areaId = areaId;
-		this.name = name.toLowerCase();
-	}
-
-	@Override
-	public Area getArea() {
-		return storage.getArea(areaId);
 	}
 
 	@Override
@@ -41,8 +23,8 @@ public class SqlMsg implements Msg {
 		if (storage.connect()) {
 			try {
 				PreparedStatement ps = storage.conn.prepareStatement(sql);
-				ps.setInt(1, areaId);
-				ps.setString(2, name);
+				ps.setInt(1, getArea().getId());
+				ps.setString(2, getName());
 				ps.execute();
 
 				// Get the result
@@ -65,11 +47,6 @@ public class SqlMsg implements Msg {
 	}
 
 	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
 	public boolean setMsg(String creator, String msg) {
 		boolean success = false;
 		if (exsists()) {
@@ -79,8 +56,8 @@ public class SqlMsg implements Msg {
 					return false;
 				try {
 					PreparedStatement ps = storage.conn.prepareStatement(sql);
-					ps.setInt(1, areaId);
-					ps.setString(2, name);
+					ps.setInt(1, getArea().getId());
+					ps.setString(2, getName());
 					ps.execute();
 
 					// Close events
@@ -104,8 +81,8 @@ public class SqlMsg implements Msg {
 					PreparedStatement ps = storage.conn.prepareStatement(update);
 					ps.setString(1, creator.toLowerCase());
 					ps.setString(2, msg);
-					ps.setInt(3, areaId);
-					ps.setString(4, name);
+					ps.setInt(3, getArea().getId());
+					ps.setString(4, getName());
 					
 				
 					ps.execute();
@@ -132,9 +109,9 @@ public class SqlMsg implements Msg {
 					return false;
 				try {
 					PreparedStatement ps = storage.conn.prepareStatement(insert);
-					ps.setInt(1, areaId);
+					ps.setInt(1, getArea().getId());
 					ps.setString(2, creator.toLowerCase());
-					ps.setString(3, name);
+					ps.setString(3, getName());
 					ps.setString(4, msg);
 					ps.execute();
 					ps.close();
@@ -156,7 +133,7 @@ public class SqlMsg implements Msg {
 		if (storage.connect()) {
 			try {
 				PreparedStatement ps = storage.conn.prepareStatement(sql);
-				ps.setInt(1, areaId);
+				ps.setInt(1, getArea().getId());
 				ps.setString(2, getName());
 				ps.execute();
 

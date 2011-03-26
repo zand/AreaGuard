@@ -11,28 +11,15 @@ import com.zand.areaguard.area.error.ErrorArea;
 import com.zand.areaguard.area.error.ErrorCuboid;
 import com.zand.areaguard.area.error.ErrorWorld;
 
-public class SqlCuboid implements Cuboid {
+public class SqlCuboid extends Cuboid {
 	final static public ErrorCuboid
 		COULD_NOT_CONNECT = new ErrorCuboid(),
 		SQL_ERROR = new ErrorCuboid();
 	final private SqlStorage storage;
-	final private int id;
-	
-	@Override public boolean equals(Object o) {
-		if (o instanceof SqlCuboid)
-			return id == ((SqlCuboid)o).id;
-		if (o instanceof Integer)
-			return id == ((Integer)o).intValue();
-		return false;
-	}
-	
-	@Override public int hashCode() {
-		return id;
-	}
 	
 	public SqlCuboid(SqlStorage storage, int id) {
+		super(id);
 		this.storage = storage;
-		this.id = id;
 	}
 
 	@Override
@@ -96,11 +83,6 @@ public class SqlCuboid implements Cuboid {
 	}
 
 	@Override
-	public int getId() {
-		return id;
-	}
-
-	@Override
 	public int getPriority() {
 		int priority = 100;
 		String sql = "SELECT Priority FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ? LIMIT 1";
@@ -156,15 +138,6 @@ public class SqlCuboid implements Cuboid {
 			storage.disconnect();
 		} else world = SqlWorld.COULD_NOT_CONNECT;
 		return world;
-	}
-
-	@Override
-	public boolean pointInside(World world, int x, int y, int z) {
-		int coords[] = getCoords();
-		return ((coords[0] <= x && coords[3] >= x) &&
-				(coords[1] <= x && coords[4] >= x) &&
-				(coords[2] <= x && coords[5] >= x) &&
-				getWorld().getName().equals(world.getName()));
 	}
 
 	@Override
@@ -267,15 +240,6 @@ public class SqlCuboid implements Cuboid {
 			storage.disconnect();
 		}
 		return ret;
-	}
-
-	@Override
-	public long getBlockCount() {
-		int coords[] = getCoords();
-		return 
-		(coords[3]-coords[0]+1)*
-		(coords[4]-coords[1]+1)*
-		(coords[5]-coords[2]+1);
 	}
 
 	@Override
