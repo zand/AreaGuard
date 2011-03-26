@@ -297,7 +297,7 @@ public class SqlCuboid extends Cuboid {
 	@Override
 	public String getCreator() {
 		String creator = "";
-		String sql = "SELECT Creator FROM `" + storage.tablePrefix + "Cubiods` WHERE Id = ? LIMIT 1";
+		String sql = "SELECT Creator FROM `" + storage.tablePrefix + "Cuboids` WHERE Id = ? LIMIT 1";
 
 		if (storage.connect()) {
 			try {
