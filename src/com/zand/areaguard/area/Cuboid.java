@@ -72,8 +72,8 @@ public abstract class Cuboid extends IdData {
 	public boolean pointInside(World world, int x, int y, int z) {
 		int coords[] = getCoords();
 		return ((coords[0] <= x && coords[3] >= x) &&
-				(coords[1] <= x && coords[4] >= x) &&
-				(coords[2] <= x && coords[5] >= x) &&
+				(coords[1] <= y && coords[4] >= y) &&
+				(coords[2] <= z && coords[5] >= z) &&
 				getWorld().getName().equals(world.getName()));
 	}
 	
