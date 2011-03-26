@@ -6,11 +6,9 @@ import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.List;
 import com.zand.areaguard.area.Msg;
-import com.zand.areaguard.area.World;
 
-public class CacheArea implements Area {
+public class CacheArea extends Area implements CacheData {
 	final private Area area;
-	final private int areaId;
 	static private int updateTime = 1500;
 	private long lastUpdate = 0;
 	
@@ -24,11 +22,12 @@ public class CacheArea implements Area {
 	private ArrayList<Msg> msgs;
 	
 	protected CacheArea(Area area) {
+		super(area.getId());
 		this.area = area;
-		areaId = area.getId();
 		update();
 	}
 	
+	@Override
 	public boolean update() {
 		long time = System.currentTimeMillis();
 		
@@ -36,7 +35,7 @@ public class CacheArea implements Area {
 			exsists = area.exsists();
 			name = area.getName();
 			creator = area.getCreator();
-			cuboids = area.getCubiods();
+			cuboids = area.getCuboids();
 			lists = area.getLists();
 			msgs = area.getMsgs();
 			
@@ -61,23 +60,9 @@ public class CacheArea implements Area {
 	}
 
 	@Override
-	public ArrayList<Cuboid> getCubiods() {
+	public ArrayList<Cuboid> getCuboids() {
 		update();
 		return cuboids;
-	}
-
-	@Override
-	public ArrayList<Cuboid> getCubiods(boolean active) {
-		ArrayList<Cuboid> ret = new ArrayList<Cuboid>();
-		for (Cuboid cuboid : getCubiods())
-			if (cuboid.isActive() == active) ret.add(cuboid);
-		
-		return ret;
-	}
-
-	@Override
-	public int getId() {
-		return areaId;
 	}
 
 	@Override
@@ -85,8 +70,11 @@ public class CacheArea implements Area {
 		for (List list : getLists())
 			if (list.getName().equals(name)) 
 				return list;
-		// TODO make new list
-		return null;
+		
+		List list = area.getList(name);
+		if (list.exsists())
+			lists.add(list);
+		return list;
 	}
 
 	@Override
@@ -97,8 +85,14 @@ public class CacheArea implements Area {
 
 	@Override
 	public Msg getMsg(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		for (Msg msg : getMsgs())
+			if (msg.getName().equals(name)) 
+				return msg;
+		
+		Msg msg = area.getMsg(name);
+		if (msg.exsists())
+			msgs.add(msg);
+		return msg;
 	}
 
 	@Override
@@ -122,20 +116,6 @@ public class CacheArea implements Area {
 	@Override
 	public boolean isOwner(String player) {
 		return getList("owners").hasValue(player);
-	}
-
-	@Override
-	public boolean pointInside(World world, int x, int y, int z) {
-		for (Cuboid cubiod : getCubiods(true))
-			if (cubiod.pointInside(world, x, y, z))
-				return true;
-		return false;
-	}
-
-	@Override
-	public boolean pointInside(String world, int x, int y, int z) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
