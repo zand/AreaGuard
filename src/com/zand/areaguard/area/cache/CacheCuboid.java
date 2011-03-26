@@ -1,18 +1,14 @@
 package com.zand.areaguard.area.cache;
 
-import java.util.ArrayList;
-
-import org.bukkit.event.Event.Priority;
-
 import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Cuboid;
-import com.zand.areaguard.area.List;
-import com.zand.areaguard.area.Msg;
+import com.zand.areaguard.area.Storage;
 import com.zand.areaguard.area.World;
 
 public class CacheCuboid extends Cuboid implements CacheData {
+	final private Storage storage;
 	final private Cuboid cuboid;
-	static private int updateTime = 1500;
+	static private int updateTime = 15000;
 	private long lastUpdate = 0;
 	
 	// Cached data
@@ -24,8 +20,9 @@ public class CacheCuboid extends Cuboid implements CacheData {
 	private int priority;
 	private int coords[];
 	
-	public CacheCuboid(Cuboid cuboid) {
+	public CacheCuboid(Storage storage, Cuboid cuboid) {
 		super(cuboid.getId());
+		this.storage = storage;
 		this.cuboid = cuboid;
 	}
 	
@@ -35,8 +32,8 @@ public class CacheCuboid extends Cuboid implements CacheData {
 		
 		if (time - lastUpdate > updateTime) {
 			exsists = cuboid.exsists();
-			world = cuboid.getWorld();
-			area = new CacheArea(cuboid.getArea());
+			world = storage.getWorld(cuboid.getWorld().getId());
+			area = storage.getArea(cuboid.getArea().getId());
 			priority = cuboid.getPriority();
 			creator = cuboid.getCreator();
 			coords = cuboid.getCoords();

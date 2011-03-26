@@ -8,8 +8,9 @@ import com.zand.areaguard.area.List;
 import com.zand.areaguard.area.Msg;
 
 public class CacheArea extends Area implements CacheData {
+	final private CacheStorage storage;
 	final private Area area;
-	static private int updateTime = 1500;
+	static private int updateTime = 15000;
 	private long lastUpdate = 0;
 	
 	// Cached data
@@ -17,12 +18,13 @@ public class CacheArea extends Area implements CacheData {
 	private String name;
 	private String creator;
 	private Area parrent;
-	private ArrayList<Cuboid> cuboids;
+	protected ArrayList<Cuboid> cuboids;
 	private ArrayList<List> lists;
 	private ArrayList<Msg> msgs;
 	
-	protected CacheArea(Area area) {
+	protected CacheArea(CacheStorage storage, Area area) {
 		super(area.getId());
+		this.storage = storage;
 		this.area = area;
 		update();
 	}
@@ -35,9 +37,21 @@ public class CacheArea extends Area implements CacheData {
 			exsists = area.exsists();
 			name = area.getName();
 			creator = area.getCreator();
-			cuboids = area.getCuboids();
-			lists = area.getLists();
-			msgs = area.getMsgs();
+			parrent = storage.getArea(area.getParrent().getId());
+			cuboids.clear();
+			for (Cuboid cuboid : storage.getCuboids())
+				if (cuboid.getArea().getId() == getId() && !cuboids.contains(cuboid)) 
+					cuboids.add(cuboid);
+			for (List list : lists)
+				if (!list.exsists()) 
+					lists.remove(list);
+			for (List list : area.getLists())
+				getList(list.getName());
+			for (Msg msg : msgs)
+				if (!msg.exsists()) 
+					msgs.remove(msg);
+			for (Msg msg : area.getMsgs())
+				getMsg(msg.getName());
 			
 			lastUpdate = time;
 		}
@@ -71,7 +85,7 @@ public class CacheArea extends Area implements CacheData {
 			if (list.getName().equals(name)) 
 				return list;
 		
-		List list = area.getList(name);
+		List list = new CacheList(storage, area.getList(name));
 		if (list.exsists())
 			lists.add(list);
 		return list;
@@ -89,7 +103,7 @@ public class CacheArea extends Area implements CacheData {
 			if (msg.getName().equals(name)) 
 				return msg;
 		
-		Msg msg = area.getMsg(name);
+		Msg msg = new CacheMsg(storage, area.getMsg(name));
 		if (msg.exsists())
 			msgs.add(msg);
 		return msg;
