@@ -15,15 +15,6 @@ public class SqlList extends List {
 		super(area, name.toLowerCase());
 		this.storage = storage;
 	}
-	
-	public String toString() {
-		String ret = "";
-		for (String value : getValues())
-			ret += ", " + value;
-		if (!ret.isEmpty())
-			ret = ret.substring(2);
-		return ret;
-	}
 
 	@Override
 	public boolean addValue(String creator, String value) {

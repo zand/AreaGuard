@@ -18,6 +18,16 @@ public abstract class List implements Data {
 		this.name = name;
 	}
 	
+	@Override
+	public String toString() {
+		String ret = "";
+		for (String value : getValues())
+			ret += ", " + value;
+		if (!ret.isEmpty())
+			ret = ret.substring(2);
+		return ret;
+	}
+	
 	@Override public boolean equals(Object o) {
 		if (o instanceof List)
 			return area == ((List)o).area && name == ((List)o).name;
