@@ -1,6 +1,7 @@
 package com.zand.areaguard.area.cache;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Cuboid;
@@ -19,8 +20,8 @@ public class CacheArea extends Area implements CacheData {
 	private String creator;
 	private Area parrent;
 	final protected ArrayList<Cuboid> cuboids = new ArrayList<Cuboid>();
-	final private ArrayList<List> lists = new ArrayList<List>();
-	final private ArrayList<Msg> msgs = new ArrayList<Msg>();
+	final private HashMap<String, CacheList> lists = new HashMap<String, CacheList>();
+	final private HashMap<String, CacheMsg> msgs = new HashMap<String, CacheMsg>();
 	
 	protected CacheArea(CacheStorage storage, Area area) {
 		super(area.getId());
@@ -45,18 +46,20 @@ public class CacheArea extends Area implements CacheData {
 			for (Cuboid cuboid : storage.getCuboids())
 				if (cuboid.getArea().getId() == getId() && !cuboids.contains(cuboid)) 
 					cuboids.add(cuboid);
-			for (List list : lists)
-				if (!list.exsists()) 
-					lists.remove(list);
+			
+			// Update Lists
+			for (CacheList list : lists.values())
+				list.update();
 			for (List list : area.getLists())
-				if (!lists.contains(list))
-					lists.add(new CacheList(storage, list));
-			for (Msg msg : msgs)
-				if (!msg.exsists()) 
-					msgs.remove(msg);
+				if (!lists.containsKey(list.getName()))
+					lists.put(list.getName(), new CacheList(storage, list));
+			
+			// Update Msgs
+			for (CacheMsg msg : msgs.values())
+				msg.update();
 			for (Msg msg : area.getMsgs())
-				if (!msgs.contains(msg))
-					msgs.add(new CacheMsg(storage, msg));
+				if (!msgs.containsKey(msg.getName()))
+					msgs.put(msg.getName(), new CacheMsg(storage, msg));
 			
 			System.out.println("Updated Area " + getId());
 		}
@@ -87,38 +90,42 @@ public class CacheArea extends Area implements CacheData {
 
 	@Override
 	public List getList(String name) {
-		for (List list : getLists())
-			if (list.getName().equals(name)) 
-				return list;
+		update();
+		if (lists.containsKey(name))
+			return lists.get(name);
 		
-		List list = new CacheList(storage, area.getList(name));
-		if (list.exsists())
-			lists.add(list);
+		CacheList list = new CacheList(storage, area.getList(name));
+		lists.put(list.getName(), list);
 		return list;
 	}
 
 	@Override
 	public ArrayList<List> getLists() {
 		update();
-		return lists;
+		ArrayList<List> ret = new ArrayList<List>();
+		for (List list : lists.values())
+			if (list.exsists()) ret.add(list);
+		return ret;
 	}
 
 	@Override
 	public Msg getMsg(String name) {
-		for (Msg msg : getMsgs())
-			if (msg.getName().equals(name)) 
-				return msg;
+		update();
+		if (msgs.containsKey(name))
+			return msgs.get(name);
 		
-		Msg msg = new CacheMsg(storage, area.getMsg(name));
-		if (msg.exsists())
-			msgs.add(msg);
+		CacheMsg msg = new CacheMsg(storage, area.getMsg(name));
+		msgs.put(msg.getName(), msg);
 		return msg;
 	}
 
 	@Override
 	public ArrayList<Msg> getMsgs() {
 		update();
-		return msgs;
+		ArrayList<Msg> ret = new ArrayList<Msg>();
+		for (Msg msg : msgs.values())
+			if (msg.exsists()) ret.add(msg);
+		return ret;
 	}
 
 	@Override
