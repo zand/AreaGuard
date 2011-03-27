@@ -47,9 +47,7 @@ public class AreaGuardBlockListener extends BlockListener {
     	// Don't process cancelled events beyond this point
     	if (event.isCancelled()) return;
     	
-    	if (event.getDamageLevel() == BlockDamageLevel.BROKEN) {
-    		if (!checkCanBuild(player, block, event))
-    			return; }
+    	if (!checkCanBuild(player, block, event)) return;
     }
     
     @Override
