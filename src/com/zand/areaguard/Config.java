@@ -38,7 +38,6 @@ public class Config {
 	}
 
 	public static boolean readConfig(String file) {
-		System.out.println("Reading config \"" + config + "\"");
 		Properties props = new Properties();
 
 		try {
@@ -62,8 +61,12 @@ public class Config {
 		if (storage instanceof SqlStorage)
 			((SqlStorage)storage).disconnect();
 		
-		System.out.println("[AreaGuard]: Useing Storage Method \"sql\"");
+		String storageType = props.getProperty("area-creators");
+		if (storageType != null) storageType = "com.zand.areaguard.area.sql.SqlStorage";
+		if (storageType.equals("com.zand.areaguard.area.cache.CacheStorage"))
+			storage = new CacheStorage(config);
 		storage = new SqlStorage(config);
+		System.out.println("[AreaGuard]: Useing Storage Method " + storage.getInfo());
 		
 		return true;
 	}
