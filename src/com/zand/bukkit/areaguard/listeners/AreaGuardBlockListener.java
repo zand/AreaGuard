@@ -1,16 +1,12 @@
 package com.zand.bukkit.areaguard.listeners;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.*;
 
-import com.zand.areaguard.Config;
-import com.zand.areaguard.area.Cuboid;
 import com.zand.bukkit.areaguard.AreaGuard;
-import com.zand.bukkit.areaguard.Session;
 
 public class AreaGuardBlockListener extends BlockListener {
 	
@@ -35,56 +31,11 @@ public class AreaGuardBlockListener extends BlockListener {
     	Player player = event.getPlayer();
     	Block block = event.getBlock();
     	
-    	// Set Point
-    	if (	event.getDamageLevel() == BlockDamageLevel.STARTED &&
-    			player.getItemInHand().getTypeId() == Config.createTool) {
-    		Session ps = plugin.getSession(player);
-    		ps.select(Config.storage.getWorld(player.getWorld().getName()));
-    		ps.selectLeft(block.getX(), block.getY(), block.getZ());
-    		player.sendMessage("Left Point Selected (" + block.getX() + ", " + block.getY() + ", " + block.getZ() + ") set");
-    	}
-    	
     	// Don't process cancelled events beyond this point
     	if (event.isCancelled()) return;
     	
-    	if (event.getDamageLevel() == BlockDamageLevel.BROKEN) {
-    		if (!checkCanBuild(player, block, event))
-    			return; }
+    	if (!checkCanBuild(player, block, event)) return;
     }
-    
-    @Override
-    public void onBlockRightClick(BlockRightClickEvent event) {
-    	Block block = event.getBlock();
-    	Player player = event.getPlayer();
-    	
-    	// Set Point
-    	if (event.getItemInHand().getTypeId() == Config.createTool) {
-    		Session ps = plugin.getSession(player);
-    		ps.select(Config.storage.getWorld(player.getWorld().getName()));
-    		ps.selectRight(block.getX(), block.getY(), block.getZ());
-    		player.sendMessage("Right Point Selected (" + block.getX() + ", " + block.getY() + ", " + block.getZ() + ") set");
-    	}
-    	
-    	// Check Area
-    	else if (event.getItemInHand().getTypeId() == Config.checkTool) {
-    		Cuboid cuboid = Config.storage.getWorld(player.getWorld().getName())
-        		.getCuboid(block.getX(), block.getY(), block.getZ());
-    		if (cuboid != null && cuboid.exsists())
-        		plugin.showCuboidInfo(event.getPlayer(), cuboid);
-    		else player.sendMessage(ChatColor.YELLOW + "not an Area");
-    	}
-    }
-	
-    @Override
-	public void onBlockInteract(BlockInteractEvent event) {
-		if (event.isCancelled()) return;
-		if (!event.isPlayer()) return;
-		
-		Player player = (Player)event.getEntity();
-		Block block = event.getBlock();
-		
-		checkCanUse(player, block, event);
-	}
 	
 	/**
 	 * Checks if a player is allowed to create or destroy a block.
