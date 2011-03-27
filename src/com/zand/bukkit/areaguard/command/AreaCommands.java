@@ -478,6 +478,7 @@ public class AreaCommands implements CommandExecutor {
 		}
 		
 		if (name.equals("allow") ||
+			name.equals("build") ||
 			name.equals("open") ||
 			name.equals("enter") ||
 			name.equals("heal") ||
@@ -505,6 +506,7 @@ public class AreaCommands implements CommandExecutor {
 		}
 		
 		if (name.equals("allow") ||
+			name.equals("build") ||
 			name.equals("open") ||
 			name.equals("enter") ||
 			name.equals("leave") ||

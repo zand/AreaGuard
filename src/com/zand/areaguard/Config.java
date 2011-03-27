@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.zand.areaguard.area.Storage;
+import com.zand.areaguard.area.cache.CacheStorage;
 import com.zand.areaguard.area.sql.SqlStorage;
 
 public class Config {
@@ -64,7 +65,7 @@ public class Config {
 		String storageType = props.getProperty("area-creators");
 		if (storageType != null) storageType = "com.zand.areaguard.area.sql.SqlStorage";
 		if (storageType.equals("com.zand.areaguard.area.cache.CacheStorage"))
-			storage = new CacheStorage(config);
+			storage = new CacheStorage(new SqlStorage(config));
 		storage = new SqlStorage(config);
 		System.out.println("[AreaGuard]: Useing Storage Method " + storage.getInfo());
 		
