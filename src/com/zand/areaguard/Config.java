@@ -66,7 +66,7 @@ public class Config {
 		if (storageType != null) storageType = "com.zand.areaguard.area.sql.SqlStorage";
 		if (storageType.equals("com.zand.areaguard.area.cache.CacheStorage"))
 			storage = new CacheStorage(new SqlStorage(config));
-		storage = new SqlStorage(config);
+		else storage = new SqlStorage(config);
 		System.out.println("[AreaGuard]: Useing Storage Method " + storage.getInfo());
 		
 		return true;

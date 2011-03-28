@@ -193,7 +193,7 @@ public class SqlCuboid extends Cuboid {
 		String update = "UPDATE `" + storage.tablePrefix + "Cuboids` "
 		+ "SET WorldId=?, x1=?, y1=?, z1=?, x2=?, y2=?, z2=? "
 		+ "WHERE Id=?;";
-		if (storage.connect())
+		if (!storage.connect())
 			return false;
 		try {
 			PreparedStatement ps = storage.conn.prepareStatement(update);

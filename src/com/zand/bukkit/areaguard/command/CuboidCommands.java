@@ -117,7 +117,7 @@ public class CuboidCommands implements CommandExecutor {
 				if (cuboid.isActive() && !canActivate(cuboid, sender, true)) {
 					Messager.warn(sender, "You can deactivate this cuboid to move it, but it will need to be activated agen.");
 					return true; }
-				if (world == null || world != cuboid.getWorld()) {
+				if (world == null || world.getId() != cuboid.getWorld().getId()) {
 					Messager.warn(sender, "The point you selected is not in the world \"" + world.getName() + "\".");
 					return true; }
 				
