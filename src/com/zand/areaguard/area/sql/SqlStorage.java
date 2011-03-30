@@ -83,8 +83,8 @@ public class SqlStorage implements Storage {
 	
 	public boolean createTables() {
 		// Run Table Creation Script
-		String name = "mysql.sql";
-		if (url.toLowerCase().contains("sqlite")) name = "sqlite.sql";
+		String name = "/com/zand/areaguard/area/sql/mysql.sql";
+		if (url.toLowerCase().contains("sqlite")) name = "/com/zand/areaguard/area/sql/sqlite.sql";
 		return executeSqlScript(SqlStorage.class.getClassLoader().getResourceAsStream(name));
 	}
 	
