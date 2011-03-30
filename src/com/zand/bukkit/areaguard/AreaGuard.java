@@ -119,14 +119,13 @@ public class AreaGuard extends JavaPlugin {
 		PluginManager pm = getServer().getPluginManager();
 		Priority preventPriority = Event.Priority.High;
 		
-		pm.registerEvent(Event.Type.CHUNK_UNLOADED, worldListener, preventPriority, this);
+		pm.registerEvent(Event.Type.CHUNK_UNLOAD, worldListener, preventPriority, this);
 		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, preventPriority, this);
 		pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, preventPriority, this);
-		pm.registerEvent(Event.Type.ENTITY_DAMAGED, entityListener, preventPriority, this);
-        pm.registerEvent(Event.Type.BLOCK_PLACED, blockListener, preventPriority, this);
-        pm.registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, preventPriority, this);
-        pm.registerEvent(Event.Type.BLOCK_RIGHTCLICKED, blockListener, preventPriority, this);
-        pm.registerEvent(Event.Type.BLOCK_INTERACT, blockListener, preventPriority, this);
+		pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, preventPriority, this);
+        pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, preventPriority, this);
+        pm.registerEvent(Event.Type.BLOCK_DAMAGE, blockListener, preventPriority, this);
+        pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, preventPriority, this);
     }
     
     /**
