@@ -182,7 +182,7 @@ public class SqlArea extends Area {
 		String update = "UPDATE `" + storage.tablePrefix + "Areas` "
 		+ "SET Name=? "
 		+ "WHERE Id=?;";
-		if (storage.connect())
+		if (!storage.connect())
 			return false;
 		try {
 			PreparedStatement ps = storage.conn.prepareStatement(update);

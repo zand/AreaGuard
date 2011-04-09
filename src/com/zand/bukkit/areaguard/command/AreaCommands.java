@@ -262,7 +262,7 @@ public class AreaCommands implements CommandExecutor {
 			}
 			
 			// Rename
-			else if (args[0].equalsIgnoreCase("name")) {
+			else if (args[0].equalsIgnoreCase("rename")) {
 				Area area = session.getSelectedArea();
 				if (area == null)
 					Messager.warn(sender, "You have no area selected");

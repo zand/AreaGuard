@@ -21,13 +21,15 @@ public class HealJob extends TimerTask {
 		this.player = player;
 		this.area = area;
 		
-		if (player.getHealth() < 20 && 
-				players.add(player)) // Are we not healing this player
+		if (players.add(player)) // Are we not healing this player
 			healTimer.schedule(this, healDelay);
 	}
 	
 	public void run() {
 		players.remove(player);
+		if (player.getHealth() < 20)
+			new HealJob(player, area);
+		else return;
 		
 		// Are they inside the area
 		Location loc = player.getLocation();
@@ -39,7 +41,6 @@ public class HealJob extends TimerTask {
 				loc.getBlockZ())) {
 			if (player.getHealth() > 0)
 					player.setHealth(player.getHealth() + healPower);
-			new HealJob(player, area);
 		}
 	}
 }

@@ -15,7 +15,7 @@ import com.zand.areaguard.area.cache.CacheStorage;
 import com.zand.areaguard.area.sql.SqlStorage;
 
 public class Config {
-	private static final String config = getConfigDir() + "/areaguard.properties";
+	private static final String config = getConfigDir() + "areaguard.properties";
 	private static String configDir;
 	public static int createTool;
 	public static int checkTool;
@@ -44,11 +44,11 @@ public class Config {
 		try {
 			props.load(new FileInputStream(file));
 		} catch (FileNotFoundException e) {
-			System.err.println("[AreaGuard]: Config file not Found \"" + file
+			System.err.println("[AreaGuard] Config file not Found \"" + file
 					+ "\"");
 			return false;
 		} catch (IOException e) {
-			System.err.println("[AreaGuard]: IO Error while loading config \""
+			System.err.println("[AreaGuard] IO Error while loading config \""
 					+ file + "\", " + e.getMessage());
 			return false;
 		}
@@ -67,7 +67,7 @@ public class Config {
 		if (storageType.equals("com.zand.areaguard.area.cache.CacheStorage"))
 			storage = new CacheStorage(new SqlStorage(config));
 		else storage = new SqlStorage(config);
-		System.out.println("[AreaGuard]: Useing Storage Method " + storage.getInfo());
+		System.out.println("[AreaGuard] Useing Storage Method " + storage.getInfo());
 		
 		return true;
 	}
@@ -85,20 +85,20 @@ public class Config {
 				e.printStackTrace();
 			}
 		}
-		return "plugins/AreaGuard";
+		return "plugins/AreaGuard/";
 	}
 
 	public static boolean setup() {
-		System.out.println("AreaGuard: Setup");
+		System.out.println("[AreaGuard] Setup");
 
 		// Test the config file
 		File f = new File(config);
 		boolean found = f.exists();
-		System.out.println("Config file \"" + config + "\" "
+		System.out.println("[AreaGuard] Config file \"" + config + "\" "
 				+ (found ? "found" : "missing"));
 		if (!found) {
 			try {
-				System.out.println("Creating \"" + config + "\"");
+				System.out.println("[AreaGuard] Creating \"" + config + "\"");
 				List<String> data = JarFile.toList("data/areaguard.properties");
 				
 				(new File(getConfigDir())).mkdir();
@@ -113,7 +113,7 @@ public class Config {
 				}
 				out.close();
 			} catch (IOException e) {
-				System.err.println("Error: " + e.getMessage());
+				System.err.println("[AreaGuard] Error: " + e.getMessage());
 			}
 		}
 

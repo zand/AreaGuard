@@ -6,6 +6,7 @@ import org.bukkit.event.entity.*;
 
 import com.zand.areaguard.Config;
 import com.zand.areaguard.area.Area;
+import com.zand.areaguard.area.Cuboid;
 import com.zand.bukkit.areaguard.AreaGuard;
 import com.zand.bukkit.areaguard.HealJob;
 
@@ -18,47 +19,51 @@ public class AreaGuardEntityListener extends EntityListener {
     public AreaGuardEntityListener(AreaGuard instance) {
     	plugin = instance;
     }
-
-    public void onEntityDamage(EntityDamageByEntityEvent event) {
+    
+    @Override
+    public void onEntityDamage(EntityDamageEvent event) {
     	if (event.isCancelled()) return;
     	
-    	Entity to = event.getEntity();
-    	Entity from = event.getDamager();
-    	String type = "";
+    	Entity entity = event.getEntity();
+    	Location loc = entity.getLocation();
+    	Cuboid cuboid = Config.storage.getWorld(entity.getWorld().getName())
+    	.getCuboid(true, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    	if (cuboid == null) return; // TODO fix
+    	Area area = cuboid.getArea();
+    	if (area == null) return; // TODO fix
     	
-    	Player player = null;
-    	
-    	// if this is a player
-    	if (from instanceof Player) {
-    		player = (Player) from;
-    		if (to instanceof Player) type = "pvp";
-    		else type = "mobs";
+    	if (event instanceof EntityDamageByEntityEvent) {
+    		Entity from = ((EntityDamageByEntityEvent)event).getDamager();
+    		
+    		Player player = null;
+    		
+    		// if this is a player
+        	if (from instanceof Player) {
+        		player = (Player) from;
+        		if (entity instanceof Player) { // player attacks player
+        			plugin.checkEvent(event, player, new String[] {"pvp"}, area);
+        		}
+        		else { // player attacks mobs
+        			plugin.checkEvent(event, player, new String[] {"mobs"}, area);
+        		}
+        	}
+        	else if (entity instanceof Player) { // mobs attack player
+        		player = (Player) entity;
+        		plugin.checkEvent(event, player, new String[] {"mobs"}, area);
+        	}
     	}
-    	else if (to instanceof Player) {
-    		player = (Player) to;
-    		type = "mobs";
-    	}
     	
-    	if(player == null) return;
-    	Location loc = to.getLocation();
-    	Area area = Config.storage.getWorld(player.getWorld().getName())
-    	.getCuboid(true, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())
-    	.getArea();
-		if (plugin.checkEvent(event, player, new String[] {type}, area) &&
-				to instanceof Player)
-			onPlayerDamage((Player) to, area);
+    	if (entity instanceof Player) {
+    		Player player = (Player)entity;
+    		
+    		// if they are in an area
+    		if (area != null)
+    			if (plugin.playerCan(area, player, new String[] {"heal"})) // can they auto heal
+    					new HealJob(player, area); // start a new HealJob
+    	}
     }
     
-    private  void onPlayerDamage(Player player, Area area) {
-    	// if they are in an area
-		if (area != null)
-			if (plugin.playerCan(area, player, new String[] {"heal"})) // can they auto heal
-					new HealJob(player, area); // start a new HealJob
+    @Override
+    public void onEntityInteract(EntityInteractEvent event) {
     }
-    
-    /*public void onEntityCombust(EntityCombustEvent event) {
-    }
-
-    public void onEntityExplode(EntityExplodeEvent event) {
-    }*/
 }

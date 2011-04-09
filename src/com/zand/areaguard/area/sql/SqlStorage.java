@@ -83,9 +83,9 @@ public class SqlStorage implements Storage {
 	
 	public boolean createTables() {
 		// Run Table Creation Script
-		String name = "/com/zand/areaguard/area/sql/mysql.sql";
-		if (url.toLowerCase().contains("sqlite")) name = "/com/zand/areaguard/area/sql/sqlite.sql";
-		return executeSqlScript(SqlStorage.class.getClassLoader().getResourceAsStream(name));
+		String name = "com/zand/areaguard/area/sql/mysql.sql";
+		if (url.toLowerCase().contains("sqlite")) name = "com/zand/areaguard/area/sql/sqlite.sql";
+		return executeSqlScript(getClass().getClassLoader().getResourceAsStream(name));
 	}
 	
 	public void config(String driver, String url, String user, String password,
@@ -106,20 +106,20 @@ public class SqlStorage implements Storage {
 		try {
 			if (conn == null || conn.isClosed()) {
 				if (time - connectTime > warnDelay) 
-					System.out.println("[AreaGuard]: Connecting");
+					System.out.println("[AreaGuard] Connecting");
 				Class.forName(driver);
 				conn = DriverManager.getConnection(url, user, password);
 			}
 		} catch (java.lang.ClassNotFoundException e) {
 			// Could not find driver
 			if (time - connectTime > warnDelay)
-				System.err.print("[AreaGuard]: Could not find driver \"" + driver
+				System.err.print("[AreaGuard] Could not find driver \"" + driver
 					+ "\"\n");
 		} catch (SQLException e) {
 			// Could not connect to the database
 			conn = null;
 			if (time - connectTime > warnDelay)
-				System.err.print("[AreaGuard]: Can't Connect, " + e.getMessage()
+				System.err.print("[AreaGuard] Can't Connect, " + e.getMessage()
 					+ "\n");
 		}
 		connectTime = System.currentTimeMillis();
@@ -140,7 +140,7 @@ public class SqlStorage implements Storage {
 		} catch (SQLException e) {
 			// Could not disconnect from the database?
 			conn = null;
-			System.err.print("[AreaGuard]:  Can't Disconnect, " + e.getMessage());
+			System.err.print("[AreaGuard]  Can't Disconnect, " + e.getMessage());
 		}
 	}
 

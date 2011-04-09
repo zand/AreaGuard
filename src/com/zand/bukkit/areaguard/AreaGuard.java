@@ -108,7 +108,7 @@ public class AreaGuard extends JavaPlugin {
     	
     	registerEvents();
     	// setupOtherPlugins();
-    	log.info( versionInfo + " is enabled!" );
+    	log.info( "[" + name + "] version [" + desc.getVersion() + "]" + (authors.isEmpty() ? "" : " by (" + authors.substring(2)) + ") is enabled!" );
     }
     
     public void onDisable() {
@@ -121,7 +121,7 @@ public class AreaGuard extends JavaPlugin {
 		
 		pm.registerEvent(Event.Type.CHUNK_UNLOAD, worldListener, preventPriority, this);
 		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, preventPriority, this);
-		pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, preventPriority, this);
+		//pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, preventPriority, this);
 		pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_DAMAGE, blockListener, preventPriority, this);

@@ -23,7 +23,9 @@ public class PermissionsWrapper {
     	if (this.Permissions == null) {
     		if(test != null) {
     			this.Permissions = (Permissions)test;
-    	    	log.info("[" + plugin.getClass().getName() + "] Found Permissions plugin. Using it.");
+    			String name = plugin.getClass().getName();
+    			name = name.substring(name.lastIndexOf(".")+1);
+    	    	log.info("[" + name + "] Found Permissions plugin. Using it.");
     	    }
     	}
 	}

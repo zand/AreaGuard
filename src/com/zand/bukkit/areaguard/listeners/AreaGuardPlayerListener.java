@@ -78,6 +78,7 @@ public class AreaGuardPlayerListener extends PlayerListener {
     	}
     }
 	
+	@Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Action action = event.getAction();
 		Block block = event.getClickedBlock();
