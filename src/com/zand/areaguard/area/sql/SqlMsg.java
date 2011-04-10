@@ -8,7 +8,7 @@ import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.Msg;
 
 public class SqlMsg extends Msg {
-	final private SqlStorage storage;
+	private final SqlStorage storage;
 	
 	protected SqlMsg(SqlStorage storage, Area area, String name) {
 		super(area, name.toLowerCase());

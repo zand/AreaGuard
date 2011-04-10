@@ -12,10 +12,10 @@ import com.zand.areaguard.area.error.ErrorCuboid;
 import com.zand.areaguard.area.error.ErrorWorld;
 
 public class SqlCuboid extends Cuboid {
-	final static public ErrorCuboid
+	public static final ErrorCuboid
 		COULD_NOT_CONNECT = new ErrorCuboid(),
 		SQL_ERROR = new ErrorCuboid();
-	final private SqlStorage storage;
+	private final SqlStorage storage;
 	
 	public SqlCuboid(SqlStorage storage, int id) {
 		super(id);

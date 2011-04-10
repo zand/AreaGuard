@@ -12,10 +12,10 @@ import com.zand.areaguard.area.Msg;
 import com.zand.areaguard.area.error.ErrorArea;
 
 public class SqlArea extends Area {
-	final static public ErrorArea
+	public static final ErrorArea
 	COULD_NOT_CONNECT = new ErrorArea("COULD NOT CONNECT"),
 	SQL_ERROR = new ErrorArea("SQL ERROR");
-	final private SqlStorage storage;
+	private final SqlStorage storage;
 	
 	protected SqlArea(SqlStorage storage, int id) {
 		super(id);

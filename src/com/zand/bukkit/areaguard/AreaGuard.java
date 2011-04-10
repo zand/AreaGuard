@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.ContainerBlock;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -121,7 +124,7 @@ public class AreaGuard extends JavaPlugin {
 		
 		pm.registerEvent(Event.Type.CHUNK_UNLOAD, worldListener, preventPriority, this);
 		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, preventPriority, this);
-		//pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, preventPriority, this);
+		// TODO pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, preventPriority, this);
 		pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, preventPriority, this);
         pm.registerEvent(Event.Type.BLOCK_DAMAGE, blockListener, preventPriority, this);
@@ -271,5 +274,49 @@ public class AreaGuard extends JavaPlugin {
 	@Override
 	public void onLoad() {
 		// TODO Auto-generated method stub
+	}
+	
+	/**
+	 * Checks if a player is allowed to create or destroy a block.
+	 * @param player	The player to check for
+	 * @param block		The block to check
+	 * @param event		The event to cancel if he can't
+	 * @return			If the player can create or destroy
+	 */
+	public boolean checkCanBuild(Player player, Block block, Cancellable event) {
+		// Check build
+		if (!checkEvent(event, player, 
+				new String[] {"owners", "allow", "build"}, 
+				block.getX(), block.getY(), block.getZ()))
+			return false;
+		
+		// Check can use
+		if (!checkCanUse(player, block, event))
+			return false;
+		
+		return true;
+	}
+	
+	/**
+	 * Checks if a player is allowed to use a block.
+	 * @param player	The player to check for
+	 * @param block		The block to check
+	 * @param event		The event to cancel if he can't
+	 * @return			If the player can use the block
+	 */
+	public boolean checkCanUse(Player player, Block block, Cancellable event) {
+		Material mat = block.getType();
+		String list = mat.name().toLowerCase().replaceAll("\\W", "").replaceAll("_", "-");
+		
+		// If it can be opened
+		if (block.getState() instanceof ContainerBlock) {
+			if (!checkEvent(event, player, 
+				new String[] {"owners", "allow", "open", list}, 
+				block.getX(), block.getY(), block.getZ())) return false;
+		}
+		
+		return checkEvent(event, player, 
+				new String[] {"owners", "allow", "use", list}, 
+				block.getX(), block.getY(), block.getZ());
 	}
 }

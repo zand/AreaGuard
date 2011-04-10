@@ -10,12 +10,12 @@ import com.zand.areaguard.area.Msg;
 
 
 public class ErrorArea extends com.zand.areaguard.area.Area {
-	final static public ErrorArea
+	public static final ErrorArea
 	NOT_FOUND = new ErrorArea("AREA NOT FOUND");
 	private final String error;
-	ArrayList<Cuboid> cubiods = new ArrayList<Cuboid>();
-	ArrayList<List> lists = new ArrayList<List>();
-	HashMap<String, Msg> msgs = new HashMap<String, Msg>();
+	private final ArrayList<Cuboid> cubiods = new ArrayList<Cuboid>();
+	private final ArrayList<List> lists = new ArrayList<List>();
+	private final HashMap<String, Msg> msgs = new HashMap<String, Msg>();
 
 	public ErrorArea(String error) {
 		super(-2);

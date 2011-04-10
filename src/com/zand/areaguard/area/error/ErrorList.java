@@ -6,8 +6,7 @@ import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.List;
 
 public class ErrorList extends List {
-	ArrayList<String> values = new ArrayList<String>();
-	String error;
+	private final ArrayList<String> values = new ArrayList<String>();
 	
 	public ErrorList(Area area, String name, String values[]) {
 		super(area, name);

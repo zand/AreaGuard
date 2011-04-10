@@ -6,10 +6,10 @@ import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.World;
 
 public class ErrorWorld extends World {
-	final static public ErrorWorld
+	public static final ErrorWorld
 		NOT_FOUND = new ErrorWorld("WORLD NOT FOUND");
 	
-	final private String name;
+	private final String name;
 	
 	public ErrorWorld(String name) {
 		super(-2);

@@ -9,10 +9,10 @@ import com.zand.areaguard.area.Cuboid;
 import com.zand.areaguard.area.error.ErrorWorld;
 
 public class SqlWorld extends com.zand.areaguard.area.World {
-	final static public ErrorWorld
+	public static final ErrorWorld
 		COULD_NOT_CONNECT = new ErrorWorld("COULD NOT CONNECT"),
 		SQL_ERROR = new ErrorWorld("SQL ERROR");
-	final private SqlStorage storage;
+	private final SqlStorage storage;
 	
 	protected SqlWorld(SqlStorage storage, int id) {
 		super(id);

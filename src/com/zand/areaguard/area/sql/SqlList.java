@@ -9,7 +9,7 @@ import com.zand.areaguard.area.Area;
 import com.zand.areaguard.area.List;
 
 public class SqlList extends List {
-	final private SqlStorage storage;
+	private final SqlStorage storage;
 
 	public SqlList(SqlStorage storage, Area area, String name) {
 		super(area, name.toLowerCase());

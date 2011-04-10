@@ -2,11 +2,8 @@ package com.zand.bukkit.areaguard.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.ContainerBlock;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -117,29 +114,6 @@ public class AreaGuardPlayerListener extends PlayerListener {
 		
 		if (event.isCancelled()) return;
 		
-		checkCanUse(player, block, event);
+		plugin.checkCanUse(player, block, event);
     }
-	
-	/**
-	 * Checks if a player is allowed to use a block.
-	 * @param player	The player to check for
-	 * @param block		The block to check
-	 * @param event		The event to cancel if he can't
-	 * @return			If the player can use the block
-	 */
-	public boolean checkCanUse(Player player, Block block, Cancellable event) {
-		Material mat = block.getType();
-		String list = mat.name().toLowerCase().replaceAll("\\W", "").replaceAll("_", "-");
-		
-		// If it can be opened
-		if (block.getState() instanceof ContainerBlock) {
-			if (!plugin.checkEvent(event, player, 
-				new String[] {"owners", "allow", "open", list}, 
-				block.getX(), block.getY(), block.getZ())) return false;
-		}
-		
-		return plugin.checkEvent(event, player, 
-				new String[] {"owners", "allow", "use", list}, 
-				block.getX(), block.getY(), block.getZ());
-	}
 }
